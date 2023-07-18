@@ -13,13 +13,8 @@ jobs:
        secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
          
-    run-log:
-    
-      runs-on: ubuntu-20.04
-      steps:
-      - name: Checkout
-        run: | 
-         echo "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
+ 
+  
        
       
     
