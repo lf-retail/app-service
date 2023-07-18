@@ -6,9 +6,20 @@ on:
  
 jobs:
 
-    trigger_javaci: 
-      
+    run-java-maven: 
+     
        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-ci.yml@main
       
        secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+         
+    run-log:
+    
+      runs-on: ubuntu-20.04
+      steps:
+      - name: Checkout
+        run: | 
+         echo "${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
+       
+      
+    
