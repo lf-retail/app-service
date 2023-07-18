@@ -8,7 +8,7 @@ jobs:
 
     trigger_javaci: 
       
-       uses: devsaibala/common-repo/.github/workflows/javaci.yml@main
+       uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-ci.yml@main
       
        secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
