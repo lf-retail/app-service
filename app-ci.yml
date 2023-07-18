@@ -1,0 +1,14 @@
+name: app CI
+
+on:
+ workflow_dispatch:
+ 
+ 
+jobs:
+
+    trigger_javaci: 
+      
+       uses: devsaibala/common-repo/.github/workflows/javaci.yml@main
+      
+       secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
