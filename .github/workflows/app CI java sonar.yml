@@ -9,6 +9,6 @@ jobs:
     
     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-         #SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-         #SONARQUBE_HOST: ${{ secrets.SONARQUBE_HOST }}
+         #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         #SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
    
