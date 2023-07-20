@@ -9,7 +9,7 @@ jobs:
     
     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-         configuration-path: ${{ inputs.config-path }}
+         #configuration-path: ${{ inputs.config-path }}
          #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
          #SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
    
