@@ -35,14 +35,6 @@ jobs:
           
         run: |
 
-         #echo "Creating temp dir"
-         #sshpass -p $AWS_SSH_KEY ssh root@13.234.120.105 'mkdir -v PACKAGETEMP' 
-         
-         #sshpass -p ${{github.workspace }}/rakbank-ubuntuserver1-key.pem ssh root@13.234.120.105 'mkdir -v PACKAGETEMP' 
-        
-         #echo "Copy files to target server"
-         #sshpass -p P@ssw0rd scp -r -v ${{github.workspace }}/helloworld.war ubuntu@13.234.120.105:$PACKAGETEMP/hello.war
-         
          echo "Running undeploy command"
          #cd ${{ github.workspace }}/dist
          '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="undeploy ${{ github.workspace }}/helloworld.war"'
