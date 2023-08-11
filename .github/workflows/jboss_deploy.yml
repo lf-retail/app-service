@@ -29,9 +29,9 @@ jobs:
         env:
           JBOSS_USERNAME: ${{ secrets.JBOSS_USERNAME }} 
           JBOSS_PASSWORD: ${{ secrets.JBOSS_PASSWORD }} 
-          JBOSS_ENDPOINT: ${{ vars.JBOSS_ENDPOINT }} 
-          AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
-          #WAR_PATH: ${{github.workspace }}/dist
+          #JBOSS_ENDPOINT: ${{ vars.JBOSS_ENDPOINT }} 
+          #AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+          #WAR_PATH: ${{github.workspace }}
           
         run: |
 
@@ -41,16 +41,15 @@ jobs:
          #sshpass -p ${{github.workspace }}/rakbank-ubuntuserver1-key.pem ssh root@13.234.120.105 'mkdir -v PACKAGETEMP' 
         
          #echo "Copy files to target server"
-         #sshpass -p P@ssw0rd scp -r -v ${{github.workspace }}/dist/helloworld.war ubuntu@13.234.120.105:$PACKAGETEMP/hello.war
+         #sshpass -p P@ssw0rd scp -r -v ${{github.workspace }}/helloworld.war ubuntu@13.234.120.105:$PACKAGETEMP/hello.war
          
          echo "Running undeploy command"
          #cd ${{ github.workspace }}/dist
-         '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="undeploy ${{ github.workspace }}/dist/helloworld.war"'
-         #sshpass -p ${{github.workspace }}/rakbank-ubuntuserver1-key.pem ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="undeploy helloworld.war --server-groups=HelloWorld"'
+         '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="undeploy ${{ github.workspace }}/helloworld.war"'
 
          #echo "Running deploy command"
          #'/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deploy $WAR_PATH --server-groups=HelloWorld"'
-         #sshpass -p $AWS_SSH_KEY ssh ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deploy ${{github.workspace }}/dist/helloworld.war --server-groups=HelloWorld"'
+         #sshpass -p $AWS_SSH_KEY ssh ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deploy ${{github.workspace }}/helloworld.war --server-groups=HelloWorld"'
 
          #echo "Check deployment status"
          #sshpass -p $AWS_SSH_KEY ssh ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deployment-info --name=helloworld.war"'
