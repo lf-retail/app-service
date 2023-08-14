@@ -29,9 +29,6 @@ jobs:
         env:
           JBOSS_USERNAME: ${{ secrets.JBOSS_USERNAME }} 
           JBOSS_PASSWORD: ${{ secrets.JBOSS_PASSWORD }} 
-          #JBOSS_ENDPOINT: ${{ vars.JBOSS_ENDPOINT }} 
-          #AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
-          #WAR_PATH: ${{github.workspace }}
           
         run: |
         
