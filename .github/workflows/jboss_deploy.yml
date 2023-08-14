@@ -19,11 +19,11 @@ jobs:
          
 
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'  
+     # - name: Set up JDK 17
+      #  uses: actions/setup-java@v3
+       # with:
+        #  java-version: '17'
+         # distribution: 'temurin'  
           
       - name: login to JBoss and deploy war file
         env:
