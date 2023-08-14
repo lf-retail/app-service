@@ -35,11 +35,11 @@ jobs:
           
         run: |
          echo "Running undeploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=JBOSS_USERNAME --password=JBOSS_PASSWORD  --command="undeploy /home/ubuntu/app-dir/helloworld.war"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="undeploy /home/ubuntu/app-dir/helloworld.war"
          echo "Running deploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=JBOSS_USERNAME --password=JBOSS_PASSWORD  --command="deployment-info --name=helloworld.war"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="deployment-info --name=helloworld.war"
         
-         #/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=JBOSS_USERNAME --password=JBOSS_PASSWORD  --command="undeploy --name=helloworld.war"
+         #/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="undeploy --name=helloworld.war"
 
          #echo "Running undeploy command"
          #cp ${{ github.workspace }}/helloworld.war /home/ubuntu/app-dir/
