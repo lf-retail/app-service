@@ -34,21 +34,13 @@ jobs:
           #WAR_PATH: ${{github.workspace }}
           
         run: |
-         echo "Running undeploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="undeploy /home/ubuntu/app-dir/helloworld.war"
-         echo "Running deploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="deployment-info --name=helloworld.war"
         
-         #/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="undeploy --name=helloworld.war"
-
-         #echo "Running undeploy command"
-         #cp ${{ github.workspace }}/helloworld.war /home/ubuntu/app-dir/
-         #cd ${{ github.workspace }}/dist
-         #'/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="undeploy /home/ubuntu/app-dir/helloworld.war"'
-
-         #echo "Running deploy command"
-         #'/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deploy $WAR_PATH --server-groups=HelloWorld"'
-         #sshpass -p $AWS_SSH_KEY ssh ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deploy ${{github.workspace }}/helloworld.war --server-groups=HelloWorld"'
-
-         #echo "Check deployment status"
-         #sshpass -p $AWS_SSH_KEY ssh ubuntu@13.234.120.105 '/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD --command="deployment-info --name=helloworld.war"'
+         echo "Running undeploy command"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="undeploy --name=helloworld.war"
+         
+         echo "Running deploy command"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="deploy /home/ubuntu/app-dir/helloworld.war"
+         
+         echo "Running deploy status command"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.234.120.105 --user=jbadmin --password=jbadmin@123  --command="deployment-info --name=helloworld.war"
+         
