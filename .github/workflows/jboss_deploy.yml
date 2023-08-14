@@ -1,4 +1,4 @@
-name: caller-java-sonar-ci
+name: caller-jboss
 
 on:
  workflow_dispatch:
