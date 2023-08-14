@@ -1,4 +1,4 @@
-name: jboss-caller
+name: jboss-caller-new
 
 on:
  workflow_dispatch:
