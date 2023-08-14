@@ -5,7 +5,7 @@ on:
   
 jobs:
   caller-java-sonar-ci:
-    uses: lf-common-repo/shared-workflow/.github/workflows/jboss.yml@main
+    uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
     
     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
