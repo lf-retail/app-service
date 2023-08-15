@@ -8,7 +8,7 @@ env:
   
 jobs:
   caller-jboss-deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps: 
       - name: deploy jboss   
         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
