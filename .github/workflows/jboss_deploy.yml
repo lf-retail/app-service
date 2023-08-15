@@ -3,12 +3,14 @@ name: jboss-caller-new
 on:
  workflow_dispatch:
 
-env:
-  GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
+#env:
+ # GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
   
 jobs:
   caller-jboss-deploy:
-    runs-on: ubuntu-latest
-    steps: 
-      - name: deploy jboss   
+    #runs-on: ubuntu-latest
+    #steps: 
+     # - name: deploy jboss   
         uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-ci.yml@main
+        secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
