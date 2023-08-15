@@ -4,7 +4,7 @@ on:
  workflow_dispatch:
   
 jobs:
-  caller-java-sonar-ci:
+  caller-jboss-deploy:
     uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
     
     secrets:
