@@ -4,13 +4,16 @@ on:
  workflow_dispatch:
 
 #env:
- # GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
+ # Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
   
 jobs:
   caller-jboss-deploy:
-    #runs-on: ubuntu-latest
-    #steps: 
-     # - name: deploy jboss   
+    runs-on: self-hosted
+    steps: 
+      - name: deploy jboss   
         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-        secrets:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+        #secrets: 
+      - name: passing secret key
+        run: |
+         secrets:
+           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }} 
