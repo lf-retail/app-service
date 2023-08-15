@@ -12,5 +12,7 @@ jobs:
     steps: 
       - name: deploy jboss   
         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+        with:
+         GITHUB_TOKEN: 'GITHUB_TOKEN'
         #env:
          # Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
