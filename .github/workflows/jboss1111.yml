@@ -1,7 +1,10 @@
 name: jboss-caller-new
 
 on:
- workflow_dispatch:
+ workflow_call:
+   secrets:
+      Workflow2_PAT_TOKEN_GITHUB:
+        required: true
   
 jobs:
   caller-jboss-deploy:
@@ -9,5 +12,5 @@ jobs:
     steps: 
       - name: deploy jboss   
         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-        env:
-          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+        #env:
+         # Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
