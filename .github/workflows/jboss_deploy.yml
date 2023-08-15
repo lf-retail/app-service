@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: deploy jboss   
-        uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+        uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-ci.yml@main
