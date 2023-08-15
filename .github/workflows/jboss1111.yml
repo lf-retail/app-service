@@ -1,10 +1,10 @@
 name: jboss-caller-new
 
 on:
- workflow_call:
-   secrets:
-      Workflow2_PAT_TOKEN_GITHUB:
-        required: true
+ workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
   
 jobs:
   caller-jboss-deploy:
