@@ -10,6 +10,12 @@ jobs:
   caller-jboss-deploy:
       runs-on: self-hosted
       steps:
+        - name: Set Runner Info
+          run: echo "RUNNER=custom-runner" >> $GITHUB_ENV
+
+        - name: Run Called Workflow
+          uses: actions/checkout@v2
+        
         - name: Trigger Called Workflow
           uses: actions/github-script@v5
           with:
@@ -26,7 +32,3 @@ jobs:
               console.log(response);
           env:
             Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}         
-
-
-
-         
