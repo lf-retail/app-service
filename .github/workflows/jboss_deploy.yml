@@ -17,13 +17,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: npm install @actions/github
-        
+        run: npm install @octokit/rest.js
+
       - name: Trigger Called Workflow
         uses: actions/github-script@v5
         with:
           script: |
-            const { Octokit } = require("@octokit/rest");
+            const { Octokit } = require("@octokit/rest.js"); // Correct package name
             const octokit = new Octokit({
               auth: process.env.Workflow2_PAT_TOKEN_GITHUB, // Use the appropriate token here
             });
@@ -37,4 +37,6 @@ jobs:
                 runner: process.env.RUNNER
               }
             });
-            console.log(response);
+            console.log(response);    
+        env:
+           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}             
