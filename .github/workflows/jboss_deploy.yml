@@ -8,27 +8,30 @@ env:
   
 jobs:
   caller-jboss-deploy:
-      runs-on: self-hosted
-      steps:
-        - name: Set Runner Info
-          run: echo "RUNNER=custom-runner" >> $GITHUB_ENV
+     runs-on: self-hosted
+     steps:
+      - name: Set Runner Info
+        run: echo "RUNNER=custom-runner" >> $GITHUB_ENV
 
-        - name: Run Called Workflow
-          uses: actions/checkout@v2
+      - name: Run Called Workflow
+        uses: actions/checkout@v2
         
-        - name: Trigger Called Workflow
-          uses: actions/github-script@v5
-          with:
-            script: |
-              const response = await octokit.actions.createWorkflowDispatch({
-                owner: 'lf-common-repo',
-                repo: 'shared-workflow',
-                workflow_id: 'Jboss.yml',
-                ref: 'main',
-                inputs: {
-                  runner: process.env.RUNNER
-                }
-              });
-              console.log(response);
-          env:
-            Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}         
+      - name: Trigger Called Workflow
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const { Octokit } = require("@octokit/rest");
+            const octokit = new Octokit({
+              auth: process.env.Workflow2_PAT_TOKEN_GITHUB, // Use the appropriate token here
+            });
+
+            const response = await octokit.actions.createWorkflowDispatch({
+              owner: 'lf-common-repo',
+              repo: 'shared-workflow',
+              workflow_id: 'Jboss.yml',
+              ref: 'main',
+              inputs: {
+                runner: process.env.RUNNER
+              }
+            });
+            console.log(response);
