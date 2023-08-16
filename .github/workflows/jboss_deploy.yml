@@ -3,17 +3,9 @@ name: jboss-caller-new
 on:
  workflow_dispatch:
 
-#env:
- # Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
   
 jobs:
   caller-jboss-deploy:
-    runs-on: ubuntu-latest #self-hosted
-    steps: 
-      - name: deploy jboss   
-        uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-        #secrets: 
-      - name: passing secret key
-        run: |
+         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
          secrets:
            Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }} 
