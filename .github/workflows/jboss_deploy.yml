@@ -13,7 +13,7 @@ jobs:
          with:           
            token: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}          
            repository: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main      
-           #event-type: Jboss.yml@main
+           event-type: run-called-workflow
          #uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
          #secrets:
            #Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }} 
