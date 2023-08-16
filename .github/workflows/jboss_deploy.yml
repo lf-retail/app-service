@@ -6,6 +6,14 @@ on:
   
 jobs:
   caller-jboss-deploy:
-         uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-         secrets:
-           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }} 
+      runs-on: self-hosted
+      steps:
+       - name: Trigger Called Workflow        
+         uses: peter-evans/repository-dispatch@v1        
+         with:           
+           token: ${{ secrets.GITHUB_TOKEN }}          
+           repository: lf-common-repo/shared-workflow/.github/workflows         
+           event-type: Jboss.yml@main
+         #uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+         #secrets:
+           #Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }} 
