@@ -11,7 +11,7 @@ jobs:
        - name: Trigger Called Workflow        
          uses: peter-evans/repository-dispatch@v1        
          with:           
-           secrets: ${{ secrets.GITHUB_TOKEN }}          
+           secrets: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}          
            repository: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main      
            #event-type: Jboss.yml@main
          #uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
