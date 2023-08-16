@@ -21,8 +21,11 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install dependencies
-        run: npm install @octokit/rest.js
+      - name: Install dependencies and trigger workflow
+        run: |
+          npm install @octokit/rest.js
+          node your-trigger-script.js
+
 
       - name: Trigger Called Workflow
         uses: actions/github-script@v5
