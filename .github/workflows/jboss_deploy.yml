@@ -3,9 +3,6 @@ name: jboss-caller-new
 on:
  workflow_dispatch:
  
-env: 
-  Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-  
 jobs:
   caller-jboss-deploy:
      runs-on: ubuntu-latest
