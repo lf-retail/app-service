@@ -10,7 +10,7 @@ jobs:
   caller-jboss-deploy:
      runs-on: ubuntu-latest
      steps:
-        - name: caller-java-sonar-ci
+        - name: jboss-deploy
           uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
     
           env:
