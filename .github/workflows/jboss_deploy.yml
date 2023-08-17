@@ -10,13 +10,19 @@ jobs:
   caller-jboss-deploy:
      runs-on: ubuntu-latest
      steps:
-      - name: Trigger Caller Workflow
-        uses: actions/checkout@v2
+        - name: caller-java-sonar-ci
+          uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+    
+          env:
+            Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
      
-      - name: Run Callee Workflow
-        run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: Bearer ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}" \
-          https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Jboss.yml/dispatches \
-          -d '{"ref":"main"}'
+      #- name: Trigger Caller Workflow
+       # uses: actions/checkout@v2
+     
+      #- name: Run Callee Workflow
+       # run: |
+        #  curl -X POST \
+         # -H "Accept: application/vnd.github.v3+json" \
+          #-H "Authorization: Bearer ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}" \
+          #https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Jboss.yml/dispatches \
+          #-d '{"ref":"main"}'
