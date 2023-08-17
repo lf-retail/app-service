@@ -10,7 +10,7 @@ jobs:
   caller-jboss-deploy:
      runs-on: ubuntu-latest
      steps:
-      - name: Trigger Caller Workflowii
+      - name: Trigger Caller Workflow
         uses: actions/checkout@v3
      
       - name: Run Callee Workflow
@@ -18,5 +18,5 @@ jobs:
           curl -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: Bearer ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}" \
-          https://github.com/lf-common-repo/shared-workflow/.github/workflows/Jboss.yml \
+          https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Jboss.yml/dispatches \
           -d '{"ref":"main"}'
