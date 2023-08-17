@@ -8,43 +8,15 @@ env:
   
 jobs:
   caller-jboss-deploy:
-     runs-on: self-hosted
+     runs-on: ubuntu-latest
      steps:
-      - name: Set Runner Info
-        run: echo "RUNNER=custom-runner" >> $GITHUB_ENV
-
-      - name: Run Called Workflow
-        uses: actions/checkout@v2
-        
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies and trigger workflow
+      - name: Trigger Caller Workflowii
+        uses: actions/checkout@v3
+     
+      - name: Run Callee Workflow
         run: |
-          npm install @octokit/rest
-          node your-trigger-script.js
-
-
-      - name: Trigger Called Workflow
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { Octokit } = require("@octokit/rest"); // Correct package name
-            const octokit = new Octokit({
-              auth: process.env.Workflow2_PAT_TOKEN_GITHUB, // Use the appropriate token here
-            });
-
-            const response = await octokit.actions.createWorkflowDispatch({
-              owner: 'lf-common-repo',
-              repo: 'shared-workflow',
-              workflow_id: 'Jboss.yml',
-              ref: 'main',
-              inputs: {
-                runner: process.env.RUNNER
-              }
-            });
-            console.log(response);    
-        env:
-           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}             
+          curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Jboss.yml/dispatches \
+          -d '{"ref":"main"}'
