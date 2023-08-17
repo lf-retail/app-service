@@ -5,10 +5,12 @@ on:
  
 jobs:
   caller-jboss-deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: jboss-deploy
+      #runs-on: ubuntu-latest
+      #steps:
+        #- name: jboss-deploy
           uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-          env:
+          #with:
+           #  config-path: .github/labeler.yml
+          secrets:
             token: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
    
