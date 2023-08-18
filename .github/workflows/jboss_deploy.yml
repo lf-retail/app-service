@@ -11,8 +11,5 @@ jobs:
           uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
           with:
              runner: "[\"self-hosted\"]"
-
-        - name: passing secrets
-          with:
              Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
    
