@@ -13,5 +13,7 @@ jobs:
 
         run: |
            lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+           with:
+            runner: "[\"self-hosted\"]"
     
      
