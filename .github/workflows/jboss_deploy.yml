@@ -12,6 +12,7 @@ jobs:
           with:
              runner: "[\"self-hosted\"]"
 
-          env:
+        - name: passing secrets
+          with:
              Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
    
