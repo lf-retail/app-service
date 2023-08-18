@@ -9,7 +9,7 @@ jobs:
       steps:
         - name: jboss-deploy
           uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-          with:
-             runner: "[\"self-hosted\"]"
+          #with:
+           #  runner: "[\"self-hosted\"]"
              #Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
    
