@@ -7,7 +7,7 @@ jobs:
   caller-jboss-deploy:
       uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
       with:
-             runner: "[\"self-hosted\"]"
+        runner: "[\"self-hosted\"]"
       secrets:
         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
    
