@@ -5,15 +5,9 @@ on:
  
 jobs:
   caller-jboss-deploy:
-    runs-on: self-hosted
-    steps:
-      - name: deploying the war file
-        env:
-          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-
-        run: |
-           lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
-           with:
-            runner: "[\"self-hosted\"]"
+    uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+    
+    secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
     
      
