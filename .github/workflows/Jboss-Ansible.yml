@@ -1,11 +1,14 @@
-name: jboss-caller-new
+name: jboss-caller-Ansible
 
 on:
  workflow_dispatch:
  
 jobs:
-  caller-jboss-deploy:
-    uses: lf-common-repo/shared-workflow/.github/workflows/Jboss.yml@main
+  caller-jboss-deploy-Ansible:
+    runs-on: self-hosted
+    steps: 
+      - name: Deploying the war file into jboss
+        run: ansible-playbook -i inventory.ini -l jboss_servers jboss.yml
     
-    secrets:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+    #secrets:
+     #    Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
