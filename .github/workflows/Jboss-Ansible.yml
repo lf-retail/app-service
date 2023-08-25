@@ -8,7 +8,7 @@ jobs:
     runs-on: self-hosted
     steps: 
       - name: Deploying the war file into jboss
-        run: ansible-playbook -i inventory.ini -l jboss_servers jboss.yml
+        run: ansible-playbook -i /home/ubuntu/inventory.ini -l /home/ubuntu/jboss_servers jboss.yml
     
     #secrets:
      #    Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
