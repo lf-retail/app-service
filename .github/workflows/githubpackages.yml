@@ -37,4 +37,4 @@ jobs:
               -Durl=https://maven.pkg.github.com/lf-retail/app-service
           done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW2_PAT_TOKEN_GITHUB }}
