@@ -1,0 +1,11 @@
+name: caller-ant-ci
+
+on:
+ workflow_dispatch:
+  
+jobs:
+  caller-java-ant-ci:
+    uses: lf-common-repo/shared-workflow/.github/workflows/java-ant-ci.yml@main
+    
+    secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
