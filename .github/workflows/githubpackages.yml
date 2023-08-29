@@ -1,6 +1,6 @@
 name: Publish to GitHub Packages
 on:
-  workflow_dispatch:
+ workflow_dispatch:
 
 jobs:
   publish:
@@ -11,17 +11,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download JAR files
-        run: |
-          mkdir jars
-          wget -P jars https://github.com/lf-retail/app-service/helloworld.jar
-
       - name: Build and Publish
         run: |
-          PACKAGE_PATH=com/lf-retail/app-service
+          # Replace 'com/example' with the appropriate package path
+          PACKAGE_PATH=https://github.com/lf-retail/app-service/helloworld.jar
+          
+          # Replace '1.0.0' with the appropriate version
           VERSION=1.0.0
-
-          for jar_file in $(ls jars/*.jar); do
+          
+          # Iterate through JAR files in a directory and publish each to GitHub Packages
+          for jar_file in $(ls https://github.com/lf-retail/app-service/*.jar); do
             artifact_id=$(basename $jar_file .jar)
             mvn deploy:deploy-file \
               -Dfile=$jar_file \
