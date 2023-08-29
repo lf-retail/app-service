@@ -34,7 +34,7 @@ jobs:
               -Dversion=$VERSION \
               -Dpackaging=jar \
               -DrepositoryId=github \
-              -Durl=https://maven.pkg.github.com/OWNER/REPO
+              -Durl=https://maven.pkg.github.com/lf-retail/app-service
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
