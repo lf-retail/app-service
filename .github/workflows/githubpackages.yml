@@ -1,0 +1,40 @@
+name: Publish to GitHub Packages
+on:
+ workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish JARs to GitHub Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      #- name: Set up JDK
+       # uses: actions/setup-java@v2
+        #with:
+         # java-version: 11
+
+      - name: Build and Publish
+        run: |
+          # Replace 'com/example' with the appropriate package path
+          PACKAGE_PATH=https://github.com/lf-retail/app-service/helloworld.jar
+          
+          # Replace '1.0.0' with the appropriate version
+          VERSION=1.0.0
+          
+          # Iterate through JAR files in a directory and publish each to GitHub Packages
+          for jar_file in $(ls https://github.com/lf-retail/app-service/*.jar); do
+            artifact_id=$(basename $jar_file .jar)
+            mvn deploy:deploy-file \
+              -Dfile=$jar_file \
+              -DgroupId=$PACKAGE_PATH \
+              -DartifactId=$artifact_id \
+              -Dversion=$VERSION \
+              -Dpackaging=jar \
+              -DrepositoryId=github \
+              -Durl=https://maven.pkg.github.com/OWNER/REPO
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
