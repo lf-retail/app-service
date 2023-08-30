@@ -1,10 +1,11 @@
 name: Java CI with Gradle
 
 on:
-  workflow_call:
-    secrets:
-      Workflow2_PAT_TOKEN_GITHUB:
-        required: true
+  workflow_dispatch
+ # workflow_call:
+    #secrets:
+      #Workflow2_PAT_TOKEN_GITHUB:
+       # required: true
 env:
   JAVA_VERSION: '11' 
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
