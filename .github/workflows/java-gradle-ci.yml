@@ -1,53 +1,12 @@
-name: Java CI with Gradle
+name: caller-gradle-ci
+
 
 on:
-  workflow_dispatch
- # workflow_call:
-    #secrets:
-      #Workflow2_PAT_TOKEN_GITHUB:
-       # required: true
-env:
-  JAVA_VERSION: '11' 
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+  workflow_dispatch:
 
 jobs:
-  build:
+  caller-java-gardle-ci:
+    uses: lf-common-repo/shared-workflow/.github/workflows/java-gradle-ci.yaml@main
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: permission
-      run: chmod +x /home/runner/work/app-service/app-service/gradlew
-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        
-    - name: Validate Gradle wrapper
-      uses: gradle/wrapper-validation-action@ccb4328a959376b642e027874838f60f8e596de3
-
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
-      with:
-          arguments: build
-
-    - name: Run SonarQube Scan
-      run: |
-          echo "SONAR URL - > " ${{vars.SONAR_HOST_URL}}
-          #export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
-          export SONAR_HOST_URL=${{vars.SONAR_HOST_URL}}
-          mvn install sonar:sonar \
-            -D sonar.projectKey=test-maven-project \
-            -D sonar.host.url=$SONAR_HOST_URL \
-            -D sonar.login=admin -D sonar.password=admin123 
-
-    - name: Publish package
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: publish
-      env:
-          GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+    secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
