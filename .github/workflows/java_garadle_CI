@@ -1,4 +1,4 @@
-name: caller-ant-ci
+name: caller-gradle-ci
 
 on:
  workflow_dispatch:
