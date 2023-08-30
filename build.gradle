@@ -24,7 +24,7 @@ publishing {
   repositories {
     maven {
       name = "GitHubPackages"
-      url = "https://maven.pkg.github.com/lf-common-repo/shared-workflow/blob/main/.github/workflows/publish-java-package-with-gradle"
+      url = "https://maven.pkg.github.com/lf-common-repo/shared-workflow</url>"
       credentials {
         username = System.getenv("GITHUB_ACTOR")
         password = System.getenv("GITHUB_TOKEN")
