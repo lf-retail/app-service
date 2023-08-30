@@ -6,7 +6,7 @@ on:
 
 jobs:
   caller-java-gardle-ci:
-    uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yaml@main
+    uses: lf-common-repo/shared-workflow/.github/workflows/publish-java-package-with-gradle.yml@main
 
     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
