@@ -27,7 +27,7 @@ publishing {
       url = "https://maven.pkg.github.com/lf-common-repo/shared-workflow"
       credentials {
         username = System.getenv("GITHUB_ACTOR")
-        password = System.getenv("WORKFLOW2_PAT_TOKEN_GITHUB")
+        password = System.getenv("GITHUB_TOKEN")
       }
     }
   }
