@@ -9,3 +9,4 @@ jobs:
     
     secrets:
          Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+         JAVA_TOKEN: ${{ secrets.JAVA_TOKEN }}
