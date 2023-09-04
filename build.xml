@@ -1,5 +1,17 @@
 <project name="MyJavaProject" default="build">
 
+    <groupId>DEH.app</groupId>
+    <artifactId>java-ant-sonar-packages</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/lf-common-repo/shared-workflow</url>
+        </repository>
+    </distributionManagement>
+
   <target name="clean">
     <delete dir="build"/>
   </target>
