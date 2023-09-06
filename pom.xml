@@ -18,7 +18,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/lf-common-repo/shared-workflow</url>
+            <url>https://maven.pkg.github.com/lf-retail/app-service</url>
         </repository>
     </distributionManagement>  
          
