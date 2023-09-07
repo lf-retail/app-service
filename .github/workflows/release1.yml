@@ -1,0 +1,24 @@
+name: Create Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Name of version (e.g., 5.5.0)'
+        required: true
+      versionCode:
+        description: 'Version number (e.g., 50500)'
+        required: true
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Create and switch to the release branch
+        run: |
+          BRANCH_NAME="release/v${{ github.event.inputs.Release }}"
+          git checkout -b $BRANCH_NAME Dev
