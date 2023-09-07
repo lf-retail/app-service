@@ -20,7 +20,9 @@ jobs:
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
         git checkout -b $RELEASE_BRANCH_NAME origin/Dev
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME:origin/Dev
+        git branch --set-upstream-to=origin/Dev $RELEASE_BRANCH_NAME
+
       env:
         GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
 
