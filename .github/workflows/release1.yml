@@ -15,7 +15,7 @@ jobs:
     - name: Create Release Branch
       run: |
         RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
-        git checkout -b $RELEASE_BRANCH_NAME origin/Dev
+        git checkout -b $RELEASE_BRANCH_NAME 
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN  }}
