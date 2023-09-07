@@ -11,6 +11,10 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: 'refs/heads/Dev'
+        fetch-depth: 0  # Fetch all history, including branches and tags.
+      
+    - name: Fetch latest changes from remote
+      run: git fetch origin
       
     - name: Create Release Branch
       run: |
@@ -18,4 +22,5 @@ jobs:
         git checkout -b $RELEASE_BRANCH_NAME origin/Dev
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN  }}
+        GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
+
