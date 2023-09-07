@@ -5,7 +5,7 @@ on:
  
 jobs:
   caller-jboss-deploy-Ansible:
-    runs-on: self-hosted
+    runs-on: label-1
     steps: 
        - name: Checkout code
          uses: actions/checkout@v3
