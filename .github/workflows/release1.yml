@@ -2,6 +2,8 @@ name: Create Release Branch and Trigger CD Pipeline
 
 on:
   workflow_dispatch:
+permissions:
+  contents: write
    
 jobs:
   create_release_branch:
