@@ -1,0 +1,21 @@
+name: Create Release Branch and Trigger CD Pipeline
+
+on:
+  workflow_dispatch:
+   
+jobs:
+  create_release_branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'refs/heads/Dev'
+      
+    - name: Create Release Branch
+      run: |
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
+        git checkout -b $RELEASE_BRANCH_NAME origin/Dev
+        git push --set-upstream origin origin/Dev
+      env:
+        GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
