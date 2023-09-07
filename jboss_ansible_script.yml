@@ -1,0 +1,19 @@
+- name: deploy the war file into jboss
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+    - name: Undeploy existing application
+      ansible.builtin.shell: >
+        /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123 --command="undeploy --name=helloworld.war"
+      ignore_errors: yes
+
+    - name: Deploy application
+      ansible.builtin.shell: >
+        /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123 --command="deploy /home/ubuntu/app-dir/helloworld.war"
+
+    - name: Check deployment status
+      ansible.builtin.shell: >
+        /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123  --command="deployment-info --name=helloworld.war"
+
