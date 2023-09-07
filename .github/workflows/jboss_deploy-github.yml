@@ -48,8 +48,8 @@ jobs:
 
         run: |
 
-         #echo "Running undeploy command"
-         #/opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="undeploy --name=helloworld.jar"
+         echo "Running undeploy command"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="undeploy --name=helloworld.jar"
 
          echo "Running deploy command"
          /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="deploy /home/ubuntu/app-dir/helloworld.jar"
