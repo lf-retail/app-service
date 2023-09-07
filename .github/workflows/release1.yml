@@ -1,8 +1,12 @@
-name: Create Release Branch and Trigger CD Pipeline
+name: Create Release Branch
 
 on:
   workflow_dispatch:
-   
+    inputs:
+      release:
+        description: 'Release branch name'
+        required: true
+
 jobs:
   create_release_branch:
     runs-on: ubuntu-latest
@@ -11,18 +15,12 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: 'refs/heads/Dev'
-        fetch-depth: 0  # Fetch all history, including branches and tags.
-      
-    - name: Fetch latest changes from remote
-      run: git fetch origin
       
     - name: Create Release Branch
       run: |
-        RELEASE_BRANCH_NAME=${{ github.event.inputs.Release }}
-        git checkout -b $RELEASE_BRANCH_NAME origin/Dev
-        git push --set-upstream origin $RELEASE_BRANCH_NAME:origin/Dev
-        git branch --set-upstream-to=origin/Dev $RELEASE_BRANCH_NAME
-
+        RELEASE_BRANCH_NAME=${{ github.event.inputs.release }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
         GITHUB_TOKEN: ${{ secrets.JAVA_TOKEN }}
 
