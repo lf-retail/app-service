@@ -8,27 +8,27 @@ env:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: label-5
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         
 
-      - name: Download WAR from GitHub Packages
-        run: |
+      #- name: Download WAR from GitHub Packages
+       # run: |
           # Replace OWNER, REPO, PACKAGE_NAME, and VERSION with your repository and package details
           #PACKAGE_NAME="java-ant-sonar"
           #VERSION="1.0.0"
-          curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/PACKAGE_NAME/VERSION/java-ant-sonar-1.0.2.jar"
+        #  curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/PACKAGE_NAME/VERSION/java-ant-sonar-1.0.2.jar"
           #mv "java-ant-sonar-1.0.0.jar" /home/ubuntu/app-dir/helloworld.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
+        #env:
+         # GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
 
-      - name: Move JAR file to /home/ubuntu/app-dir/
-        run: |
-           sudo mv "java-ant-sonar-1.0.2.jar" /home/ubuntu/app-dir/helloworld.jar
-           sudo chmod 755 /home/ubuntu/app-dir/helloworld.jar
-        shell: bash          
+      #- name: Move JAR file to /home/ubuntu/app-dir/
+       # run: |
+        #   sudo mv "java-ant-sonar-1.0.2.jar" /home/ubuntu/app-dir/helloworld.jar
+         #  sudo chmod 755 /home/ubuntu/app-dir/helloworld.jar
+        #shell: bash          
 
       - name: list 
         run: |
@@ -49,10 +49,10 @@ jobs:
         run: |
 
          echo "Running undeploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="undeploy --name=helloworld.jar"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="undeploy --name=helloworld.war"
 
          echo "Running deploy command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="deploy /home/ubuntu/app-dir/helloworld.jar"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="deploy /home/ubuntu/app-dir/helloworld.war"
 
          echo "Running deploy status command"
-         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="deployment-info --name=helloworld.jar"
+         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=$JBOSS_USERNAME --password=$JBOSS_PASSWORD  --command="deployment-info --name=helloworld.war"
