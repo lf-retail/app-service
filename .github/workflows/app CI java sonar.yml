@@ -1,9 +1,7 @@
 name: caller-java-sonar-ci
 
- 
-
 on:
-workflow_dispatch:
+ workflow_dispatch:
 
 jobs:
   caller-java-sonar-ci:
