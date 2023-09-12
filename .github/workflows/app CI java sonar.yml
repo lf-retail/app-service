@@ -1,20 +1,16 @@
 name: caller-java-sonar-ci
 
+ 
+
 on:
- workflow_dispatch:
-  
+workflow_dispatch:
+
 jobs:
   caller-java-sonar-ci:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout Local Repository
-        uses: actions/checkout@v2
-        #with:
-          #path: /.github/workflows/app CI java sonar.yml@main
-          #repository: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-    
-      - name: Run Caller CI workflow
-        run: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
-        env: 
-           Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-   
+    uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
+
+    secrets:
+         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+         #configuration-path: ${{ inputs.config-path }}
+         #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         #SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
