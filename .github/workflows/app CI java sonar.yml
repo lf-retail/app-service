@@ -1,8 +1,10 @@
 name: caller-java-sonar-ci
 
 on:
- workflow_dispatch:
-
+   workflow_call:
+    secrets:
+      Workflow2_PAT_TOKEN_GITHUB:
+        required: true
 jobs:
   caller-java-sonar-ci:
     uses: lf-common-repo/shared-workflow/.github/workflows/java-maven-sonar-ci.yml@main
