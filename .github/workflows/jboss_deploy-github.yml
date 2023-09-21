@@ -18,7 +18,8 @@ jobs:
         run: |
           PACKAGE_NAME="java-ant-sonar"
           VERSION="1.0.0"
-          curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/PACKAGE_NAME/VERSION/java-ant-sonar-1.0.2.jar"
+          curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/$PACKAGE_NAME/$VERSION/java-ant-sonar-$VERSION.jar"
+          #curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/PACKAGE_NAME/VERSION/java-ant-sonar-1.0.2.jar"
           mv "java-ant-sonar-1.0.0.jar" /home/ubuntu/app-dir/helloworld.jar
         env:
           GITHUB_TOKEN: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}  
