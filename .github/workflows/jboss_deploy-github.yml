@@ -8,7 +8,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: label-5
+    runs-on: label-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
