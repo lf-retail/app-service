@@ -1,0 +1,23 @@
+name: Deploy Workflow
+
+on:
+ workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - run:
+        chmod +x deploy.sh
+
+    - name: Deploy 
+      run: |
+        ./deploy.sh
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
+        git add change.log
+        git commit -m "Update change.log with release 1.0.1 changes"
+        git push
