@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Define a function to process each line
+process_line() {
+  local filename
+  local destination
+
+  # Split the line into filename and destination using comma as the delimiter
+  IFS=',' read -r filename destination <<< "$1"
+
+  # Perform actions based on the values
+  echo "Deploying $filename to $destination"
+
+  # Add your deployment logic here
+  # For example, you can use 'cp' to copy the file to the destination:
+  # cp "$filename" "$destination"
+}
+
+# Check if the release.txt file exists
+if [ -e "release.txt" ]; then
+  # Read each line from the release.txt file
+  while IFS= read -r line; do
+    # Skip empty lines and lines starting with #
+    if [[ -n "$line" && "$line" != "#"* ]]; then
+      process_line "$line"
+    fi
+  done < "release.txt"
+else
+  echo "release.txt file not found"
+fi
