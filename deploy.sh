@@ -16,4 +16,15 @@ process_line() {
   # cp "$filename" "$destination"
 }
 
-
+# Check if the release.txt file exists
+if [ -e "release.txt" ]; then
+  # Read each line from the release.txt file
+  while IFS= read -r line; do
+    # Skip empty lines and lines starting with #
+    if [[ -n "$line" && "$line" != "#"* ]]; then
+      process_line "$line"
+    fi
+  done < "release.txt"
+else
+  echo "release.txt file not found"
+fi
