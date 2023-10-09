@@ -1,0 +1,2 @@
+filename1.js, /documents/
+filename2.js, /documents/
