@@ -7,7 +7,13 @@ process_line() {
 
   # Perform actions based on the values
   echo "Deploying $filename to $destination"
-
+  
+  # Check if either the filename or destination is empty
+  if [ -z "$filename" ] || [ -z "$destination" ]; then
+    echo "Error: Empty filename or destination in line: $1"
+    return
+  fi
+  
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file to the destination:
   cp "$filename" "$destination"
