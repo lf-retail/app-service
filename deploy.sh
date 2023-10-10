@@ -1,6 +1,3 @@
-#!/bin/bash
-
-# Define a function to process each line
 process_line() {
   local filename
   local destination
@@ -13,7 +10,13 @@ process_line() {
 
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file to the destination:
-  # cp "$filename" "$destination"
+  cp "$filename" "$destination"
+  
+  if [ $? -eq 0 ]; then
+    echo "Copied $filename to $destination"
+  else
+    echo "Error copying $filename to $destination"
+  fi
 }
 
 # Check if the release.txt file exists
