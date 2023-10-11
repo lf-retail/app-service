@@ -240,7 +240,14 @@ compile fileTree(dir: 'lib', include: '*.jar')
 	compile	'com.rakbank.infosys.lib:pfl-basic-tools:4.0.1'
 	compile	'com.rakbank.infosys.lib:pfl-basic:4.1.0'
 	compile	'com.rakbank.infosys.lib:pfl-asm:4.1.0'
-	
+	################################################
+	shanmugam
+	compile	'com.rakbank.infosys.lib:pdfbox:2.0.15'
+        compile	'com.rakbank.infosys.lib:paranamer:2.8'
+        compile	'com.rakbank.infosys.lib:org.osgi.core:6.0.0'
+	compile	'com.rakbank.infosys.lib:opennlp-tools:1.6.0'
+	compile	'com.rakbank.infosys.lib:nimbus-jose-jwt:8.20'
+	##############################################
 	
 	
 	
