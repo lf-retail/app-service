@@ -10,16 +10,16 @@ pfl-asm-4.1.0.jar done
 PD-GEN.jar done
 #######################
 #####shanmugam########
-pdfbox-2.0.15.jar
-paranamer-2.8.jar
-org.restlet-2.3.12_1.jar
-org.osgi.core-6.0.0.jar
-org.eclipse.jetty.server.jar
-opennlp-tools-1.6.0.jar
-openAPI-generated-1111.jar
-ojdbc8.jar
-nimbus-jose-jwt-8.20.jar
-netty-transport-native-unix-common-4.1.42.Final.jar
+pdfbox-2.0.15.jar - done
+paranamer-2.8.jar - done
+org.restlet-2.3.12_1.jar -- need to change(version)
+org.osgi.core-6.0.0.jar - done
+org.eclipse.jetty.server.jar -- need to change(version)
+opennlp-tools-1.6.0.jar - done
+openAPI-generated-1111.jar --  jar not found
+ojdbc8.jar -- need to change(package name and version)
+nimbus-jose-jwt-8.20.jar -- done
+netty-transport-native-unix-common-4.1.42.Final.jar -- need to change (artifact id)
 
 ##########################
 
