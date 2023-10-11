@@ -1,0 +1,14 @@
+https://github.com/Rakbank-DEH-Onboarding/SMEDigitalBank main gradle file url
+
+for libs /jars folder url https://github.com/Rakbank-DEH-Onboarding/BBG-Sample-Build
+
+
+
+packages : https://github.com/orgs/Rakbank-DEH-Onboarding/packages
+
+
+push-gpt.sh
+
+libs
+
+//missing jars from latest build
