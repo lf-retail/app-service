@@ -233,6 +233,16 @@ compile fileTree(dir: 'lib', include: '*.jar')
 	#######################################################
 	vivek
 	compile	'com.rakbank.infosys.lib:poi-ooxml-schemas:3.17'
+	compile	'com.rakbank.infosys.lib:poi-ooxml:3.17'
+	compile	'com.rakbank.infosys.lib:pfl-tf-tools:4.0.1'
+	compile	'com.rakbank.infosys.lib:pfl-tf:4.1.0'
+	compile	'com.rakbank.infosys.lib:pfl-dynamic:4.1.0'
+	compile	'com.rakbank.infosys.lib:pfl-basic-tools:4.0.1'
+	compile	'com.rakbank.infosys.lib:pfl-basic:4.1.0'
+	compile	'com.rakbank.infosys.lib:pfl-asm:4.1.0'
+	
+	
+	
 	
 
 
