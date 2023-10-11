@@ -1,11 +1,11 @@
 poi-ooxml-schemas-3.17.jar done
-poi-ooxml-3.17.jar
-pfl-tf-tools-4.0.1.jar
-pfl-tf-4.1.0.jar
-pfl-dynamic-4.1.0.jar
-pfl-basic-tools-4.0.1.jar
-pfl-basic-4.1.0.jar
-pfl-asm-4.1.0.jar
+poi-ooxml-3.17.jar done
+pfl-tf-tools-4.0.1.jar done
+pfl-tf-4.1.0.jar done
+pfl-dynamic-4.1.0.jar done
+pfl-basic-tools-4.0.1.jar done
+pfl-basic-4.1.0.jar done
+pfl-asm-4.1.0.jar done
  
 PD-GEN.jar
 #######################
