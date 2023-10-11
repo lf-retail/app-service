@@ -1,10 +1,4 @@
 #!/bin/bash
-
-USERNAME="pradip-wincy"
-TOKEN="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"  # Consider using environment variables or some secure method to store this
-REPO_OWNER="Rakbank-DEH-Onboarding"
-REPO_NAME="RetailOnboarding-AccMS"
-GROUP_ID="com.rakbank.infosys.lib"
 FILES_DIR="/Users/pradeep/Documents/DEH-Libs-Publish/libs"
 ARTIFACT_ID="pd-gen"
 VERSION="1111"
