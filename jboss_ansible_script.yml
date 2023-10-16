@@ -1,10 +1,9 @@
-- name: deploy the war file into jboss
+- name: Deploy the war file into JBoss
   hosts: all
   remote_user: ubuntu
   become: yes
 
   tasks:
-  
     - name: Download JAR from GitHub Packages
       environment:
         GITHUB_TOKEN: "{{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
@@ -12,14 +11,14 @@
         PACKAGE_NAME="java-ant-sonar"
         VERSION="1.0.2"
         curl -LO "https://maven.pkg.github.com/lf-common-repo/shared-workflow/$PACKAGE_NAME/$VERSION/java-ant-sonar-$VERSION.jar"
-        
+
     - name: Move JAR file to /home/ubuntu/app-dir/
       ansible.builtin.shell: >
         mv "java-ant-sonar-1.0.2.jar" /home/ubuntu/app-dir/helloworld.jar && chmod 755 /home/ubuntu/app-dir/helloworld.jar
       args:
         executable: /bin/bash
-        
-      - name: List files in /opt/wildfly/bin/
+
+    - name: List files in /opt/wildfly/bin/
       ansible.builtin.shell: ls -l /opt/wildfly/bin/
 
     - name: Echo WAR_PATH
@@ -28,8 +27,8 @@
     #- name: Login to JBoss and deploy war file
      # environment:
       #  JBOSS_USERNAME: "{{ secrets.JBOSS_USERNAME }}"
-       # JBOSS_PASSWORD: "{{ secrets.JBOSS_PASSWORD }}"
-     
+       # JBOSS_PASSWORD: "{{ secrets.JBOSS_PASSWORD }}"      
+
     - name: Undeploy existing application
       ansible.builtin.shell: >
         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123 --command="undeploy --name=helloworld.war"
@@ -42,4 +41,3 @@
     - name: Check deployment status
       ansible.builtin.shell: >
         /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123  --command="deployment-info --name=helloworld.war"
-
