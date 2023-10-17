@@ -4,6 +4,18 @@
   become: yes
 
   tasks:
+
+    - name: Stop the application
+      ansible.builtin.shell: >
+        /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123 --command="undeploy --name=helloworld.war"
+      ignore_errors: yes
+
+    - name: Backup Application
+      ansible.builtin.archive:
+        path: /home/ubuntu/app-dir/helloworld.war
+        dest: /home/ubuntu/app-dir/backup/helloworld_backup_{{ ansible_date_time.date }}.tar.gz
+      
+      
     - name: Download JAR from Artifact
       environment:
         GITHUB_TOKEN: "{{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
@@ -29,10 +41,7 @@
       #  JBOSS_USERNAME: "{{ secrets.JBOSS_USERNAME }}"
        # JBOSS_PASSWORD: "{{ secrets.JBOSS_PASSWORD }}"      
 
-    - name: Undeploy existing application
-      ansible.builtin.shell: >
-        /opt/wildfly/bin/jboss-cli.sh --connect --controller=13.200.96.209 --user=jbadmin --password=jbadmin@123 --command="undeploy --name=helloworld.war"
-      ignore_errors: yes
+
 
     - name: Deploy application
       ansible.builtin.shell: >
