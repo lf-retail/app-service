@@ -4,7 +4,7 @@
   become: yes
 
   tasks:
-    - name: Download JAR from GitHub Packages
+    - name: Download JAR from Artifact
       environment:
         GITHUB_TOKEN: "{{ secrets.Workflow2_PAT_TOKEN_GITHUB }}"
       shell: |
