@@ -19,6 +19,9 @@ jobs:
       run: |
         ./deploy.sh
 
+    - name: Make rollback.sh executable
+      run: chmod +x rollback.sh
+
     - name: Rollback on Failure
       if: failure()
       run: |
