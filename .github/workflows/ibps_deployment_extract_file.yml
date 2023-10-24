@@ -1,7 +1,7 @@
 name: extract release file
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -10,11 +10,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
-    - name: Make deploy.sh executable      
-      run: |
-        chmod +x deploy.sh
+
+    - name: Make deploy.sh executable
+      run: chmod +x deploy.sh
 
     - name: Deploy 
+      id: deploy_step
       run: |
         ./deploy.sh
+
+    - name: Rollback on Failure
+      if: failure()
+      run: |
+        # Call rollback.sh script here
+        ./rollback.sh rollback.txt
