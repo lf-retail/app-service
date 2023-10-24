@@ -13,6 +13,17 @@ process_line() {
     echo "Error: Empty filename or destination in line: $1"
     return
   fi
+
+  # Backup the file before deploying
+  if [ -e "$destination" ]; then
+    backup_dir="backup"
+    mkdir -p "$backup_dir"
+    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
+    cp "$destination" "$backup_file"
+    echo "Backed up $destination to $backup_file"
+  else
+    echo "File $destination not found, skipping backup"
+  }
   
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file to the destination:
