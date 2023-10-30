@@ -17,7 +17,7 @@ jobs:
     - name: Deploy 
       id: deploy_step
       run: |
-        sudo ./deploy.sh
+        sudo -E ./deploy.sh
 
     - name: Make rollback.sh executable
       run: chmod +x rollback.sh
