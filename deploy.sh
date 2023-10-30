@@ -3,7 +3,7 @@ process_line() {
   local source  # Add a new variable for the source location
   local destination
 
-  # Split the line into filename, source, and destination using comma as the delimiter
+  # Split the line into filename, source, and destination using a comma as the delimiter
   IFS=',' read -r filename source destination <<< "$1"
 
   # Perform actions based on the values
