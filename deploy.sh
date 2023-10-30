@@ -1,18 +1,19 @@
 process_line() {
   local filename
+  local source  # Add a new variable for the source location
   local destination
 
-  # Split the line into filename and destination using comma as the delimiter
-  IFS=',' read -r filename destination <<< "$1"
+  # Split the line into filename, source, and destination using comma as the delimiter
+  IFS=',' read -r filename source destination <<< "$1"
 
   # Perform actions based on the values
-  echo "Deploying $filename to $destination"
+  echo "Deploying $filename from $source to $destination"
   
-  # Check if either the filename or destination is empty
-  if [ -z "$filename" ] || [ -z "$destination" ]; then
-    echo "Error: Empty filename or destination in line: $1"
+  # Check if either the filename, source, or destination is empty
+  if [ -z "$filename" ] || [ -z "$source" ] || [ -z "$destination" ]; then
+    echo "Error: Empty filename, source, or destination in line: $1"
     return
-  fi
+  }
 
   # Backup the file before deploying
   if [ -e "$destination" ]; then
@@ -27,13 +28,13 @@ process_line() {
   
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file to the destination:
-  cp "$filename" "$destination"
-  
+  cp "$source/$filename" "$destination"
+
   if [ $? -eq 0 ]; then
-    echo "Copied $filename to $destination"
+    echo "Copied $filename from $source to $destination"
   else
-    echo "Error copying $filename to $destination"
-  fi
+    echo "Error copying $filename from $source to $destination"
+  }
 }
 
 # Check if the release.txt file exists
