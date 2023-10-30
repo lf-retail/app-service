@@ -34,7 +34,7 @@ process_line() {
     echo "Copied $filename from $source to $destination"
   else
     echo "Error copying $filename from $source to $destination"
-  }
+  fi
 }
 
 # Check if the release.txt file exists
