@@ -26,4 +26,4 @@ jobs:
       #if: failure()
       run: |
         # Call rollback.sh script here
-        ./rollback.sh release.txt
+        ./rollback.sh rollback.txt
