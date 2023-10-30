@@ -17,6 +17,8 @@ jobs:
     - name: Deploy 
       id: deploy_step
       run: |
+        sudo apt-get install dos2unix
+        sudo yum install dos2unix
         dos2unix deploy.sh
         sudo -E ./deploy.sh
 
