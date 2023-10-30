@@ -24,7 +24,7 @@ process_line() {
     echo "Backed up $destination to $backup_file"
   else
     echo "File $destination not found, skipping backup"
-  }
+  fi
   
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file to the destination:
