@@ -17,7 +17,7 @@ rollback_line() {
 
   # Perform the rollback logic here
   # For example, you can use 'cp' to copy the backup_file to the destination:
-  cp "$backup_file" "$destination"
+  cp -r "$backup_file" "$destination"
 
   if [ $? -eq 0 ]; then
     echo "Rolled back $backup_file to $destination"
