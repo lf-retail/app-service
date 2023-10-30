@@ -17,6 +17,7 @@ jobs:
     - name: Deploy 
       id: deploy_step
       run: |
+        dos2unix deploy.sh
         sudo -E ./deploy.sh
 
     - name: Make rollback.sh executable
