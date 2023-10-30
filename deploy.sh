@@ -13,7 +13,7 @@ process_line() {
   if [ -z "$filename" ] || [ -z "$source" ] || [ -z "$destination" ]; then
     echo "Error: Empty filename, source, or destination in line: $1"
     return
-  }
+  fi
 
   # Backup the file before deploying
   if [ -e "$destination" ]; then
