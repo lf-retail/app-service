@@ -13,7 +13,7 @@ rollback_line() {
   # Check if either the backup_file or destination is empty
   if [ -z "$backup_file" ] || [ -z "$destination" ]; then
     echo "Error: Empty backup_file or destination in line: $1"
-  }
+  fi
 
   # Perform the rollback logic here
   # For example, you can use 'cp' to copy the backup_file to the destination:
@@ -23,7 +23,7 @@ rollback_line() {
     echo "Rolled back $backup_file to $destination"
   else
     echo "Error rolling back $backup_file to $destination"
-  }
+  fi
 }
 
 # Check if the rollback.txt file exists
