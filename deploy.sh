@@ -13,7 +13,7 @@ process_line() {
   fi
 
   if [ -e "$destination" ]; then
-    backup_dir="backup"
+    backup_dir="/home/ubuntu/backup"
     mkdir -p "$backup_dir"
     backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
     cp "$destination" "$backup_file"
