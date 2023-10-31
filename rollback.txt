@@ -1,1 +1,7 @@
-$(ls -td /home/ubuntu/backup/app-dir_backup_*/ | head -n 1)/helloworld.jar,/home/ubuntu/app-dir
+latest_backup=""
+for backup_dir in /home/ubuntu/backup/app-dir_backup_*/; do
+  if [[ -z "$latest_backup" || "$backup_dir" -nt "$latest_backup" ]]; then
+    latest_backup="$backup_dir"
+  fi
+done
+${latest_backup}helloworld.jar,/home/ubuntu/app-dir
