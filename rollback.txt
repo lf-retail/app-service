@@ -5,4 +5,4 @@ for backup_dir in /home/ubuntu/backup/app-dir_backup_*/; do
   fi
 done
 ${latest_backup}helloworld.jar,/home/ubuntu/app-dir
-#/home/ubuntu/backup/app-dir_backup_20231030130403/,/home/ubuntu/app-dir
+#/home/ubuntu/backup/app-dir_backup_20231030130403/helloworld.jar,/home/ubuntu/app-dir
