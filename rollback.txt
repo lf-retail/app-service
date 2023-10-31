@@ -1,4 +1,4 @@
 #$(ls -td /home/ubuntu/backup/app-dir_backup_*/ | head -n 1)/helloworld.jar,/home/ubuntu/app-dir
-#/home/ubuntu/backup/app-dir_backup_20231030130403/helloworld.jar,/home/ubuntu/app-dir
 #$latest_backup/helloworld.jar,/home/ubuntu/app-dir
-$(ls -td /home/ubuntu/backup/app-dir_backup_* | head -n 1)/helloworld.jar,/home/ubuntu/app-dir
+#$(ls -td /home/ubuntu/backup/app-dir_backup_* | head -n 1)/helloworld.jar,/home/ubuntu/app-dir
+/home/ubuntu/backup/app-dir_backup_20231031091554/helloworld.jar,/home/ubuntu/app-dir
