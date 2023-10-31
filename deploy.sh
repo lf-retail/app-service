@@ -17,8 +17,12 @@ process_line() {
     mkdir -p "$backup_dir"
     backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
     cp -r "$destination" "$backup_file"
-    echo "$backup_file" > /home/ubuntu/latest_backup.txt
-    #echo "Backed up $destination to $backup_file"
+    echo "Backed up $destination to $backup_file"
+
+    # Create a symbolic link to the latest backup
+    latest_backup_link="/home/ubuntu/latest_backup"
+    rm -f "$latest_backup_link"  # Remove the previous symlink if it exists
+    ln -s "$backup_file" "$latest_backup_link"
   else
     echo "File $destination not found, skipping backup"
   fi
