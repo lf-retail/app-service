@@ -17,7 +17,8 @@ process_line() {
     mkdir -p "$backup_dir"
     backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
     cp -r "$destination" "$backup_file"
-    echo "Backed up $destination to $backup_file"
+    echo "$backup_file" > /home/ubuntu/latest_backup.txt
+    #echo "Backed up $destination to $backup_file"
   else
     echo "File $destination not found, skipping backup"
   fi
