@@ -1,1 +1,1 @@
-$(ls -d -1 /home/ubuntu/backup/app-dir_backup_* | tail -n 1),/home/ubuntu/app-dir
+$(ls -td /home/ubuntu/backup/app-dir_backup_*/ | head -n 1)/helloworld.jar,/home/ubuntu/app-dir
