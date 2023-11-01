@@ -1,2 +1,2 @@
 #BAIS.jsp, /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/dspcasapps01Cell01/BAIS_war.ear/BAIS.war/CustomForms/Forms_cas_31
-helloworld.jar,/home/ubuntu/source,/home/ubuntu/app-dir
+helloworld.jar,/home/ubuntu/app-dir
