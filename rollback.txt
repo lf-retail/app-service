@@ -1,1 +1,0 @@
-/home/ubuntu/backup/app-dir_backup_20231031091554/helloworld.jar,/home/ubuntu/app-dir
