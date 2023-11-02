@@ -1,43 +1,38 @@
 #!/bin/bash
 
-# Define the path to the change.log file
-change_log="change.log"
+rollback_change_log() {
+  local change_log="$1"
+  local rollback_dir="/home/ubuntu/backup"
 
-rollback() {
-  local rollback_info
-  local backup_file
-  local destination
-  local timestamp
+  # Check if the change.log file exists
+  if [ -e "$change_log" ]; then
+    while IFS= read -r line; do
+      # Split the line into components (source, destination, timestamp, etc.)
+      IFS=',' read -r source destination timestamp <<< "$line"
 
-  # Read the change.log file in reverse order (latest changes first)
-  tac "$change_log" | while IFS= read -r rollback_info; do
-    if [[ "$rollback_info" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) - Backed up (.+) to (.+)$ ]]; then
-      timestamp="${BASH_REMATCH[1]}"
-      backup_file="${BASH_REMATCH[2]}"
-      destination="${BASH_REMATCH[3]}"
-
-      # Check if the backup file and destination exist
-      if [ -e "$backup_file" ] && [ -e "$destination" ]; then
-        echo "Rolling back $backup_file to $destination"
-
-        # Perform the rollback by copying the backup file back to the destination
-        cp -r "$backup_file" "$destination"
+      # Check if the source file exists in the backup directory
+      if [ -e "$rollback_dir/$source" ]; then
+        # Perform the rollback
+        echo "Rolling back $source to $destination"
+        cp "$rollback_dir/$source" "$destination"
 
         if [ $? -eq 0 ]; then
-          echo "Rolled back $backup_file to $destination"
-          # Remove the line from the change.log file
-          sed -i "\|$timestamp - Backed up $destination to $backup_file|d" "$change_log"
+          echo "Rolled back $source to $destination"
         else
-          echo "Error rolling back $backup_file to $destination"
+          echo "Error rolling back $source to $destination"
         fi
+      else
+        echo "Backup file $source not found, skipping rollback"
       fi
-    fi
-  done
+    done < "$change_log"
+  else
+    echo "Change log file not found"
+  fi
 }
 
-# Check if the change.log file exists
-if [ -e "$change_log" ]; then
-  rollback
+# Check if the change.log file is provided as an argument
+if [ $# -eq 1 ]; then
+  rollback_change_log "$1"
 else
-  echo "change.log file not found, unable to perform rollback"
+  echo "Usage: $0 <change.log>"
 fi
