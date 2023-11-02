@@ -25,5 +25,5 @@ jobs:
     - name: Rollback on Failure
       if: failure()
       run: |
-        # Call rollback.sh script here
-        sudo ./rollback.sh rollback.txt
+        # Call rollback.sh script with change.log as an argument
+        sudo ./rollback.sh change.log
