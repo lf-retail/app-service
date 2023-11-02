@@ -1,11 +1,14 @@
 process_line() {
   local filename
   local destination
-
+  
+  # Split the line into backup_file and destination using comma as the delimiter 
   IFS=',' read -r filename destination <<< "$1"
 
+  # Perform actions based on the values
   echo "Deploying $filename to $destination"
 
+  # Check if either the backup_file or destination is empty
   if [ -z "$filename" ] || [ -z "$destination" ]; then
     echo "Error: Empty filename or destination in line: $1"
     return
@@ -18,10 +21,13 @@ process_line() {
     backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
     cp -r "$destination" "$backup_file"
     echo "Backed up $destination to $backup_file"
+
+    # Add the backup details to the change.log file
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
   else
     echo "File $destination not found, skipping backup"
   fi
-  
+
   # Add your deployment logic here
   # For example, you can use 'cp' to copy the file from the source to the destination:
   cp "$filename" "$destination"
