@@ -14,6 +14,9 @@ jobs:
     - name: Make deploy.sh executable
       run: chmod +x deploy.sh
 
+    - name: Make deploy.sh executable
+      run: chmod +x helloworld.war
+
     - name: Deploy 
       id: deploy_step
       run: |
