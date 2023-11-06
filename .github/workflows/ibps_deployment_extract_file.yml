@@ -1,4 +1,4 @@
-name: extract release file
+name: IBPS deployment
 
 on:
   workflow_dispatch:
