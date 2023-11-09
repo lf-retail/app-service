@@ -2,19 +2,19 @@ process_line() {
   local filename
   local destination
   
-  # Split the line into backup_file and destination using comma as the delimiter 
+  # Split the line into filename and destination using a comma as the delimiter 
   IFS=',' read -r filename destination <<< "$1"
 
   # Perform actions based on the values
   echo "Deploying $filename to $destination"
 
-  # Check if either the backup_file or destination is empty
+  # Check if either the filename or destination is empty
   if [ -z "$filename" ] || [ -z "$destination" ]; then
     echo "Error: Empty filename or destination in line: $1"
     return
   fi
 
-  # Backup the file before deploying
+  # Backup the existing file at the destination
   if [ -e "$destination" ]; then
     backup_dir="/home/ubuntu/backup"
     mkdir -p "$backup_dir"
@@ -28,14 +28,24 @@ process_line() {
     echo "File $destination not found, skipping backup"
   fi
 
-  # Add your deployment logic here
-  # For example, you can use 'cp' to copy the file from the source to the destination:
-  cp "$filename" "$destination"
+  # Download the file from GitHub Packages using curl
+  # Replace GITHUB_TOKEN with your GitHub token or credentials
+  curl -H "Authorization: token GITHUB_TOKEN" -o "$filename" -L "https://npm.pkg.github.com/your-organization/$filename"
 
   if [ $? -eq 0 ]; then
-    echo "Copied $filename to $destination"
+    echo "Downloaded $filename from GitHub Packages"
+
+    # Add your deployment logic here
+    # For example, you can use 'cp' to copy the file from the source to the destination:
+    cp "$filename" "$destination"
+
+    if [ $? -eq 0 ]; then
+      echo "Copied $filename to $destination"
+    else
+      echo "Error copying $filename to $destination"
+    fi
   else
-    echo "Error copying $filename to $destination"
+    echo "Error downloading $filename from GitHub Packages"
   fi
 }
 
