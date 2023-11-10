@@ -14,19 +14,26 @@ jobs:
     - name: Make deploy.sh executable
       run: chmod +x deploy.sh
 
+    - name: Make rollback.sh executable
+      run: chmod +x rollback.sh      
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/IBPS-deployment.yml 
+
     #- name: Make deploy.sh executable
      # run: chmod +x helloworld.war
 
-    - name: Deploy 
-      id: deploy_step
-      run: |
-       ./deploy.sh
+    #- name: Deploy 
+     # id: deploy_step
+      #run: |
+       #./deploy.sh
 
-    - name: Make rollback.sh executable
-      run: chmod +x rollback.sh
-
-    - name: Rollback on Failure
-      if: failure()
-      run: |
-        # Call rollback.sh script with change.log as an argument
-        sudo ./rollback.sh change.log
+    #- name: Rollback on Failure
+     # if: failure()
+      #run: |
+       # # Call rollback.sh script with change.log as an argument
+        #sudo ./rollback.sh change.log
