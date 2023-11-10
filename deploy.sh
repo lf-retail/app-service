@@ -19,7 +19,8 @@ process_line() {
     backup_dir="/home/ubuntu/backup"
     mkdir -p "$backup_dir"
     backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    cp -r "$destination" "$backup_file"
+    rsync -a "$destination" "$backup_file"
+    #cp -r "$destination" "$backup_file"
     echo "Backed up $destination to $backup_file"
 
     # Add the backup details to the change.log file
