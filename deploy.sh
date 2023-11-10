@@ -30,7 +30,7 @@ process_line() {
 
   # Download the file from GitHub Packages using curl
   # Replace GITHUB_TOKEN with your GitHub token or credentials
-  curl -H "Authorization: token GITHUB_TOKEN" -o "$filename" -L "https://npm.pkg.github.com/your-organization/$filename"
+  curl -H "Authorization: token GITHUB_TOKEN" -o "$filename" -L "https://maven.pkg.github.com/your-organization/$filename"
 
   if [ $? -eq 0 ]; then
     echo "Downloaded $filename from GitHub Packages"
