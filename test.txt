@@ -1,14 +1,5 @@
-https://github.com/Rakbank-DEH-Onboarding/SMEDigitalBank main gradle file url
+Server IP :- 10.15.13.148 - ANT3CASAPPS01
 
-for libs /jars folder url https://github.com/Rakbank-DEH-Onboarding/BBG-Sample-Build
+Installed Apps Location 
 
-
-
-packages : https://github.com/orgs/Rakbank-DEH-Onboarding/packages
-
-
-push-gpt.sh
-
-libs
-
-//missing jars from latest build
+/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
