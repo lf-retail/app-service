@@ -1,5 +1,70 @@
-Server IP :- 10.15.13.148 - ANT3CASAPPS01
+using github action workflow
+name: IBPS deployment
 
-Installed Apps Location 
+on:
+  workflow_dispatch:
 
-/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: rakdeh9
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Make deploy.sh executable
+      run: chmod +x deploy.sh
+
+    - name: Make rollback.sh executable
+      run: chmod +x rollback.sh      
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        #run: ansible-playbook -i ~/inventory.ini -l webshpere_servers ./playbook/IBPS-deployment.yml 
+        ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01' ./playbook/IBPS-deployment.yml  
+
+using inventory.ini
+[all:vars]
+ansible_user=itansops
+ansible_ssh_port=22
+
+[target_webshpere]
+target=ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+#ansible_ssh_private_key_file=/home/ubuntu/rakbank-ubuntuserver1-key.pem ansible_user=ubuntu
+
+using playbook
+- hosts: '{{ target }}'
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Deploy Application
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
+      when: deploy_result|failed
+  
+  getting error
+Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
+  cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
+  #run: ansible-playbook -i ~/inventory.ini -l webshpere_servers ./playbook/IBPS-deployment.yml 
+  ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01' ./playbook/IBPS-deployment.yml  
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+Warning: : Could not match supplied host pattern, ignoring: ANT3CASAPPS01
+
+PLAY [ANT3CASAPPS01] ***********************************************************
+skipping: no hosts matched
+
+PLAY RECAP *********************************************************************
