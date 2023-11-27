@@ -69,17 +69,26 @@ skipping: no hosts matched
 
 PLAY RECAP *********************************************************************
 ===========================
-Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
-  #ansible-playbook -i ~/inventory.ini -l webshpere_servers ./playbook/IBPS-deployment.yml 
-  ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01' ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: ***
-  
-Warning: : Could not match supplied host pattern, ignoring: ANT3CASAPPS01
+- hosts: target_webshpere
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Deploy Application
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+      register: deploy_result
+      ignore_errors: yes
 
-PLAY [ANT3CASAPPS01] ***********************************************************
-skipping: no hosts matched
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
+      when: deploy_result|failed
+=======================
 
-PLAY RECAP *********************************************************************
+env:
+  TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+run: |
+  cd ${{ github.workspace }}
+  ansible-playbook -b --extra-vars 'target=target_webshpere' ./playbook/IBPS-deployment.yml
+
