@@ -69,8 +69,26 @@ skipping: no hosts matched
 
 PLAY RECAP *********************************************************************
 ===========================
+- hosts: ANT3CASAPPS01
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Deploy Application
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+      register: deploy_result
+      ignore_errors: yes
 
-[target_webshpere]
-ANT3CASAPPS01 ansible_ssh_host=10.15.13.148 ansible_user=itansops ansible_ssh_port=22
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
+      when: deploy_result|failed
+=============================
 
-================================
+env:
+  TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+run: |
+  cd ${{ github.workspace }}
+  ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01' ./playbook/IBPS-deployment.yml
+====================
