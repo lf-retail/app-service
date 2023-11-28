@@ -1,8 +1,1 @@
-- hosts: '{{ target }}'
-  become: yes
-  become_method: sudo
-  gather_facts: no
-  tasks:
-    - name: Execute deployment script
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+ansible-playbook -b -vvv --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment' ./playbook/IBPS-deployment.yml
