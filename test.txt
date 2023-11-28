@@ -1,139 +1,15 @@
-using ansible.cfg
-[defaults]
-host_key_checking=False
-deprecation_warnings=False
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-remote_tmp=/tmp
-inventory=hosts.cfg
-roles_path=roles/
-comment_warnings=False
-command_warnings=False
-interpreter_python=auto
-vault_password_file=group_vars/vault_key.yml
-ANSIBLE_DEPRECATION_WARNINGS=False
-ANSIBLE_COMMAND_WARNINGS=False
+Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
 
-using hosts.cfg
-[all:vars]
-ansible_user=itansops
-ansible_ssh_port=22
+PLAY [ANT3CASAPPS01] ***********************************************************
 
-[target_jb1]
-ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+TASK [Deploy Application] ******************************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "/bin/bash -c 'cd  && ./deploy.sh'", "delta": "0:00:00.331971", "end": "2023-11-28 13:00:24.695878", "msg": "non-zero return code", "rc": 127, "start": "2023-11-28 13:00:24.363907", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
+...ignoring
 
-using inventory.ini
-[all:vars]
-ansible_user=itansops
-ansible_ssh_port=22
+TASK [Rollback on Deployment Failure] ******************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "/bin/bash -c 'cd  && ./rollback.sh change.log'", "delta": "0:00:00.358433", "end": "2023-11-28 13:00:25.577103", "msg": "non-zero return code", "rc": 127, "start": "2023-11-28 13:00:25.218670", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
 
-[target_jb1]
-ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=1    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 
-using deploy.sh
-process_line() {
-  local filename
-  local destination
-  
-  # Split the line into filename and destination using a comma as the delimiter 
-  IFS=',' read -r filename destination <<< "$1"
-
-  # Perform actions based on the values
-  echo "Deploying $filename to $destination"
-
-  # Check if either the filename or destination is empty
-  if [ -z "$filename" ] || [ -z "$destination" ]; then
-    echo "Error: Empty filename or destination in line: $1"
-    return
-  fi
-
-  # Backup the existing file or directory at the destination
-  if [ -e "$destination" ]; then
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    mkdir -p "$backup_dir"
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    mv "$destination" "$backup_file"
-    echo "Backed up $destination to $backup_file"
-
-    # Add the backup details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
-  else
-    echo "File or directory $destination not found, skipping backup"
-  fi
-
-  # Download the ZIP file from GitHub Packages using curl
-  # Replace GITHUB_TOKEN with your GitHub token or credentials
-  curl -H "Authorization: token TOKEN_GITHUB" -o "release-1.0.0.zip" -L "https://npm.pkg.github.com/Rakbank-DEH-Onboarding/IBPS-Deployment/release-1.0.0.zip"
-
-  if [ $? -eq 0 ]; then
-    echo "Downloaded release-1.0.0.zip from GitHub Packages"
-
-    # Unzip the file
-    unzip -q "release-1.0.0.zip" -d "$destination"
-
-    if [ $? -eq 0 ]; then
-      echo "Extracted and deployed release-1.0.0.zip to $destination"
-    else
-      echo "Error extracting and deploying release-1.0.0.zip to $destination"
-    fi
-
-    # Add the deployment details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed release-1.0.0.zip to $destination" >> change.log
-  else
-    echo "Error downloading release-1.0.0.zip from GitHub Packages"
-  fi
-}
-
-# Check if the release.txt file exists
-if [ -e "release.txt" ]; then
-  # Read each line from the release.txt file
-  while IFS= read -r line; do
-    # Skip empty lines and lines starting with #
-    if [[ -n "$line" && "$line" != "#"* ]]; then
-      process_line "$line"
-    fi
-  done < "release.txt"
-else
-  echo "release.txt file not found"
-fi
-
-using rollback.sh
-#!/bin/bash
-
-rollback_change_log() {
-  local change_log="$1"
-  local rollback_dir="/home/ubuntu/backup"
-
-  # Check if the change.log file exists
-  if [ -e "$change_log" ]; then
-    while IFS= read -r line; do
-      # Split the line into components (source, destination, timestamp, etc.)
-      IFS=',' read -r source destination timestamp <<< "$line"
-
-      # Check if the source file exists in the backup directory
-      if [ -e "$rollback_dir/$source" ]; then
-        # Perform the rollback
-        echo "Rolling back $source to $destination"
-        cp "$rollback_dir/$source" "$destination"
-
-        if [ $? -eq 0 ]; then
-          echo "Rolled back $source to $destination"
-        else
-          echo "Error rolling back $source to $destination"
-        fi
-      else
-        echo "Backup file $source not found, skipping rollback"
-      fi
-    done < "$change_log"
-  else
-    echo "Change log file not found"
-  fi
-}
-
-# Check if the change.log file is provided as an argument
-if [ $# -eq 1 ]; then
-  rollback_change_log "$1"
-else
-  echo "Usage: $0 <change.log>"
-fi
-
+Error: Process completed with exit code 2.
