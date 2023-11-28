@@ -69,20 +69,12 @@ skipping: no hosts matched
 
 PLAY RECAP *********************************************************************
 ===========================
-Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
-  
+- name: Run Ansible Playbook
+  env:
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+  run: |
+    cd ${{ github.workspace }}
+    deployment_directory=$(awk -F ', ' '{print $2}' release.txt)
+    ansible-playbook -b --extra-vars "target=ANTANSAPPS02 deployment_directory=$deployment_directory" ./playbook/IBPS-deployment.yml
 
-PLAY [ANTANSAPPS02] ************************************************************
-
-TASK [Deploy Application] ******************************************************
-fatal: [ANTANSAPPS02]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'deployment_directory' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 6, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n    - name: Deploy Application\n      ^ here\n"}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANTANSAPPS02]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'deployment_directory' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 12, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Rollback on Deployment Failure\n      ^ here\n"}
-
-PLAY RECAP *********************************************************************
-ANTANSAPPS02               : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
 
