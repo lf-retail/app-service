@@ -1,49 +1,40 @@
-- name: Checkout code
-  uses: actions/checkout@v3
+Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
+  cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
+    
+  # Debugging: Print the contents of the directory
+  ls -al
+  ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment' ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+total 68
+drwxrwxr-x 8 itansops itansops   254 Nov 28 13:18 .
+drwxrwxr-x 3 itansops itansops    29 Nov 27 16:50 ..
+-rw-rw-r-- 1 itansops itansops   404 Nov 28 13:18 ansible.cfg
+-rwxrwxr-x 1 itansops itansops  2244 Nov 28 13:18 deploy.sh
+drwxrwxr-x 3 itansops itansops    23 Nov 28 13:18 .github
+drwxrwxr-x 2 itansops itansops    42 Nov 28 13:18 group_vars
+-rw-rw-r-- 1 itansops itansops   111 Nov 28 13:18 hosts.cfg
+drwxrwxr-x 6 itansops itansops    89 Nov 28 13:18 IBPS_SAMPLE_EAR
+-rw-rw-r-- 1 itansops itansops   111 Nov 28 13:18 inventory.ini
+drwxrwxr-x 2 itansops itansops    33 Nov 28 13:18 playbook
+-rw-rw-r-- 1 itansops itansops    17 Nov 28 13:18 README.md
+drwxrwxr-x 3 itansops itansops    50 Nov 28 13:18 release
+-rw-rw-r-- 1 itansops itansops   107 Nov 28 13:18 release.txt
+-rw-rw-r-- 1 itansops itansops 40087 Nov 28 13:18 release.zip
+drwxrwxr-x 3 itansops itansops    29 Nov 28 13:18 roles
+-rwxrwxr-x 1 itansops itansops  1070 Nov 28 13:18 rollback.sh
 
+PLAY [ANT3CASAPPS01] ***********************************************************
 
-- name: Debug Working Directory
-  run: |
-    ls -al
+TASK [Deploy Application] ******************************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": false, "module_stderr": "Shared connection to 10.15.13.148 closed.\r\n", "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible-tmp-1701163101.2206051-2242598-67983690631082/AnsiballZ_command.py\", line 114, in <module>\r\n    _ansiballz_main()\r\n  File \"/tmp/ansible-tmp-1701163101.2206051-2242598-67983690631082/AnsiballZ_command.py\", line 106, in _ansiballz_main\r\n    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)\r\n  File \"/tmp/ansible-tmp-1701163101.2206051-2242598-67983690631082/AnsiballZ_command.py\", line 49, in invoke_module\r\n    imp.load_module('__main__', mod, module, MOD_DESC)\r\n  File \"/tmp/ansible_command_payload__8VOu2/__main__.py\", line 327, in <module>\r\n  File \"/tmp/ansible_command_payload__8VOu2/__main__.py\", line 263, in main\r\nOSError: [Errno 2] No such file or directory: '/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment'\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 1}
+...ignoring
 
+TASK [Rollback on Deployment Failure] ******************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": false, "module_stderr": "Shared connection to 10.15.13.148 closed.\r\n", "module_stdout": "Traceback (most recent call last):\r\n  File \"/tmp/ansible-tmp-1701163102.2854154-2242622-101541994816410/AnsiballZ_command.py\", line 114, in <module>\r\n    _ansiballz_main()\r\n  File \"/tmp/ansible-tmp-1701163102.2854154-2242622-101541994816410/AnsiballZ_command.py\", line 106, in _ansiballz_main\r\n    invoke_module(zipped_mod, temp_path, ANSIBALLZ_PARAMS)\r\n  File \"/tmp/ansible-tmp-1701163102.2854154-2242622-101541994816410/AnsiballZ_command.py\", line 49, in invoke_module\r\n    imp.load_module('__main__', mod, module, MOD_DESC)\r\n  File \"/tmp/ansible_command_payload_1Ds5wE/__main__.py\", line 327, in <module>\r\n  File \"/tmp/ansible_command_payload_1Ds5wE/__main__.py\", line 263, in main\r\nOSError: [Errno 2] No such file or directory: '/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment'\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 1}
 
-- name: Deploy Application
-  become_user: root
-  shell: "/bin/bash -c '{{ github.workspace }}/deploy.sh'"
-  register: deploy_result
-  ignore_errors: yes
-================
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 
-name: IBPS deployment
-
-on:
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on:
-      group: rakbank-self-hosted-runner
-      labels: rakdeh9
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Debug Working Directory
-        run: |
-          ls -al
-
-      - name: Make deploy.sh and rollback.sh executable
-        run: |
-          chmod +x deploy.sh rollback.sh
-
-      - name: Run Ansible Playbook
-        env:
-          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        run: |
-          cd ${{ github.workspace }}
-          
-          # Debugging: Print the contents of the directory
-          ls -al
-
-          ansible-playbook -b --extra-vars 'target=ANTANSAPPS02 deployment_directory=${{ github.workspace }}' ./playbook/IBPS-deployment.yml
+Error: Process completed with exit code 2.
