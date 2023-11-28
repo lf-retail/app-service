@@ -69,26 +69,24 @@ skipping: no hosts matched
 
 PLAY RECAP *********************************************************************
 ===========================
-Run cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment
-  deployment_directory=$(awk -F ', ' '{print $2}' release.txt)
-  ansible-playbook -b --extra-vars "target=ANT3CASAPPS01 deployment_directory=$deployment_directory" ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
+- name: Run Ansible Playbook
   env:
-    TOKEN_GITHUB: ***
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+  run: |
+    cd ${{ github.workspace }}
+    deployment_directory=$(awk -F ', ' '{print $2}' release.txt)
+    ansible-playbook -b --extra-vars "target=ANT3CASAPPS01 deployment_directory=$deployment_directory" ./playbook/IBPS-deployment.yml
+=================
+- name: Deploy Application
+  become_user: root
+  shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+  register: deploy_result
+  ignore_errors: yes
 
-PLAY [ANT3CASAPPS01] ***********************************************************
+- name: Rollback on Deployment Failure
+  become_user: root
+  shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
+  when: deploy_result|failed
 
-TASK [Deploy Application] ******************************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "/bin/bash -c 'cd  && ./deploy.sh'", "delta": "0:00:00.325801", "end": "2023-11-28 11:44:08.125107", "msg": "non-zero return code", "rc": 127, "start": "2023-11-28 11:44:07.799306", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python"}, "changed": true, "cmd": "/bin/bash -c 'cd  && ./rollback.sh change.log'", "delta": "0:00:00.330867", "end": "2023-11-28 11:44:08.964553", "msg": "non-zero return code", "rc": 127, "start": "2023-11-28 11:44:08.633686", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=1    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
 
 
