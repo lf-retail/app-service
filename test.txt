@@ -1,14 +1,49 @@
+- name: Checkout code
+  uses: actions/checkout@v3
+
+
+- name: Debug Working Directory
+  run: |
+    ls -al
+
+
 - name: Deploy Application
   become_user: root
-  shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
-  args:
-    chdir: "{{ deployment_directory }}"
+  shell: "/bin/bash -c '{{ github.workspace }}/deploy.sh'"
   register: deploy_result
   ignore_errors: yes
+================
 
-- name: Rollback on Deployment Failure
-  become_user: root
-  shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
-  args:
-    chdir: "{{ deployment_directory }}"
-  when: deploy_result|failed
+name: IBPS deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: rakdeh9
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Debug Working Directory
+        run: |
+          ls -al
+
+      - name: Make deploy.sh and rollback.sh executable
+        run: |
+          chmod +x deploy.sh rollback.sh
+
+      - name: Run Ansible Playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: |
+          cd ${{ github.workspace }}
+          
+          # Debugging: Print the contents of the directory
+          ls -al
+
+          ansible-playbook -b --extra-vars 'target=ANTANSAPPS02 deployment_directory=${{ github.workspace }}' ./playbook/IBPS-deployment.yml
