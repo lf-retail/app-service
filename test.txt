@@ -1,1 +1,11 @@
-In that case you were using ansible vault key to authendicate the target server but now we need to do with ssh key user name password. So that can you please share those details for deployment
+I hope this message finds you well. I am writing to inform you that our Ansible deployment, previously secured using an Ansible Vault key for authentication, has been implemented successfully.
+
+However, we now have a requirement to transition from the Ansible Vault key to a new authentication method, which involves the use of SSH keys, along with a username and password.
+
+To ensure a smooth and efficient transition, I would appreciate the opportunity to discuss this change in authentication methods further. Your insights and guidance in this matter are highly valued.
+
+Could we schedule a meeting at your earliest convenience to delve into the details and address any questions or concerns you may have regarding this transition?
+
+Thank you for your attention to this matter, and I look forward to our discussion.
+
+Best regards,
