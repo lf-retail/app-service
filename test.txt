@@ -1,1 +1,1 @@
-Suresh has confirmed that we can use the same authentication key for all machines. Therefore, I will send the key in a separate email to the Unix team
+I had a call with Suresh, and he confirmed that we can use the same authentication key for all machines. Therefore, I will send the key in a separate email to the Unix team.
