@@ -1,3 +1,1 @@
-Thank you for providing the SSH authentication key for the machine "antansapps02." Can we use the same key for all other machines, or could you please share a separate key for each?
-
-[@unix team], once he confirms, could you please place it on the IBPS UAT server? We currently lack the necessary access to perform this task.
+Suresh has confirmed that we can use the same authentication key for all machines. Therefore, I will send the key in a separate email to the Unix team
