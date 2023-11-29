@@ -1,3 +1,4 @@
-Our Ansible deployment, initially secured with an Ansible Vault key for authentication, has been successfully implemented. However, there is a need to transition to a new authentication method involving SSH keys, along with a username and password.
+You already shared one ssh-auth key for machine antansapps02. So can we use this for all machine else please share it the separate one
 
-I would appreciate the opportunity to discuss this change in more detail. Could we schedule a meeting to go over the specifics?
+@unix team once he conformed can you please place it in below IBPS UAT server because we don’t have access to place it
+Server IP :- 10.15.13.148 - ANT3CASAPPS01
