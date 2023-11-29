@@ -1,1 +1,5 @@
-I had a call with Suresh, and he confirmed that we can use the same authentication key for all machines. Therefore, I will send the key in a separate email to the Unix team.
+Currently we are developing CD part for IBPS application using with Ansible. But we don’t have access to place the ssh-auth key in below UAT server 
+
+Server IP :- 10.15.13.148 - ANT3CASAPPS01
+
+So kindly place it 
