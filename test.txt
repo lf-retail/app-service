@@ -1,5 +1,1 @@
-We are currently developing the Continuous Delivery (CD) part for the IBPS application using Ansible. However, we do not have access to place the SSH authentication key on the following UAT server:
-
-Server IP: 10.15.13.148 - ANT3CASAPPS01
-
-Kindly assist in placing the key.
+We urgently require an update for updating the SSH-auth key on the mentioned UAT server.
