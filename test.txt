@@ -1,185 +1,20 @@
-using release.yml
-name: release
-run-name: release - ${{github.event.inputs.releaseNo}}
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          #- Rakbank-DEH-Onboarding/RetailOnboarding-DB
-          #- Rakbank-DEH-Onboarding/SMEDigitalBank
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database
-
-env:
-  GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
-
 jobs:
-
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: App-CI
-    runs-on: ubuntu-latest
-    permissions:
-        pull-requests: write
-        issues: write
-        repository-projects: write
-    
-    steps:
-    - name: Checkout App Code
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'refs/heads/dev' 
-        token: ${{ secrets.TOKEN_GITHUB }}
-        
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: ${{ secrets.TOKEN_GITHUB }}
-
   App-CI:
     name: App-ci
     needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
-      releaseVersion: ${{ github.event.inputs.releaseVersion }}
-    secrets:
-      token: ${{ secrets.TOKEN_GITHUB }}
-      
-  App-Deploy-Dev:
-     needs: App-CI
-     environment: DEV
-     name: App Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-         echo " runing App deployment now "               
-
-using release-ci-test-new.yml
-name: Gradle_Build
-
-permissions:
-  id-token: write   
-  contents: read    
-  security-events: write
-
-on:
-  workflow_call:
-    secrets:
-      token:
-        required: true  
-    inputs:
-      repoName:
-        type: string
-        required: true
-        description: Application
-      branchName:
-        type: string
-        required: true
-        description: Branch Name  
-        
-      #Repository:
-       # required: true
-        #type: string
-      #releaseVersion:
-       # required: true
-        #type: string        
-      #Organization:
-       # required: true
-        #type: string  
-        
-    #outputs:
-     # Organization:
-      #  value: ${{ jobs.build.outputs.OrganizationOutput }}
-      #Repository:
-       # value: ${{ jobs.build.outputs.repoNameOutput }}
-      #commitId:
-       # value: ${{ jobs.build.outputs.commitIdOutput }}
-      #releaseVersion:
-       # value: ${{ jobs.build.outputs.releaseVersionOutput }}
-      #imageSHA:
-       # value: ${{ jobs.build.outputs.imageSHAOutput }}
-
-env:
- # REPOSITORY: ${{ inputs.Repository }}
-  #TAG_PREFIX: ${{ inputs.releaseVersion }}
-  #BRANCH_NAME: rel.${{ inputs.releaseVersion }}
-  #ORGANIZATION: ${{ inputs.Organization }}
-  REPOSITORY: ${{ inputs.repoName }}
-
-jobs:
-  build:
-    name: build
     runs-on: ubuntu-latest
-    #outputs:
-     # OrganizationOutput: ${{ inputs.Organization }}
-      #repoNameOutput: ${{ inputs.Repository }}
-      #commitIdOutput: ${{ steps.get-commit-id.outputs.commitId }}
-      #releaseVersionOutput: ${{ inputs.releaseVersion }}
-
     steps:
-    - name: Checkout code
+    - name: Checkout reusable workflow
       uses: actions/checkout@v2
       with:
-          repository: ${{ inputs.repoName }}
-          ref: release/r-${{inputs.releaseVersion}}
-          token: ${{ secrets.TOKEN_GITHUB }}
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
+        repository: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+        ref: dev # Use the correct branch name
+        token: ${{ secrets.TOKEN_GITHUB }}
+    - name: Run reusable workflow
+      run: ./.github/workflows/release-ci-test-new.yml # Correct path to the workflow file
       with:
-        distribution: 'adopt'
-        java-version: '8'
-
-    - name: Grant execute permission for Gradle
-      run: chmod +x gradle-4.10.1/bin/gradle
-
-    - name: Build with bundled Gradle
-      run: ./gradle-4.10.1/bin/gradle build -PbuildVersion=${{ github.event.inputs.version }}
+        repoName: ${{ github.event.inputs.choice }}
+        branchName: $RELEASE_BRANCH_NAME
+        releaseVersion: ${{ github.event.inputs.releaseVersion }}
       env:
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-    
-    - name: List generated WAR files
-      run: ls build/libs
-
-    - name: Publish to GitHub Packages
-      run: |
-        ./gradle-4.10.1/bin/gradle publish -PbuildVersion=${{ github.event.inputs.version }}
-      env:
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-
-getting error
-Invalid workflow file: .github/workflows/release.yml#L64
-error parsing called workflow
-".github/workflows/release.yml"
--> "Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev"
-: workflow was not found. See https://docs.github.com/actions/learn-github-actions/reusing-workflows#access-to-reusable-workflows for more information.
+        token: ${{ secrets.TOKEN_GITHUB }}
