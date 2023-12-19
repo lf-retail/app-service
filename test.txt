@@ -120,6 +120,11 @@ on:
       branchName:
         type: string
         required: true
+      #version:
+       # description: 'version'
+        #required: true
+        #type: string
+        #default: '1111'
       #Organization:
        # required: true
         #type: string
@@ -156,7 +161,7 @@ jobs:
       run: chmod +x gradle-4.10.1/bin/gradle
 
     - name: Build with bundled Gradle
-      run: ./gradle-4.10.1/bin/gradle build -PbuildVersion=${{ github.event.inputs.version }}
+      run: ./gradle-4.10.1/bin/gradle build -PbuildVersion=${{ github.event.inputs.branchName }}
       env:
         USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
@@ -166,7 +171,7 @@ jobs:
 
     - name: Publish to GitHub Packages
       run: |
-        ./gradle-4.10.1/bin/gradle publish -PbuildVersion=${{ github.event.inputs.version }}
+        ./gradle-4.10.1/bin/gradle publish -PbuildVersion=${{ github.event.inputs.branchName }}
       env:
         USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
@@ -182,20 +187,20 @@ Run ./gradle-4.10.1/bin/gradle publish -PbuildVersion=
     TOKEN_GITHUB: ***
 
 > Configure project :
-org.gradle.api.plugins.HelpTasksPlugin@2e3e6bbe
-org.gradle.language.base.plugins.LifecycleBasePlugin@2976fc5d
-org.gradle.api.plugins.BasePlugin@7bff11c8
-org.gradle.api.plugins.ReportingBasePlugin@4e6cb4cb
-org.gradle.api.plugins.JavaBasePlugin@5117c270
-org.gradle.api.plugins.JavaPlugin@4f1d581b
-org.gradle.api.plugins.WarPlugin@4cef7161
-org.gradle.platform.base.plugins.ComponentBasePlugin@678e4edb
-org.gradle.language.base.plugins.LanguageBasePlugin@8e50418
-org.gradle.platform.base.plugins.BinaryBasePlugin@2d9d589f
-org.gradle.api.plugins.JavaBasePluginRules@1a4e5034
-org.gradle.api.publish.plugins.PublishingPlugin@fa33d30
-org.gradle.api.publish.maven.plugins.MavenPublishPlugin@2f463d18
-vr.plugin.ManifestClasspathPlugin@6858c1cf
+org.gradle.api.plugins.HelpTasksPlugin@2d01d5e3
+org.gradle.language.base.plugins.LifecycleBasePlugin@6c95474c
+org.gradle.api.plugins.BasePlugin@75e15047
+org.gradle.api.plugins.ReportingBasePlugin@48ba0f32
+org.gradle.api.plugins.JavaBasePlugin@3d6ac5f8
+org.gradle.api.plugins.JavaPlugin@7b835a3e
+org.gradle.api.plugins.WarPlugin@49f4e61
+org.gradle.platform.base.plugins.ComponentBasePlugin@1c44025f
+org.gradle.language.base.plugins.LanguageBasePlugin@77ea512a
+org.gradle.platform.base.plugins.BinaryBasePlugin@1659a743
+org.gradle.api.plugins.JavaBasePluginRules@68cb1faf
+org.gradle.api.publish.plugins.PublishingPlugin@5421ae13
+org.gradle.api.publish.maven.plugins.MavenPublishPlugin@7167c6bc
+vr.plugin.ManifestClasspathPlugin@2a5f146c
 classpath:: file collection
 archiveName:: release-.war
 
@@ -211,9 +216,7 @@ archiveName:: release-.war
 > Task :jar UP-TO-DATE
 > Task :publishMavenJavaPublicationToGitHubPackagesRepository FAILED
 
-
 FAILURE: Build failed with an exception.
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
 
 * What went wrong:
 Execution failed for task ':publishMavenJavaPublicationToGitHubPackagesRepository'.
@@ -224,6 +227,8 @@ Execution failed for task ':publishMavenJavaPublicationToGitHubPackagesRepositor
 Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
 
 * Get more help at https://help.gradle.org
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
 
 BUILD FAILED in 1s
 Use '--warning-mode all' to show the individual deprecation warnings.
