@@ -30,8 +30,8 @@ on:
       database:
         type: boolean
         description: Deploy database
-env:
-  GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+#env:
+ # GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
 
 jobs:
   Create-App-CI:
@@ -45,12 +45,12 @@ jobs:
       repository-projects: write
       
     steps:
-    #- name: Get Token
-     # id: get-workflow-token
-      #uses: peter-murray/workflow-application-token-action@v2
-      #with:
-       # application_id: 403159
-        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
     - name: Display selected inputs
       run: |
         echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
@@ -61,10 +61,10 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: ${{ github.event.inputs.choice }}
-        ref: main
+        ref: 'dev'
         #ref: 'refs/heads/dev'
-        token: ${{ secrets.TOKEN_GITHUB }}
-        #token: ${{ steps.get-workflow-token.outputs.token }}
+        #token: ${{ secrets.TOKEN_GITHUB }}
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
     - name : Create Application Release Branch 
       run: |
@@ -72,7 +72,7 @@ jobs:
         git checkout -b $RELEASE_BRANCH_NAME
         git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        token: $GITHUB_TOKEN        
+        token: $GITHUB_TOKEN
 
     #- name: Create and push new branch
      # run: |
@@ -90,17 +90,16 @@ jobs:
     name: App-ci
     needs: Create-App-CI
     uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-    #secrets: inherit
+    secrets: inherit
     with:
       #Organization: ${{ github.event.inputs.Organization }}
       repoName: ${{ github.event.inputs.choice }}
       branchName: $RELEASE_BRANCH_NAME      
       #releaseVersion: ${{ github.event.inputs.releaseVersion }}
-    secrets:
-      token: $GITHUB_TOKEN           
+    #secrets:
+      #token: $GITHUB_TOKEN
 
 using release-ci-test-new.yml
-
 name: Gradle_Build
 
 permissions:
@@ -108,9 +107,9 @@ permissions:
 
 on:
   workflow_call:
-    secrets:
-      token:
-        required: true
+    #secrets:
+      #token:
+        #required: true
     inputs:
       #releaseVersion:
        # required: true
@@ -130,21 +129,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    #- name: Get Token
-     # id: get-workflow-token
-      #uses: peter-murray/workflow-application-token-action@v2
-      #with:
-       # application_id: 403159
-        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-        #organization: ${{ env.ORGANIZATION }}
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+        organization: ${{ env.ORGANIZATION }}
 
     - name: Check Out Code from Dispatched Repo
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.repoName }}
         ref: release/r-${{inputs.releaseVersion}}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        #token: ${{ steps.get-workflow-token.outputs.token }}
+        #token: ${{ secrets.TOKEN_GITHUB }}
+        #token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
     - name: Set up JDK
       uses: actions/setup-java@v2
@@ -171,17 +171,62 @@ jobs:
         USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
 
-and getting error:
-  remote: Repository not found.
-  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
-  The process '/usr/bin/git' failed with exit code 128
-  Waiting 18 seconds before trying again
-  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/release/r-2.0.0.8*:refs/remotes/origin/release/r-2.0.0.8* +refs/tags/release/r-2.0.0.8*:refs/tags/release/r-2.0.0.8*
-  remote: Repository not found.
-  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
-  The process '/usr/bin/git' failed with exit code 128
-  Waiting 10 seconds before trying again
-  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/release/r-2.0.0.8*:refs/remotes/origin/release/r-2.0.0.8* +refs/tags/release/r-2.0.0.8*:refs/tags/release/r-2.0.0.8*
-  remote: Repository not found.
-  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
-  Error: The process '/usr/bin/git' failed with exit code 128
+getting error:
+Run ./gradle-4.10.1/bin/gradle publish -PbuildVersion=
+  ./gradle-4.10.1/bin/gradle publish -PbuildVersion=
+  shell: /usr/bin/bash -e {0}
+  env:
+    REPOSITORY: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+    JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/8.0.392-8/x64
+    USERNAME_GITHUB: ***
+    TOKEN_GITHUB: ***
+
+> Configure project :
+org.gradle.api.plugins.HelpTasksPlugin@2e3e6bbe
+org.gradle.language.base.plugins.LifecycleBasePlugin@2976fc5d
+org.gradle.api.plugins.BasePlugin@7bff11c8
+org.gradle.api.plugins.ReportingBasePlugin@4e6cb4cb
+org.gradle.api.plugins.JavaBasePlugin@5117c270
+org.gradle.api.plugins.JavaPlugin@4f1d581b
+org.gradle.api.plugins.WarPlugin@4cef7161
+org.gradle.platform.base.plugins.ComponentBasePlugin@678e4edb
+org.gradle.language.base.plugins.LanguageBasePlugin@8e50418
+org.gradle.platform.base.plugins.BinaryBasePlugin@2d9d589f
+org.gradle.api.plugins.JavaBasePluginRules@1a4e5034
+org.gradle.api.publish.plugins.PublishingPlugin@fa33d30
+org.gradle.api.publish.maven.plugins.MavenPublishPlugin@2f463d18
+vr.plugin.ManifestClasspathPlugin@6858c1cf
+classpath:: file collection
+archiveName:: release-.war
+
+> Task :generatePomFileForMavenJavaPublication
+> Task :generateDAL NO-SOURCE
+> Task :generateER NO-SOURCE
+> Task :generateOpenAPI NO-SOURCE
+> Task :generateService NO-SOURCE
+> Task :generateVO NO-SOURCE
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :jar UP-TO-DATE
+> Task :publishMavenJavaPublicationToGitHubPackagesRepository FAILED
+
+
+FAILURE: Build failed with an exception.
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
+
+* What went wrong:
+Execution failed for task ':publishMavenJavaPublicationToGitHubPackagesRepository'.
+> Failed to publish publication 'mavenJava' to repository 'GitHubPackages'
+   > Invalid publication 'mavenJava': version cannot be empty.
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 1s
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/4.10.1/userguide/command_line_interface.html#sec:command_line_warnings
+5 actionable tasks: 2 executed, 3 up-to-date
+Error: Process completed with exit code 1.
