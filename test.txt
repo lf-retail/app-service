@@ -18,12 +18,12 @@ on:
         description: Select a service
         options:
           - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-      Organization:
-        type: choice
-        description: Select an Organization
-        options:
-          - Rakbank-DEH-Onboarding
-        default: Rakbank-DEH-Onboarding
+      #Organization:
+       # type: choice
+        #description: Select an Organization
+        #options:
+         # - Rakbank-DEH-Onboarding
+        #default: Rakbank-DEH-Onboarding
       app:
         type: boolean
         description: Deploy App
@@ -97,7 +97,7 @@ jobs:
       branchName: $RELEASE_BRANCH_NAME      
       #releaseVersion: ${{ github.event.inputs.releaseVersion }}
     secrets:
-      token: $GITHUB_TOKEN      
+      token: $GITHUB_TOKEN           
 
 using release-ci-test-new.yml
 
