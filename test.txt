@@ -1,7 +1,7 @@
 using release.yml
 
-name: release
-run-name: release - ${{github.event.inputs.releaseVersion}}
+name: Release Pipeline
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,148 +13,104 @@ on:
         type: choice
         description: Select a service
         options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          #- Rakbank-DEH-Onboarding/RetailOnboarding-DB
-          #- Rakbank-DEH-Onboarding/SMEDigitalBank
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database
-
-env:
-  GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+      Organization:
+        type: choice
+        description: Select an Organization
+        options:
+        - Rakbank-DEH-Onboarding
+        default: Rakbank-DEH-Onboarding
 
 jobs:
-
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: App-CI
+  initial_build:
     runs-on: ubuntu-latest
-    permissions:
-        pull-requests: write
-        issues: write
-        repository-projects: write
-    
     steps:
-    - name: Checkout App Code
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        #ref: 'refs/heads/dev'
-        ref: 'dev'
-        token: $GITHUB_TOKEN
-        
-    #- name: Display selected inputs
-     # run: |
-      #  echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-       # echo "Selected Repository: ${{ github.event.inputs.choice }}"
-
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
-
-  App-CI:
-    name: App-ci
-    needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
-      #releaseVersion: ${{ github.event.inputs.releaseVersion }}
-    secrets:
-      token: $GITHUB_TOKEN
-      
-  App-Deploy-Dev:
-     needs: App-CI
-     environment: DEV
-     name: App Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
+      - name: Get Token
+        id: get-workflow-token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: 403159
+          application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+      - name: Display selected inputs
         run: |
-         echo " runing App deployment now "          
+          echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+          echo "Selected Repository: ${{ github.event.inputs.choice }}"
+          echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+      
+      - name: Checkout selected repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.choice }}
+          ref: feature/version-test
+          token: ${{ steps.get-workflow-token.outputs.token }}
+
+      - name: Create and push new branch
+        run: |
+          git checkout -b rel.${{ github.event.inputs.releaseVersion }}
+          git push origin rel.${{ github.event.inputs.releaseVersion }}
+          
+      - name: Checkout the new branch (rel.x.x.x)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.choice }}
+          ref: rel.${{ github.event.inputs.releaseVersion }}
+          token: ${{ steps.get-workflow-token.outputs.token }}
+
+  call_reusable_workflow:
+    needs: initial_build
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/ci-gradle-build.yml@dev
+    secrets: inherit
+    with:
+      Organization: ${{ github.event.inputs.Organization }}
+      repoName: ${{ github.event.inputs.choice }}
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
 
 using release-ci-test-new.yml
+
 name: Gradle_Build
 
 permissions:
-  id-token: write   
-  contents: read    
   security-events: write
 
 on:
   workflow_call:
     secrets:
       token:
-        required: true  
-    inputs:
-      repoName:
-        type: string
         required: true
-        description: Application
+    inputs:
+      #releaseVersion:
+       # required: true
+        #type: string
+      repoName:
+        required: true
+        type: string 
       branchName:
         type: string
         required: true
-        description: Branch Name  
-      #releaseVersion:
-       # required: true
-        #type: string   
-        
-      #Repository:
-       # required: true
-        #type: string
-      #releaseVersion:
-       # required: true
-        #type: string        
       #Organization:
        # required: true
-        #type: string  
-        
-    #outputs:
-     # Organization:
-      #  value: ${{ jobs.build.outputs.OrganizationOutput }}
-      #Repository:
-       # value: ${{ jobs.build.outputs.repoNameOutput }}
-      #commitId:
-       # value: ${{ jobs.build.outputs.commitIdOutput }}
-      #releaseVersion:
-       # value: ${{ jobs.build.outputs.releaseVersionOutput }}
-      #imageSHA:
-       # value: ${{ jobs.build.outputs.imageSHAOutput }}
-
+        #type: string
 env:
- # REPOSITORY: ${{ inputs.Repository }}
-  #TAG_PREFIX: ${{ inputs.releaseVersion }}
-  #BRANCH_NAME: rel.${{ inputs.releaseVersion }}
-  #ORGANIZATION: ${{ inputs.Organization }}
   REPOSITORY: ${{ inputs.repoName }}
-
 jobs:
   build:
-    name: build
     runs-on: ubuntu-latest
-    #outputs:
-     # OrganizationOutput: ${{ inputs.Organization }}
-      #repoNameOutput: ${{ inputs.Repository }}
-      #commitIdOutput: ${{ steps.get-commit-id.outputs.commitId }}
-      #releaseVersionOutput: ${{ inputs.releaseVersion }}
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    #- name: Get Token
+     # id: get-workflow-token
+      #uses: peter-murray/workflow-application-token-action@v2
+      #with:
+       # application_id: 403159
+        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+        #organization: ${{ env.ORGANIZATION }}
+
+    - name: Check Out Code from Dispatched Repo
+      uses: actions/checkout@v3
       with:
-          repository: ${{ inputs.repoName }}
-          ref: release/r-${{inputs.releaseVersion}}
-          token: ${{ secrets.TOKEN_GITHUB }}
+        repository: ${{ inputs.repoName }}
+        ref: release/r-${{inputs.releaseVersion}}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        #token: ${{ steps.get-workflow-token.outputs.token }}
 
     - name: Set up JDK
       uses: actions/setup-java@v2
@@ -181,16 +137,17 @@ jobs:
         USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
 
-getting error
- /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/dev*:refs/remotes/origin/dev* +refs/tags/dev*:refs/tags/dev*
-  Error: fatal: could not read Username for 'https://github.com': terminal prompts disabled
+and getting error:
+  remote: Repository not found.
+  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
   The process '/usr/bin/git' failed with exit code 128
-  Waiting 19 seconds before trying again
-  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/dev*:refs/remotes/origin/dev* +refs/tags/dev*:refs/tags/dev*
-  Error: fatal: could not read Username for 'https://github.com': terminal prompts disabled
+  Waiting 18 seconds before trying again
+  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/release/r-2.0.0.8*:refs/remotes/origin/release/r-2.0.0.8* +refs/tags/release/r-2.0.0.8*:refs/tags/release/r-2.0.0.8*
+  remote: Repository not found.
+  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
   The process '/usr/bin/git' failed with exit code 128
-  Waiting 11 seconds before trying again
-  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/dev*:refs/remotes/origin/dev* +refs/tags/dev*:refs/tags/dev*
-  Error: fatal: could not read Username for 'https://github.com': terminal prompts disabled
+  Waiting 10 seconds before trying again
+  /usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +refs/heads/release/r-2.0.0.8*:refs/remotes/origin/release/r-2.0.0.8* +refs/tags/release/r-2.0.0.8*:refs/tags/release/r-2.0.0.8*
+  remote: Repository not found.
+  Error: fatal: repository 'https://github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/' not found
   Error: The process '/usr/bin/git' failed with exit code 128
-     
