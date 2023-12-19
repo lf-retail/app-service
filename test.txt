@@ -1,8 +1,12 @@
 using release.yml
 
 name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
 
 on:
+  #pull_request:
+   # branches: [ "main" ]
+
   workflow_dispatch:
     inputs:
       releaseVersion:
@@ -13,57 +17,87 @@ on:
         type: choice
         description: Select a service
         options:
-        - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
       Organization:
         type: choice
         description: Select an Organization
         options:
-        - Rakbank-DEH-Onboarding
+          - Rakbank-DEH-Onboarding
         default: Rakbank-DEH-Onboarding
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database
+env:
+  GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
 
 jobs:
-  initial_build:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI
     runs-on: ubuntu-latest
-    steps:
-      - name: Get Token
-        id: get-workflow-token
-        uses: peter-murray/workflow-application-token-action@v2
-        with:
-          application_id: 403159
-          application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-      - name: Display selected inputs
-        run: |
-          echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-          echo "Selected Repository: ${{ github.event.inputs.choice }}"
-          echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
       
-      - name: Checkout selected repository
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.inputs.choice }}
-          ref: feature/version-test
-          token: ${{ steps.get-workflow-token.outputs.token }}
+    steps:
+    #- name: Get Token
+     # id: get-workflow-token
+      #uses: peter-murray/workflow-application-token-action@v2
+      #with:
+       # application_id: 403159
+        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
 
-      - name: Create and push new branch
-        run: |
-          git checkout -b rel.${{ github.event.inputs.releaseVersion }}
-          git push origin rel.${{ github.event.inputs.releaseVersion }}
-          
-      - name: Checkout the new branch (rel.x.x.x)
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.inputs.choice }}
-          ref: rel.${{ github.event.inputs.releaseVersion }}
-          token: ${{ steps.get-workflow-token.outputs.token }}
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: main
+        #ref: 'refs/heads/dev'
+        token: ${{ secrets.TOKEN_GITHUB }}
+        #token: ${{ steps.get-workflow-token.outputs.token }}
 
-  call_reusable_workflow:
-    needs: initial_build
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/ci-gradle-build.yml@dev
-    secrets: inherit
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN        
+
+    #- name: Create and push new branch
+     # run: |
+      #  git checkout -b rel.${{ github.event.inputs.releaseVersion }}
+       # git push origin rel.${{ github.event.inputs.releaseVersion }}
+
+    #- name: Checkout the new branch (rel.x.x.x)
+     # uses: actions/checkout@v4
+      #with:
+       # repository: ${{ github.event.inputs.choice }}
+        #ref: rel.${{ github.event.inputs.releaseVersion }}
+        #token: ${{ steps.get-workflow-token.outputs.token }}
+
+  App-CI:
+    name: App-ci
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+    #secrets: inherit
     with:
-      Organization: ${{ github.event.inputs.Organization }}
+      #Organization: ${{ github.event.inputs.Organization }}
       repoName: ${{ github.event.inputs.choice }}
-      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+      branchName: $RELEASE_BRANCH_NAME      
+      #releaseVersion: ${{ github.event.inputs.releaseVersion }}
+    secrets:
+      token: $GITHUB_TOKEN      
 
 using release-ci-test-new.yml
 
