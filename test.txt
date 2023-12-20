@@ -1,94 +1,12 @@
-  Create-Database-CI:
-    if: ${{ github.event.inputs.database =='true' }}
-    environment: DEV
-    name: Database-CI
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
-
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN         
-      
-
-  Database-ci:
-    name: Database-ci
-    needs: Create-Database-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
-
-  Database-Deploy-DEV:
-     needs: Database-ci
+  App-Deploy-Dev:
+     needs: App-CI
      environment: DEV
-     name: Database Deployment DEV
+     name: App Deployment DEV
      runs-on: ubuntu-latest
      steps:
       - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "
-
-  Database-Deploy-UAT:
-     needs: Database-Deploy-DEV
-     environment: UAT
-     name: Database Deployment UAT
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "    
-
-  Database-Deploy-PROD:
-     needs: Database-Deploy-UAT
-     environment: PROD
-     name: Database Deployment PROD
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "        
-
-  Database-Deploy-DR:
-     needs: Database-Deploy-PROD
-     environment: DR
-     name: Database Deployment DR
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "                 
+        uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+        secrets: inherit
+        with:
+          repoName: ${{ github.event.inputs.choice }}
+          branchName: $RELEASE_BRANCH_NAME  
