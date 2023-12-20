@@ -1,12 +1,11 @@
-  App-Deploy-Dev:
-     needs: App-CI
-     environment: DEV
-     name: App Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-        secrets: inherit
-        with:
-          repoName: ${{ github.event.inputs.choice }}
-          branchName: $RELEASE_BRANCH_NAME  
+App-Deploy-Dev:
+  needs: App-CI
+  environment: DEV
+  name: App Deployment DEV
+  runs-on: ubuntu-latest
+  jobs:
+    - name: Reusable Workflow
+      uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+      with:
+        repoName: ${{ github.event.inputs.choice }}
+        branchName: $RELEASE_BRANCH_NAME
