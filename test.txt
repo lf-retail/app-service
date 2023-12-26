@@ -76,108 +76,52 @@ jobs:
      name: App Deployment DEV
      runs-on: ubuntu-latest
      steps:
-      - name: Check out code
-        uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-        with:
-          repoName: ${{ github.event.inputs.choice }}
-          branchName: $RELEASE_BRANCH_NAME          
-      
-      #- name: deploy App
-       # run: |
-        # echo " runing App deployment now "      
+      - name: deploy App
+        run: |
+           uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev  
+           with:
+             repoName: ${{ github.event.inputs.choice }}
+             branchName: $RELEASE_BRANCH_NAME      
 
-  Create-Database-CI:
-    if: ${{ github.event.inputs.database =='true' }}
-    environment: DEV
-    name: Database-CI
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+ using jboss_deploy_github_new.yml
+name: Deploy WAR to JBoss
 
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+on:
+  workflow_call:
+    inputs:
+      repoName:
+        required: true
+        type: string 
+      branchName:
+        type: string
+        required: true
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
+jobs:
+  deploy:
+    runs-on: rakdeh8
+
+      #group: rakbank-self-hosted-runner
+      #labels: rakdeh3
+    steps: 
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Run Ansible Playbook
       env:
-        token: $GITHUB_TOKEN         
-      
+        #JBOSS_USER: ${{ secrets.JBOSS_USER }}
+        #JBOSS_PASSWORD: ${{ secrets.JBOSS_PASSWORD }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        #ANSIBLE_ROLES_PATH: "./roles"
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml 
 
-  Database-ci:
-    name: Database-ci
-    needs: Create-Database-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
-
-  Database-Deploy-DEV:
-     needs: Database-ci
-     environment: DEV
-     name: Database Deployment DEV
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "
-
-  Database-Deploy-UAT:
-     needs: Database-Deploy-DEV
-     environment: UAT
-     name: Database Deployment UAT
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "    
-
-  Database-Deploy-PROD:
-     needs: Database-Deploy-UAT
-     environment: PROD
-     name: Database Deployment PROD
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "        
-
-  Database-Deploy-DR:
-     needs: Database-Deploy-PROD
-     environment: DR
-     name: Database Deployment DR
-     runs-on: ubuntu-latest
-     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy database
-        run: |
-         echo " runing database deployment now "                 
-
+getting error:
+Run uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev  
+  uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev  
+  with:
+    repoName: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+    branchName: $RELEASE_BRANCH_NAME      
+  shell: /usr/bin/bash -e {0}
+/home/runner/work/_temp/d0a4134d-aea6-4e3a-aa4f-f6418c18a409.sh: line 1: uses:: command not found
+Error: Process completed with exit code 127.
