@@ -171,5 +171,22 @@ jobs:
 
 Invalid type found: one of string , number , boolean were expected but an object was found
 
-Error: .github#L1
-No event triggers defined in `on`
+App-Deploy-Dev:
+  needs: App-CI
+  environment: DEV
+  name: App Deployment DEV
+  runs-on: ubuntu-latest
+  on:
+    workflow_run:
+      workflows: ["Release Pipeline"]
+      types:
+        - completed
+  steps:
+    - name: Trigger Deployment Workflow
+      uses: actions/workflow-run@v2
+      with:
+        workflow: "Deploy WAR to JBoss"
+        token: ${{ secrets.TOKEN_GITHUB }}
+        repoName: ${{ github.event.inputs.choice }}
+        branchName: $RELEASE_BRANCH_NAME
+
