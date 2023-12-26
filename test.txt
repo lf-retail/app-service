@@ -128,13 +128,14 @@ Error: Process completed with exit code 127.
 
 ==================
 
-App-Deploy-Dev:
-  needs: App-CI
-  environment: DEV
-  name: App Deployment DEV
-  runs-on: ubuntu-latest
-  jobs:
-    deploy:
+jobs:
+  App-Deploy-Dev:
+    needs: App-CI
+    environment: DEV
+    name: App Deployment DEV
+    runs-on: ubuntu-latest
+    steps:
+    - name: Call Deployment Workflow
       uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
       with:
         repoName: ${{ github.event.inputs.choice }}
