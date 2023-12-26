@@ -170,3 +170,6 @@ jobs:
 
 
 Invalid type found: one of string , number , boolean were expected but an object was found
+
+Error: .github#L1
+No event triggers defined in `on`
