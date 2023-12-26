@@ -128,6 +128,76 @@ Error: Process completed with exit code 127.
 
 ==================
 
+name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - Rakbank-DEH-Onboarding/RetailOnboarding-DB
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database
+jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
+
+  App-CI:
+    name: App-ci
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+
 jobs:
   App-Deploy-Dev:
     needs: App-CI
@@ -139,6 +209,6 @@ jobs:
       uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
       with:
         repoName: ${{ github.event.inputs.choice }}
-        branchName: $RELEASE_BRANCH_NAME
+        branchName: $RELEASE_BRANCH_NAME 
 
 
