@@ -128,87 +128,44 @@ Error: Process completed with exit code 127.
 
 ==================
 
-name: Release Pipeline
-run-name: release - ${{github.event.inputs.releaseVersion}}
+name: Deploy WAR to JBoss
 
 on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database
+  workflow_run:
+    workflows: ["Release Pipeline"]
+    types:
+      - completed
+
 jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
+  deploy:
+    runs-on: rakdeh8
     steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+      - name: Run Ansible Playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
 
-  App-CI:
-    name: App-ci
-    needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
+-----------
 
-jobs:
   App-Deploy-Dev:
     needs: App-CI
     environment: DEV
     name: App Deployment DEV
     runs-on: ubuntu-latest
-    steps:
-    - name: Call Deployment Workflow
-      uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
-      with:
-        repoName: ${{ github.event.inputs.choice }}
-        branchName: $RELEASE_BRANCH_NAME 
+    jobs:
+      - name: Trigger Deployment Workflow
+        uses: actions/workflow-run@v2
+        with:
+          workflow: "Deploy WAR to JBoss"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs:
+            repoName: ${{ github.event.inputs.choice }}
+            branchName: $RELEASE_BRANCH_NAME
 
 
