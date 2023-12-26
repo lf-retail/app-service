@@ -20,8 +20,8 @@ on:
       database:
         type: boolean
         description: Deploy database
-  repository_dispatch:
-    types: [deploy-app]        
+ # repository_dispatch:
+  #  types: [deploy-app]        
         
 jobs:
   Create-App-CI:
@@ -71,23 +71,40 @@ jobs:
       repoName: ${{ github.event.inputs.choice }}
       branchName: $RELEASE_BRANCH_NAME
 
-  App-Deploy-Dev:
+jobs:
+  Create-App-CD:
     needs: App-CI
+    environment: DEV
+    name: APP-CI
     runs-on: ubuntu-latest
+      
     steps:
-      - name: Trigger Deployment Workflow
-        uses: actions/github-script@0.10.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.repos.createDispatchEvent({
-              owner: 'your-organization',
-              repo: 'your-repository',
-              event_type: 'deploy-app',
-              client_payload: {
-                choice: context.payload.inputs.choice,
-                releaseVersion: context.payload.inputs.releaseVersion,
-                branchName: `release/r-${context.payload.inputs.releaseVersion}`
-              }
-            });
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
 
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+
+
+  App-Deploy-Dev:
+    name: App-cd
+    needs: Create-App-CD
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      
