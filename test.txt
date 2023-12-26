@@ -128,65 +128,21 @@ Error: Process completed with exit code 127.
 
 ==================
 
-name: Deploy WAR to JBoss
-
-on:
-  workflow_run:
-    workflows: ["Release Pipeline"]
-    types:
-      - completed
-
-jobs:
-  deploy:
-    runs-on: rakdeh8
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Run Ansible Playbook
-        env:
-          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        run: |
-          cd ${{ github.workspace }}
-          ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml
-
-
------------
-
-  App-Deploy-Dev:
-    needs: App-CI
-    environment: DEV
-    name: App Deployment DEV
-    runs-on: ubuntu-latest
-    jobs:
-      - name: Trigger Deployment Workflow
-        uses: actions/workflow-run@v2
-        with:
-          workflow: "Deploy WAR to JBoss"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          inputs:
-            repoName: ${{ github.event.inputs.choice }}
-            branchName: $RELEASE_BRANCH_NAME
-
-
-Invalid type found: one of string , number , boolean were expected but an object was found
-
 App-Deploy-Dev:
   needs: App-CI
   environment: DEV
   name: App Deployment DEV
   runs-on: ubuntu-latest
-  on:
-    workflow_run:
-      workflows: ["Release Pipeline"]
-      types:
-        - completed
-  steps:
+  jobs:
     - name: Trigger Deployment Workflow
-      uses: actions/workflow-run@v2
-      with:
-        workflow: "Deploy WAR to JBoss"
-        token: ${{ secrets.TOKEN_GITHUB }}
-        repoName: ${{ github.event.inputs.choice }}
-        branchName: $RELEASE_BRANCH_NAME
+      runs-on: ubuntu-latest
+      steps:
+        - name: Trigger Deployment Workflow
+          uses: actions/workflow-run@v2
+          with:
+            workflow: "Deploy WAR to JBoss"
+            token: ${{ secrets.TOKEN_GITHUB }}
+            repoName: ${{ github.event.inputs.choice }}
+            branchName: $RELEASE_BRANCH_NAME
+
 
