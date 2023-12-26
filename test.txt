@@ -125,3 +125,17 @@ Run uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_
   shell: /usr/bin/bash -e {0}
 /home/runner/work/_temp/d0a4134d-aea6-4e3a-aa4f-f6418c18a409.sh: line 1: uses:: command not found
 Error: Process completed with exit code 127.
+
+==================
+
+App-Deploy-Dev:
+  needs: App-CI
+  environment: DEV
+  name: App Deployment DEV
+  runs-on: ubuntu-latest
+  steps:
+    - name: deploy App
+      run: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+      with:
+        repoName: ${{ github.event.inputs.choice }}
+        branchName: $RELEASE_BRANCH_NAME
