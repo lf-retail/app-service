@@ -169,3 +169,4 @@ jobs:
             branchName: $RELEASE_BRANCH_NAME
 
 
+Invalid type found: one of string , number , boolean were expected but an object was found
