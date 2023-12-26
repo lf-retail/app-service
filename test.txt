@@ -134,8 +134,9 @@ App-Deploy-Dev:
   name: App Deployment DEV
   runs-on: ubuntu-latest
   steps:
-    - name: deploy App
-      run: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    - name: Deploy App
+      uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
       with:
         repoName: ${{ github.event.inputs.choice }}
         branchName: $RELEASE_BRANCH_NAME
+
