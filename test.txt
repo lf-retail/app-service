@@ -56,18 +56,14 @@ jobs:
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.java-path }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+====================
+- name: Debug Java Home
+  run: echo "Java Home: $JAVA_HOME"
 
-getting error:
-Run ./gradlew sonarqube -Dorg.gradle.java.home=${JAVA_HOME}
+- name: Run SonarQube analysis
+  run: ./gradlew sonarqube -Dorg.gradle.java.home="$JAVA_HOME"
+  env:
+    JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Value '' given for org.gradle.java.home Gradle property is invalid (Java home supplied is invalid)
-
-* Try:
-Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-Error: Process completed with exit code 1.
 
