@@ -1,71 +1,129 @@
-name: Gradle_Build
+name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version'
+      releaseVersion:
+        description: 'Release Version'
         required: true
-        default: '1111'
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - Rakbank-DEH-Onboarding/RetailOnboarding-DB
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database
+  repository_dispatch:
+    types: [deploy-app]        
+        
+jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
+
+  App-CI:
+    name: App-ci
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+
+  Create-App-CD:
+    needs: App-CI
+    environment: DEV
+    runs-on: ubuntu-latest
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+
+  App-Deploy-Dev:
+    name: App-cd
+    needs: Create-App-CD
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+
+====================================================
+
+name: Deploy WAR to JBoss
+
+on:
+  #repository_dispatch:
+   # types: [deploy-app]
+  workflow_call:
+    inputs:
+      repoName:
+        required: true
+        type: string 
+      #branchName:
+       # type: string
+        #required: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
+  deploy:
+    runs-on: rakdeh8
+
+      #group: rakbank-self-hosted-runner
+      #labels: rakdeh3
+    steps: 
+    - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '8'
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: '4.10.1'
-
-    - name: Execute Gradle build
-      run: ./gradlew clean build -PbuildVersion=${{ github.event.inputs.version }}
+    - name: Run Ansible Playbook
       env:
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        #JBOSS_USER: ${{ secrets.JBOSS_USER }}
+        #JBOSS_PASSWORD: ${{ secrets.JBOSS_PASSWORD }}
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-    
-  #  - name: List generated WAR files
-   #   run: ls build/libs
-
-    - name: Set up JDK 11 for sonar
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'      
-    
-  #  - name: Run SonarQube Scan
-   #   run: |
-    #      echo "SONAR URL - > " ${{vars.SONAR_HOST_URL}}
-     #     #export SONAR_TOKEN=${{ secrets.SONAR_TOKEN }}
-      #    export SONAR_HOST_URL=${{vars.SONAR_HOST_URL}}
-       #   mvn install sonar:sonar \
-        #    -D sonar.projectKey=test-maven-project \
-         #   -D sonar.host.url=$SONAR_HOST_URL \
-          #  -D sonar.login=admin -D sonar.password=admin123       
-
-    - name: Run SonarQube analysis
-      run: ./gradlew sonarqube -Dorg.gradle.java.home=${JAVA_HOME}
-      env:
-        JAVA_HOME: ${{ steps.setup-java.outputs.java-path }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-====================
-- name: Set up JDK 11
-  uses: actions/setup-java@v3
-  with:
-    java-version: '11'
-    distribution: 'temurin'
-
-- name: Run SonarQube analysis with JDK 11
-  run: ./gradlew sonarqube -Dorg.gradle.java.home="$JAVA_HOME"
-  env:
-    JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+        #ANSIBLE_ROLES_PATH: "./roles"
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml 
