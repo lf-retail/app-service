@@ -53,3 +53,7 @@ See https://docs.gradle.org/4.10.1/userguide/command_line_interface.html#sec:com
 
 BUILD FAILED in 2s
 Error: Process completed with exit code 1.
+=================================
+
+https://github.com/Rakbank-DEH-Onboarding/SMEDigitalBank/actions/runs/7355669307/job/20024644349
+https://github.com/Rakbank-DEH-Onboarding/SMEDigitalBank/actions/runs/7355792901/job/20024948610
