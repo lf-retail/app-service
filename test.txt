@@ -1,141 +1,74 @@
-name: Release Pipeline cd test
-run-name: release - ${{github.event.inputs.releaseVersion}}
+Run ./gradle-4.10.1/bin/gradle sonarqube \
+Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
 
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-         
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database       
-        
-jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+> Configure project :
+org.gradle.api.plugins.HelpTasksPlugin@1b68eb6c
+org.gradle.language.base.plugins.LifecycleBasePlugin@65dc1f4
+org.gradle.api.plugins.BasePlugin@83c31bb
+org.gradle.api.plugins.ReportingBasePlugin@22e3a557
+org.gradle.api.plugins.JavaBasePlugin@6ef9fb79
+org.gradle.api.plugins.JavaPlugin@643d533
+org.gradle.api.plugins.WarPlugin@6f9b8da9
+org.gradle.platform.base.plugins.ComponentBasePlugin@50ed5410
+org.gradle.language.base.plugins.LanguageBasePlugin@71ee5f47
+org.gradle.platform.base.plugins.BinaryBasePlugin@691ce604
+org.gradle.api.plugins.JavaBasePluginRules@5a59c84b
+org.gradle.api.publish.plugins.PublishingPlugin@60ae5ac4
+org.gradle.api.publish.maven.plugins.MavenPublishPlugin@633935f1
+vr.plugin.ManifestClasspathPlugin@6d1bd354
+org.sonarqube.gradle.SonarQubePlugin@7994552c
+classpath:: file collection
+archiveName:: smedigitalbank-1111.war
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
+> Task :generateDAL NO-SOURCE
+> Task :generateER NO-SOURCE
+> Task :generateOpenAPI NO-SOURCE
+> Task :generateService NO-SOURCE
+> Task :generateTAO NO-SOURCE
+> Task :generateVO NO-SOURCE
+warning: Supported source version 'RELEASE_8' from annotation processor 'org.gradle.api.internal.tasks.compile.processing.NonIncrementalProcessor' less than -source '11'
 
-  App-CI:
-    name: App-CI
-    needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
+> Task :compileJava
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:9: error: package javax.xml.soap does not exist
+import javax.xml.soap.MessageFactory;
 
-  #App-Deploy-Dev:
-   # name: App-CD-UAT
-    #needs: App-CI
-    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
-    #secrets: inherit
-    #with:
-     # repoName: ${{ github.event.inputs.choice }}
-      #env_value: DEV
-      #environment: UAT
+                     ^
+> Task :compileJava FAILED
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:10: error: package javax.xml.soap does not exist
+import javax.xml.soap.SOAPConnection;
+                     ^
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:11: error: package javax.xml.soap does not exist
+import javax.xml.soap.SOAPException;
+                     ^
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:12: error: package javax.xml.soap does not exist
+import javax.xml.soap.SOAPMessage;
+                     ^
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:13: error: package javax.xml.soap does not exist
+import javax.xml.soap.SOAPPart;
+                     ^
+/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:34: error: cannot find symbol
+	private static MessageFactory soapMsgFactory;
+	               ^
+  symbol:   class MessageFactory
+  location: class CustomRAKSOAPWebServiceClient
+6 errors
+1 warning
 
- # Create-App-CD:
-  #  needs: App-CI
-   # environment: UAT
-    #runs-on: ubuntu-latest
-      
-    #steps:
-    #- name: Get Token
-     # id: get-workflow-token
-      #uses: peter-murray/workflow-application-token-action@v2
-      #with:
-       # application_id: 403159
-        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
 
-  App-Deploy-Dev:
-    name: App-cd
-    needs: App-CI
-   # needs: Create-App-CD
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      Environments: UAT          
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
+FAILURE: Build failed with an exception.
 
-==========================
+Use '--warning-mode all' to show the individual deprecation warnings.
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
 
-name: Deploy WAR to JBoss
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
 
-on:
-  #repository_dispatch:
-   # types: [deploy-app]
-  workflow_call:
-    inputs:
-      repoName:
-        required: true
-        type: string 
-      Environments:
-        required: true
-        type: string
-      #branchName:
-       # type: string
-        #required: true
+* Get more help at https://help.gradle.org
 
-jobs:
-  deploy:
-    runs-on: rakdeh8
-
-      #group: rakbank-self-hosted-runner
-      #labels: rakdeh3
-    steps: 
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Run Ansible Playbook
-      env:
-        #JBOSS_USER: ${{ secrets.JBOSS_USER }}
-        #JBOSS_PASSWORD: ${{ secrets.JBOSS_PASSWORD }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        #ANSIBLE_ROLES_PATH: "./roles"
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml 
+BUILD FAILED in 33s
+See https://docs.gradle.org/4.10.1/userguide/command_line_interface.html#sec:command_line_warnings
+1 actionable task: 1 executed
+Error: Process completed with exit code 1.
