@@ -1,22 +1,22 @@
 Run ./gradle-4.10.1/bin/gradle sonarqube \
-Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
+  
 
 > Configure project :
-org.gradle.api.plugins.HelpTasksPlugin@1b68eb6c
-org.gradle.language.base.plugins.LifecycleBasePlugin@65dc1f4
-org.gradle.api.plugins.BasePlugin@83c31bb
-org.gradle.api.plugins.ReportingBasePlugin@22e3a557
-org.gradle.api.plugins.JavaBasePlugin@6ef9fb79
-org.gradle.api.plugins.JavaPlugin@643d533
-org.gradle.api.plugins.WarPlugin@6f9b8da9
-org.gradle.platform.base.plugins.ComponentBasePlugin@50ed5410
-org.gradle.language.base.plugins.LanguageBasePlugin@71ee5f47
-org.gradle.platform.base.plugins.BinaryBasePlugin@691ce604
-org.gradle.api.plugins.JavaBasePluginRules@5a59c84b
-org.gradle.api.publish.plugins.PublishingPlugin@60ae5ac4
-org.gradle.api.publish.maven.plugins.MavenPublishPlugin@633935f1
-vr.plugin.ManifestClasspathPlugin@6d1bd354
-org.sonarqube.gradle.SonarQubePlugin@7994552c
+org.gradle.api.plugins.HelpTasksPlugin@37c8b56b
+org.gradle.language.base.plugins.LifecycleBasePlugin@41738ad6
+org.gradle.api.plugins.BasePlugin@7643d13e
+org.gradle.api.plugins.ReportingBasePlugin@77b8572a
+org.gradle.api.plugins.JavaBasePlugin@5a9d75b
+org.gradle.api.plugins.JavaPlugin@58d1c802
+org.gradle.api.plugins.WarPlugin@30f32807
+org.gradle.platform.base.plugins.ComponentBasePlugin@5473834
+org.gradle.language.base.plugins.LanguageBasePlugin@4e1f24c8
+org.gradle.platform.base.plugins.BinaryBasePlugin@185864d1
+org.gradle.api.plugins.JavaBasePluginRules@31c2d4cd
+org.gradle.api.publish.plugins.PublishingPlugin@d78dc59
+org.gradle.api.publish.maven.plugins.MavenPublishPlugin@3af6905a
+vr.plugin.ManifestClasspathPlugin@61d30539
+org.sonarqube.gradle.SonarQubePlugin@4610d172
 classpath:: file collection
 archiveName:: smedigitalbank-1111.war
 
@@ -26,49 +26,30 @@ archiveName:: smedigitalbank-1111.war
 > Task :generateService NO-SOURCE
 > Task :generateTAO NO-SOURCE
 > Task :generateVO NO-SOURCE
-warning: Supported source version 'RELEASE_8' from annotation processor 'org.gradle.api.internal.tasks.compile.processing.NonIncrementalProcessor' less than -source '11'
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :sonarqube FAILED
 
-> Task :compileJava
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:9: error: package javax.xml.soap does not exist
-import javax.xml.soap.MessageFactory;
-
-                     ^
-> Task :compileJava FAILED
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:10: error: package javax.xml.soap does not exist
-import javax.xml.soap.SOAPConnection;
-                     ^
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:11: error: package javax.xml.soap does not exist
-import javax.xml.soap.SOAPException;
-                     ^
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:12: error: package javax.xml.soap does not exist
-import javax.xml.soap.SOAPMessage;
-                     ^
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:13: error: package javax.xml.soap does not exist
-import javax.xml.soap.SOAPPart;
-                     ^
-/home/runner/work/SMEDigitalBank/SMEDigitalBank/src/main/java/com/infosys/custom/ebanking/hif/channel/middleware/CustomRAKSOAPWebServiceClient.java:34: error: cannot find symbol
-	private static MessageFactory soapMsgFactory;
-	               ^
-  symbol:   class MessageFactory
-  location: class CustomRAKSOAPWebServiceClient
-6 errors
-1 warning
-
-
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
 FAILURE: Build failed with an exception.
 
-Use '--warning-mode all' to show the individual deprecation warnings.
+
 * What went wrong:
-Execution failed for task ':compileJava'.
-> Compilation failed; see the compiler error output for details.
+Execution failed for task ':sonarqube'.
+> org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
 
 * Try:
 Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
 
 * Get more help at https://help.gradle.org
-
-BUILD FAILED in 33s
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
 See https://docs.gradle.org/4.10.1/userguide/command_line_interface.html#sec:command_line_warnings
-1 actionable task: 1 executed
+3 actionable tasks: 1 executed, 2 up-to-date
+
+BUILD FAILED in 2s
 Error: Process completed with exit code 1.
