@@ -1,4 +1,4 @@
-name: Release Pipeline
+name: Release Pipeline cd test
 run-name: release - ${{github.event.inputs.releaseVersion}}
 
 on:
@@ -13,21 +13,19 @@ on:
         description: Select a service
         options:
           - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB
+         
       app:
         type: boolean
         description: Deploy App
       database:
         type: boolean
-        description: Deploy database
-  repository_dispatch:
-    types: [deploy-app]        
+        description: Deploy database       
         
 jobs:
   Create-App-CI:
     if: ${{ github.event.inputs.app =='true' }}
     environment: DEV
-    name: APP-CI
+    name: APP-CI-Setup
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -46,7 +44,6 @@ jobs:
         echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
         echo "Selected Repository: ${{ github.event.inputs.choice }}"
         echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-
     - name: Checkout selected repository
       uses: actions/checkout@v3
       with:
@@ -63,37 +60,48 @@ jobs:
         token: $GITHUB_TOKEN
 
   App-CI:
-    name: App-ci
+    name: App-CI
     needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-ci-test-new.yml@dev
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
     secrets: inherit
     with:
       repoName: ${{ github.event.inputs.choice }}
       branchName: $RELEASE_BRANCH_NAME
 
-  Create-App-CD:
-    needs: App-CI
-    environment: DEV
-    runs-on: ubuntu-latest
+  #App-Deploy-Dev:
+   # name: App-CD-UAT
+    #needs: App-CI
+    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    #secrets: inherit
+    #with:
+     # repoName: ${{ github.event.inputs.choice }}
+      #env_value: DEV
+      #environment: UAT
+
+ # Create-App-CD:
+  #  needs: App-CI
+   # environment: UAT
+    #runs-on: ubuntu-latest
       
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    #steps:
+    #- name: Get Token
+     # id: get-workflow-token
+      #uses: peter-murray/workflow-application-token-action@v2
+      #with:
+       # application_id: 403159
+        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
 
   App-Deploy-Dev:
     name: App-cd
-    needs: Create-App-CD
+    needs: App-CI
+   # needs: Create-App-CD
     uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
     secrets: inherit
     with:
       repoName: ${{ github.event.inputs.choice }}
-      env_value: DEV
+      Environments: UAT          
 
-==========================================================
+==========================
 
 name: Deploy WAR to JBoss
 
@@ -105,9 +113,9 @@ on:
       repoName:
         required: true
         type: string 
-      env_value:
+      Environments:
         required: true
-        type: string        
+        type: string
       #branchName:
        # type: string
         #required: true
