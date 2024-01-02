@@ -1,27 +1,108 @@
----
-jboss_controller: 10.15.14.105:18990
-#jboss_user: "{{ lookup('env', 'JBOSS_USER') }}"
-#jboss_password: "{{ lookup('env', 'JBOSS_PASSWORD') }}"
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-war_file_url: "https://maven.pkg.github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/com/rakbank/infosys/lib/retailonboarding-accms/1111/retailonboarding-accms-1111.war"
-war_file_name: "{{ war_file_url | basename }}"
-jboss_home: "/apps/JBOSSEAP7.2_EXP_DIGIHUB_DIGITAL_BANK/EAP-7.2.0"
-jboss_deployments_dir: "{{ jboss_home }}/standalone/deployments"
-#dest_path: "/apps/JBOSSEAP7.2_EXP_DIGIHUB_DIGITAL_BANK/EAP-7.2.0/standalone/{{ war_file_name }}"
-...
+name: Release Pipeline cd test
+run-name: release - ${{github.event.inputs.releaseVersion}}
 
----
-- name: Download WAR from GitHub packages
-  get_url:
-    url: "{{ war_file_url }}"
-    dest: "{{ jboss_deployments_dir }}/{{ war_file_name }}"
-    headers:
-      Authorization: "token {{ github_token }}"
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+         
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database       
+        
+jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
-- name: Undeploy existing WAR (if it exists) from JBoss
-  shell: "{{ jboss_home }}/bin/jboss-cli.sh --connect --controller={{ jboss_controller }} --command='undeploy {{ war_file_name }} --keep-content'"
-  ignore_errors: yes  
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
 
-- name: Deploy the WAR file to JBoss
-  shell: "{{ jboss_home }}/bin/jboss-cli.sh --connect --controller={{ jboss_controller }} --command='deploy --force {{ jboss_deployments_dir }}/{{ war_file_name }}'"
-...
+  App-CI:
+    name: App-CI
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+
+  #App-Deploy-Dev:
+   # name: App-CD-UAT
+    #needs: App-CI
+    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    #secrets: inherit
+    #with:
+     # repoName: ${{ github.event.inputs.choice }}
+      #env_value: DEV
+      #environment: UAT
+
+ # Create-App-CD:
+  #  needs: App-CI
+   # environment: UAT
+    #runs-on: ubuntu-latest
+      
+    #steps:
+    #- name: Get Token
+     # id: get-workflow-token
+      #uses: peter-murray/workflow-application-token-action@v2
+      #with:
+       # application_id: 403159
+        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+
+  App-Deploy-Dev:
+    name: App-cd
+    needs: App-CI
+   # needs: Create-App-CD
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    secrets: inherit         
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      environment: ${{ environment.UAT }}
+
+
+===========================================
+
+Invalid workflow file: .github/workflows/release.yml#L102
+The workflow is not valid. .github/workflows/release.yml (Line: 102, Col: 20): Unrecognized named-value: 'environment'. Located at position 1 within expression: environment.UAT
