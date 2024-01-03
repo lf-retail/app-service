@@ -1,2 +1,77 @@
-Invalid workflow file: .github/workflows/release.yml#L102
-The workflow is not valid. .github/workflows/release.yml (Line: 102, Col: 20): Unrecognized named-value: 'secrets'. Located at position 1 within expression: secrets.UAT
+name: Gradle_Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        default: '1111'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '4.10.1'
+
+    #- name: Execute Gradle build
+      #run: ./gradlew clean build -PbuildVersion=${{ github.event.inputs.version }}
+      #env:
+      #  USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+       # TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+
+    - name: SonarQube Scan with Java 11
+      uses: ./.github/actions/sonar-composite
+      with:
+        sonarHostUrl: ${{ secrets.SONAR_HOST_URL }}
+        sonarToken: ${{ secrets.SONAR_TOKEN }}
+        sonarProjectKey: test-deh-sonar        
+
+=====================================
+
+name: 'SonarQube Scan with Java 11'
+description: 'Run SonarQube scan using Java 11 and Gradle'
+inputs:
+  sonarHostUrl:
+    description: 'SonarQube Host URL'
+    required: true
+  sonarToken:
+    description: 'SonarQube Token'
+    required: true
+  sonarProjectKey:
+    description: 'SonarQube Project Key'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Run SonarQube Scan with Gradle
+      run: |
+        ./gradlew sonarqube \
+          -Dsonar.projectKey=${{ inputs.sonarProjectKey }} \
+          -Dsonar.host.url=${{ inputs.sonarHostUrl }} \
+          -Dsonar.login=${{ inputs.sonarToken }}
+      shell: bash
+
+========================
+
+build
+Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under '/home/runner/work/SMEDigitalBank/SMEDigitalBank/.github/actions/sonar-composite'. Did you forget to run actions/checkout before running your local action?
