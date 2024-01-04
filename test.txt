@@ -1,4 +1,63 @@
-#!/bin/bash
+using IBPS.yml workflow
+name: IBPS deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: rakdeh3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+       ls -al      
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh      
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+          
+        # Debugging: Print the contents of the directory
+        ls -al
+        ansible-playbook -b -vvv --extra-vars 'target=ANT3CASAPPS01' -i inventory.ini ./playbook/IBPS-deployment.yml
+        #ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell' ./playbook/IBPS-deployment.yml
+------------------------------
+using IBPS-deployment.yml playbook
+- hosts: '{{ target }}'
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Execute deployment script
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
+      args:
+        chdir: "{{ deployment_directory }}"
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
+      args:
+        chdir: "{{ deployment_directory }}"
+      when: deploy_result|failed  
+  -------------------------------
+using deploy.sh - here it seems i have to download and extract the release.zip file from github packages
+and release.zip file contains application file and release.txt file
+release.txt file contains application file name and its destination location 
+and this script will work for copy the application file to destination
 
 process_line() {
   local filename
@@ -60,32 +119,51 @@ if [ -e "release.txt" ]; then
     # Skip empty lines and lines starting with #
     if [[ -n "$line" && "$line" != "#"* ]]; then
       process_line "$line"
-      
-      # Pass the destination to Ansible playbook
-      ansible-playbook -b -vvv --extra-vars "target=ANT3CASAPPS01 destination=$destination" -i inventory.ini ./playbook/IBPS-deployment.yml
     fi
   done < "release.txt"
 else
   echo "release.txt file not found"
 fi
-================
 
-- hosts: '{{ target }}'
-  become: yes
-  become_method: sudo
-  gather_facts: no
-  tasks:
-    - name: Execute deployment script
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
-      args:
-        chdir: "{{ destination }}"
-      register: deploy_result
-      ignore_errors: yes
+--------------------------------
+using rollback.sh
+#!/bin/bash
 
-    - name: Rollback on Deployment Failure
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
-      args:
-        chdir: "{{ destination }}"
-      when: deploy_result|failed
+rollback_change_log() {
+  local change_log="$1"
+  local rollback_dir="/home/ubuntu/backup"
+
+  # Check if the change.log file exists
+  if [ -e "$change_log" ]; then
+    while IFS= read -r line; do
+      # Split the line into components (source, destination, timestamp, etc.)
+      IFS=',' read -r source destination timestamp <<< "$line"
+
+      # Check if the source file exists in the backup directory
+      if [ -e "$rollback_dir/$source" ]; then
+        # Perform the rollback
+        echo "Rolling back $source to $destination"
+        cp "$rollback_dir/$source" "$destination"
+
+        if [ $? -eq 0 ]; then
+          echo "Rolled back $source to $destination"
+        else
+          echo "Error rolling back $source to $destination"
+        fi
+      else
+        echo "Backup file $source not found, skipping rollback"
+      fi
+    done < "$change_log"
+  else
+    echo "Change log file not found"
+  fi
+}
+
+# Check if the change.log file is provided as an argument
+if [ $# -eq 1 ]; then
+  rollback_change_log "$1"
+else
+  echo "Usage: $0 <change.log>"
+fi
+-------------------
+
