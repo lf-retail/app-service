@@ -222,3 +222,62 @@ PLAY RECAP *********************************************************************
 ANT3CASAPPS01              : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 
 Error: Process completed with exit code 2.
+
+=====================================
+
+- hosts: '{{ target }}'
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Execute deployment script
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
+      args:
+        chdir: "{{ destination }}"
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
+      args:
+        chdir: "{{ destination }}"
+      when: deploy_result|failed
+===========================================
+
+name: IBPS deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: rakdeh3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+       ls -al      
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+
+        # Debugging: Print the contents of the directory
+        ls -al
+
+        # Assuming $destination is set earlier in your workflow
+        ansible-playbook -b -vvv --extra-vars "target=ANT3CASAPPS01 destination=$destination" -i inventory.ini ./playbook/IBPS-deployment.yml
+
