@@ -1,1 +1,5 @@
  ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell' ./playbook/IBPS-deployment.yml
+
+================
+
+newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
