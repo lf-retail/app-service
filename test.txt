@@ -1,64 +1,19 @@
-Run cd /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment
-    
-  # Debugging: Print the contents of the directory
-  ls -al
-  ansible-playbook -b -vvv --extra-vars 'target=ANT3CASAPPS01' -i inventory.ini ./playbook/IBPS-deployment.yml
-  #ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ansible/GITHUB_RUNNER/actions-runner9/_work/IBPS-Deployment/IBPS-Deployment' ./playbook/IBPS-deployment.yml
-  #ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell' ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: 
-total 72
-drwxrwxr-x 7 itansops itansops   257 Jan  4 17:05 .
-drwxrwxr-x 3 itansops itansops    29 Jan  4 15:21 ..
--rw-rw-r-- 1 itansops itansops   359 Jan  4 17:04 ansible.cfg
--rw-rw-r-- 1 itansops itansops  2176 Jan  4 17:04 deploy-old.sh
--rwxrwxr-x 1 itansops itansops  2515 Jan  4 17:04 deploy.sh
-drwxrwxr-x 3 itansops itansops    23 Jan  4 17:04 .github
--rw-rw-r-- 1 itansops itansops   111 Jan  4 17:04 hosts.cfg
-drwxrwxr-x 6 itansops itansops    89 Jan  4 17:04 IBPS_SAMPLE_EAR
--rw-rw-r-- 1 itansops itansops   111 Jan  4 17:04 inventory.ini
-drwxrwxr-x 2 itansops itansops    33 Jan  4 17:04 playbook
--rw-rw-r-- 1 itansops itansops    17 Jan  4 17:04 README.md
-drwxrwxr-x 3 itansops itansops    50 Jan  4 17:04 release
--rw-rw-r-- 1 itansops itansops   107 Jan  4 17:04 release.txt
--rw-rw-r-- 1 itansops itansops 40087 Jan  4 17:04 release.zip
-drwxrwxr-x 3 itansops itansops    29 Jan  4 17:04 roles
--rwxrwxr-x 1 itansops itansops  1070 Jan  4 17:04 rollback.sh
-ansible-playbook 2.8.18
-  config file = /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/ansible.cfg
-  configured module search path = ['/home/itansops/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python3.6/site-packages/ansible
-  executable location = /usr/bin/ansible-playbook
-  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
-Using /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/ansible.cfg as config file
-host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-script declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-auto declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-Parsed /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini inventory source with ini plugin
+- hosts: '{{ target }}'
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: Execute deployment script
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
+      args:
+        chdir: "{{ destination }}"
+      register: deploy_result
+      ignore_errors: yes
 
-PLAYBOOK: IBPS-deployment.yml **************************************************
-1 plays in ./playbook/IBPS-deployment.yml
-
-PLAY [ANT3CASAPPS01] ***********************************************************
-META: ran handlers
-
-TASK [Execute deployment script] ***********************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml:6
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "msg": "The task includes an option with an undefined variable. The error was: 'deployment_directory' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 6, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n    - name: Execute deployment script\n      ^ here\n"
-}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml:14
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "msg": "The task includes an option with an undefined variable. The error was: 'deployment_directory' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 14, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Rollback on Deployment Failure\n      ^ here\n"
-}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
+    - name: Rollback on Deployment Failure
+      become_user: root
+      shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
+      args:
+        chdir: "{{ destination }}"
+      when: deploy_result|failed
