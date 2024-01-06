@@ -1,138 +1,50 @@
-using release.yml
-name: Release Pipeline
-run-name: release - ${{github.event.inputs.releaseVersion}}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri("https://maven.pkg.github.com/your-organization/your-repository")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME_GITHUB")
+                password = project.findProperty("gpr.token") ?: System.getenv("TOKEN_GITHUB")
+            }
+        }
+    }
+}
 
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database       
-        
-jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+tasks.register('publishToGitHubPackages') {
+    dependsOn('publish')
+}
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
+task publish {
+    dependsOn 'clean', 'build'
 
-  App-CI:
-    name: App-CI
-    needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
+    doLast {
+        def releaseVersion = project.hasProperty("buildVersion") ? project.buildVersion : "1.0.0"
+        def packageName = "com.rakbank.infosys.lib.release-${project.name}"
 
-===========================
-using release-gradle-build.yml
-name: Gradle_Build
+        project.publishing.publications.mavenJava.pom.groupId = 'com.rakbank.infosys.lib'
+        project.publishing.publications.mavenJava.pom.artifactId = packageName
+        project.publishing.publications.mavenJava.pom.version = releaseVersion
+        project.version = releaseVersion
 
-permissions:
-  security-events: write
+        // ... other configurations ...
 
-on:
-  workflow_call:
-    inputs:
-      repoName:
-        required: true
-        type: string 
-      branchName:
-        type: string
-        required: true
+        // Publish the artifact with the modified package name
+        project.publishing.publications.mavenJava.artifacts {
+            artifact(project.jar) {
+                classifier 'release'
+            }
+        }
 
-env:
-  REPOSITORY: ${{ inputs.repoName }}
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-        organization: ${{ env.ORGANIZATION }}
+        project.publishing.publications.mavenJava.artifacts {
+            artifactId packageName
+        }
 
-    - name: Check Out Code from Dispatched Repo
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ inputs.repoName }}
-        ref: release/r-${{inputs.releaseVersion}}
-        token: ${{ steps.get-workflow-token.outputs.token }}
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '8'
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: '4.10.1'
-
-    - name: Execute Gradle build
-      run: ./gradlew clean build -PbuildVersion=${{inputs.releaseVersion}}
-      env:
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}  
-
-    - name: List generated WAR files
-      run: ls build/libs
-
-    - name: Publish to GitHub Packages with Gradle Wrapper
-      run: ./gradlew publish -PbuildVersion=${{inputs.releaseVersion}}
-      env:
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}        
-===========================
-so release pipeline run successfully and my gradle packages publish into github packages like below name
-com.rakbank.infosys.lib.release 
-but i want like com.rakbank.infosys.lib.release-RetailOnboarding-AccMS
+        // ... other publishing configurations ...
+    }
+}
