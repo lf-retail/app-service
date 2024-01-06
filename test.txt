@@ -1,283 +1,138 @@
-using IBPS.yml workflow
-name: IBPS deployment
+using release.yml
+name: Release Pipeline
+run-name: release - ${{github.event.inputs.releaseVersion}}
 
 on:
   workflow_dispatch:
-
+    inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database       
+        
 jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: rakdeh3
-
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
     steps:
-    - name: Checkout code
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+    - name: Checkout selected repository
       uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
-    - name: Debug Working Directory
+    - name : Create Application Release Branch 
       run: |
-       ls -al      
-
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh      
-
-    - name: Run Ansible Playbook
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
-          
-        # Debugging: Print the contents of the directory
-        ls -al
-        ansible-playbook -b -vvv --extra-vars 'target=ANT3CASAPPS01' -i inventory.ini ./playbook/IBPS-deployment.yml
-        #ansible-playbook -b --extra-vars 'target=ANT3CASAPPS01 deployment_directory=/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell' ./playbook/IBPS-deployment.yml
-------------------------------
-using IBPS-deployment.yml playbook
-- hosts: '{{ target }}'
-  become: yes
-  become_method: sudo
-  gather_facts: no
-  tasks:
-    - name: Execute deployment script
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./deploy.sh'"
-      args:
-        chdir: "{{ deployment_directory }}"
-      register: deploy_result
-      ignore_errors: yes
+        token: $GITHUB_TOKEN
 
-    - name: Rollback on Deployment Failure
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ deployment_directory }} && ./rollback.sh change.log'"
-      args:
-        chdir: "{{ deployment_directory }}"
-      when: deploy_result|failed  
-  -------------------------------
-using deploy.sh - here it seems i have to download and extract the release.zip file from github packages
-and release.zip file contains application file and release.txt file
-release.txt file contains application file name and its destination location 
-and this script will work for copy the application file to destination
+  App-CI:
+    name: App-CI
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
 
-process_line() {
-  local filename
-  local destination
-  
-  # Split the line into filename and destination using a comma as the delimiter 
-  IFS=',' read -r filename destination <<< "$1"
+===========================
+using release-gradle-build.yml
+name: Gradle_Build
 
-  # Perform actions based on the values
-  echo "Deploying $filename to $destination"
-
-  # Check if either the filename or destination is empty
-  if [ -z "$filename" ] || [ -z "$destination" ]; then
-    echo "Error: Empty filename or destination in line: $1"
-    return
-  fi
-
-  # Backup the existing file or directory at the destination
-  if [ -e "$destination" ]; then
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    mkdir -p "$backup_dir"
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    mv "$destination" "$backup_file"
-    echo "Backed up $destination to $backup_file"
-
-    # Add the backup details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
-  else
-    echo "File or directory $destination not found, skipping backup"
-  fi
-
-  # Download the ZIP file from GitHub Packages using curl
-  # Replace GITHUB_TOKEN with your GitHub token or credentials
-  curl -H "Authorization: token TOKEN_GITHUB" -o "$filename" -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/$filename"
-
-  if [ $? -eq 0 ]; then
-    echo "Downloaded $filename from GitHub Packages"
-
-    # Unzip the file
-    unzip -q "$filename" -d "$destination"
-
-    if [ $? -eq 0 ]; then
-      echo "Extracted and deployed $filename to $destination"
-    else
-      echo "Error extracting and deploying $filename to $destination"
-    fi
-
-    # Add the deployment details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
-  else
-    echo "Error downloading $filename from GitHub Packages"
-  fi
-}
-
-# Check if the release.txt file exists
-if [ -e "release.txt" ]; then
-  # Read each line from the release.txt file
-  while IFS= read -r line; do
-    # Skip empty lines and lines starting with #
-    if [[ -n "$line" && "$line" != "#"* ]]; then
-      process_line "$line"
-    fi
-  done < "release.txt"
-else
-  echo "release.txt file not found"
-fi
-
---------------------------------
-using rollback.sh
-#!/bin/bash
-
-rollback_change_log() {
-  local change_log="$1"
-  local rollback_dir="/home/ubuntu/backup"
-
-  # Check if the change.log file exists
-  if [ -e "$change_log" ]; then
-    while IFS= read -r line; do
-      # Split the line into components (source, destination, timestamp, etc.)
-      IFS=',' read -r source destination timestamp <<< "$line"
-
-      # Check if the source file exists in the backup directory
-      if [ -e "$rollback_dir/$source" ]; then
-        # Perform the rollback
-        echo "Rolling back $source to $destination"
-        cp "$rollback_dir/$source" "$destination"
-
-        if [ $? -eq 0 ]; then
-          echo "Rolled back $source to $destination"
-        else
-          echo "Error rolling back $source to $destination"
-        fi
-      else
-        echo "Backup file $source not found, skipping rollback"
-      fi
-    done < "$change_log"
-  else
-    echo "Change log file not found"
-  fi
-}
-
-# Check if the change.log file is provided as an argument
-if [ $# -eq 1 ]; then
-  rollback_change_log "$1"
-else
-  echo "Usage: $0 <change.log>"
-fi
--------------------
-
-0s
-Run cd /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment
-total 72
-drwxrwxr-x 7 itansops itansops   257 Jan  4 17:33 .
-drwxrwxr-x 3 itansops itansops    29 Jan  4 15:21 ..
--rw-rw-r-- 1 itansops itansops   359 Jan  4 17:33 ansible.cfg
--rw-rw-r-- 1 itansops itansops  2176 Jan  4 17:33 deploy-old.sh
--rwxrwxr-x 1 itansops itansops  2385 Jan  4 17:33 deploy.sh
-drwxrwxr-x 3 itansops itansops    23 Jan  4 17:33 .github
--rw-rw-r-- 1 itansops itansops   111 Jan  4 17:33 hosts.cfg
-drwxrwxr-x 6 itansops itansops    89 Jan  4 17:33 IBPS_SAMPLE_EAR
--rw-rw-r-- 1 itansops itansops   111 Jan  4 17:33 inventory.ini
-drwxrwxr-x 2 itansops itansops    64 Jan  4 17:33 playbook
--rw-rw-r-- 1 itansops itansops    17 Jan  4 17:33 README.md
-drwxrwxr-x 3 itansops itansops    50 Jan  4 17:33 release
--rw-rw-r-- 1 itansops itansops   107 Jan  4 17:33 release.txt
--rw-rw-r-- 1 itansops itansops 40087 Jan  4 17:33 release.zip
-drwxrwxr-x 3 itansops itansops    29 Jan  4 17:33 roles
--rwxrwxr-x 1 itansops itansops  1070 Jan  4 17:33 rollback.sh
-ansible-playbook 2.8.18
-  config file = /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/ansible.cfg
-  configured module search path = ['/home/itansops/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python3.6/site-packages/ansible
-  executable location = /usr/bin/ansible-playbook
-  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
-Using /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/ansible.cfg as config file
-host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-script declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-auto declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini as it did not pass it's verify_file() method
-Parsed /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/inventory.ini inventory source with ini plugin
-
-PLAYBOOK: IBPS-deployment.yml **************************************************
-1 plays in ./playbook/IBPS-deployment.yml
-
-PLAY [ANT3CASAPPS01] ***********************************************************
-META: ran handlers
-
-TASK [Execute deployment script] ***********************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml:6
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "msg": "The task includes an option with an undefined variable. The error was: 'destination' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 6, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n    - name: Execute deployment script\n      ^ here\n"
-}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml:14
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "msg": "The task includes an option with an undefined variable. The error was: 'destination' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner3/_work3/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 14, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Rollback on Deployment Failure\n      ^ here\n"
-}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
-
-=====================================
-
-- hosts: '{{ target }}'
-  become: yes
-  become_method: sudo
-  gather_facts: no
-  tasks:
-    - name: Execute deployment script
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
-      args:
-        chdir: "{{ destination }}"
-      register: deploy_result
-      ignore_errors: yes
-
-    - name: Rollback on Deployment Failure
-      become_user: root
-      shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
-      args:
-        chdir: "{{ destination }}"
-      when: deploy_result|failed
-===========================================
-
-name: IBPS deployment
+permissions:
+  security-events: write
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      repoName:
+        required: true
+        type: string 
+      branchName:
+        type: string
+        required: true
 
+env:
+  REPOSITORY: ${{ inputs.repoName }}
 jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: rakdeh3
-
+  build:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+        organization: ${{ env.ORGANIZATION }}
+
+    - name: Check Out Code from Dispatched Repo
       uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.repoName }}
+        ref: release/r-${{inputs.releaseVersion}}
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
-    - name: Debug Working Directory
-      run: |
-       ls -al      
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
 
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '4.10.1'
 
-    - name: Run Ansible Playbook
+    - name: Execute Gradle build
+      run: ./gradlew clean build -PbuildVersion=${{inputs.releaseVersion}}
       env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}  
 
-        # Debugging: Print the contents of the directory
-        ls -al
+    - name: List generated WAR files
+      run: ls build/libs
 
-        # Assuming $destination is set earlier in your workflow
-        ansible-playbook -b -vvv --extra-vars "target=ANT3CASAPPS01 destination=$destination" -i inventory.ini ./playbook/IBPS-deployment.yml
-
+    - name: Publish to GitHub Packages with Gradle Wrapper
+      run: ./gradlew publish -PbuildVersion=${{inputs.releaseVersion}}
+      env:
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}        
+===========================
+so release pipeline run successfully and my gradle packages publish into github packages like below name
+com.rakbank.infosys.lib.release 
+but i want like com.rakbank.infosys.lib.release-RetailOnboarding-AccMS
