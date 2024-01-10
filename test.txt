@@ -77,4 +77,21 @@ PLAY RECAP *********************************************************************
 ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 
 Error: Process completed with exit code 2.
+============
+
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  tasks:
+    - name: Execute deployment script
+      shell: "/bin/bash -c '{{ github.workspace }}/path/to/deploy.sh'"
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      shell: "/bin/bash -c '{{ github.workspace }}/path/to/rollback.sh change.log'"
+      when: deploy_result|failed
+===========
+
 
