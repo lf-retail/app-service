@@ -1,21 +1,91 @@
-- name: Run Ansible Playbook
-  env:
-    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-  run: |
-    cd ${{ github.workspace }}
-    ansible-playbook -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
-==============
+name: IBPS deployment
 
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+     #labels: rakdeh3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+       ls -al      
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh      
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        #ansible-playbook -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -b --extra-vars 'target=target_jb' ./playbook/IBPS-deployment.yml
+=============================
 - hosts: '{{ target }}'
   become: yes
+  #become_method: sudo
   become_user: itdevtra
   gather_facts: yes
   tasks:
     - name: Execute deployment script
+      #become_user: root
+      #shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
+      #shell: "/bin/bash -c '{{ destination }}/deploy.sh'"
+      #shell: "/bin/bash -c '{{ destination }}/deploy.sh'"
       shell: "/bin/bash -c './deploy.sh'"
+      #args:
+        #chdir: "{{ github.workspace }}"
+        #chdir: '{{ destination }}'
       register: deploy_result
       ignore_errors: yes
 
     - name: Rollback on Deployment Failure
-      shell: "/bin/bash -c './rollback.sh change.log'"
+      #become_user: root
+      #shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
+      #shell: "/bin/bash -c '{{ destination }}/rollback.sh change.log'"
+      #shell: "/bin/bash -c '{{ destination }}/rollback.sh change.log'"
+      shell: "/bin/bash -c './deploy.sh'"
+      #args:
+        #chdir: "{{ github.workspace }}"
+        #chdir: '{{ destination }}'
       when: deploy_result|failed
+=========================
+getting error
+3s
+2s
+0s
+0s
+0s
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+  #ansible-playbook -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment" ./playbook/IBPS-deployment.yml
+  ansible-playbook -b --extra-vars 'target=target_jb' ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: 
+
+PLAY [target_jb] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ANT3CASAPPS01]
+
+TASK [Execute deployment script] ***********************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c './deploy.sh'", "delta": "0:00:00.326882", "end": "2024-01-10 13:08:10.262025", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 13:08:09.935143", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Rollback on Deployment Failure] ******************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c './deploy.sh'", "delta": "0:00:00.321181", "end": "2024-01-10 13:08:10.980068", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 13:08:10.658887", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
+
+Error: Process completed with exit code 2.
