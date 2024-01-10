@@ -3,46 +3,22 @@ curl -H "Authorization: token TOKEN_GITHUB" -o "$filename" -L "https://maven.pkg
 
 - hosts: '{{ target }}'
   become: yes
-  #become_method: sudo
   become_user: itdevtra
   gather_facts: yes
   tasks:
     - name: Execute deployment script
-      #become_user: root
-      #shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
       shell: |
-      pwd
-      /bin/bash -c './deploy.sh'
+        pwd
+        /bin/bash -c './deploy.sh'
       args:
-        #chdir: "{{ github.workspace }}"
         chdir: '{{ destination }}'
       register: deploy_result
       ignore_errors: yes
 
     - name: Rollback on Deployment Failure
-      #become_user: root
-      #shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
       shell: |
-      pwd
-      /bin/bash -c './rollback.sh change.log'
+        pwd
+        /bin/bash -c './rollback.sh change.log'
       args:
-        #chdir: "{{ github.workspace }}"
         chdir: '{{ destination }}'
       when: deploy_result|failed
-==================
-
-getting error
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  
-ERROR! Syntax Error while loading YAML.
-  could not find expected ':'
-
-The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 12, column 7, but may
-be elsewhere in the file depending on the exact syntax problem.
-
-The offending line appears to be:
-
-      pwd
-      /bin/bash -c './deploy.sh'
-      ^ here
-Error: Process completed with exit code 4.
