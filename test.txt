@@ -1,24 +1,29 @@
 curl -H "Authorization: token TOKEN_GITHUB" -o "$filename" -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/$filename"
 ===================
 
-- hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-  gather_facts: yes
-  tasks:
-    - name: Execute deployment script
-      shell: |
-        pwd
-        /bin/bash -c './deploy.sh'
-      args:
-        chdir: '{{ destination }}'
-      register: deploy_result
-      ignore_errors: yes
 
-    - name: Rollback on Deployment Failure
-      shell: |
-        pwd
-        /bin/bash -c './rollback.sh change.log'
-      args:
-        chdir: '{{ destination }}'
-      when: deploy_result|failed
+Search logs
+3s
+2s
+0s
+0s
+0s
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+  
+
+PLAY [target_jb] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ANT3CASAPPS01]
+
+TASK [Execute deployment script] ***********************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "pwd\n/bin/bash -c './deploy.sh'\n", "delta": "0:00:00.313484", "end": "2024-01-10 12:27:39.001432", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 12:27:38.687948", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "/home/itdevtra", "stdout_lines": ["/home/itdevtra"]}
+...ignoring
+
+TASK [Rollback on Deployment Failure] ******************************************
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "pwd\n/bin/bash -c './rollback.sh change.log'\n", "delta": "0:00:00.314749", "end": "2024-01-10 12:27:39.665616", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 12:27:39.350867", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "/home/itdevtra", "stdout_lines": ["/home/itdevtra"]}
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
+
+Error: Process completed with exit code 2.
