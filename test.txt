@@ -183,20 +183,21 @@ else
   echo "Usage: $0 <change.log>"
 fi
 ====================== 
-getting error:
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  tasks:
+    - name: Execute deployment script
+      shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
+      args:
+        chdir: "{{ github.workspace }}"  # Update the working directory
+      register: deploy_result
+      ignore_errors: yes
 
-PLAY [target_jb] ***************************************************************
+    - name: Rollback on Deployment Failure
+      shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
+      args:
+        chdir: "{{ github.workspace }}"  # Update the working directory
+      when: deploy_result|failed
 
-TASK [Gathering Facts] *********************************************************
-ok: [ANT3CASAPPS01]
-
-TASK [Execute deployment script] ***********************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c 'cd  && ./deploy.sh'", "delta": "0:00:00.319400", "end": "2024-01-10 10:57:08.371977", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 10:57:08.052577", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c 'cd  && ./rollback.sh change.log'", "delta": "0:00:00.319302", "end": "2024-01-10 10:57:09.059031", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 10:57:08.739729", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1  
