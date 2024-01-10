@@ -1,13 +1,17 @@
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  
-PLAY [target_jb] ***************************************************************
-TASK [Gathering Facts] *********************************************************
-ok: [ANT3CASAPPS01]
-TASK [Execute deployment script] ***********************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c './deploy.sh'", "delta": "0:00:00.321520", "end": "2024-01-10 11:23:31.898026", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 11:23:31.576506", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-...ignoring
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c './rollback.sh change.log'", "delta": "0:00:00.324553", "end": "2024-01-10 11:23:32.594616", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 11:23:32.270063", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-Error: Process completed with exit code 2.
+# deploy.sh
+cd "$(dirname "$0")"  # Change to the script's directory
+process_line() {
+   # Rest of the script...
+}
+=============
+# rollback.sh
+cd "$(dirname "$0")"  # Change to the script's directory
+rollback_change_log() {
+   # Rest of the script...
+}
+==============
+# rollback.sh
+cd "$(dirname "$0")"  # Change to the script's directory
+rollback_change_log() {
+   # Rest of the script...
+}
