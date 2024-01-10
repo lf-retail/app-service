@@ -33,12 +33,10 @@ jobs:
 using playbook IBPS-deployment.yml
 - hosts: '{{ target }}'
   become: yes
-  #become_method: sudo
   become_user: itdevtra
   gather_facts: yes
   tasks:
     - name: Execute deployment script
-      become_user: root
       shell: "/bin/bash -c 'cd {{ destination }} && ./deploy.sh'"
       args:
         chdir: "{{ destination }}"
@@ -46,7 +44,6 @@ using playbook IBPS-deployment.yml
       ignore_errors: yes
 
     - name: Rollback on Deployment Failure
-      become_user: root
       shell: "/bin/bash -c 'cd {{ destination }} && ./rollback.sh change.log'"
       args:
         chdir: "{{ destination }}"
@@ -188,12 +185,6 @@ fi
 ====================== 
 getting error:
 Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  ansible-playbook -b --extra-vars "target=target_jb destination=$destination" ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: 
-  
 
 PLAY [target_jb] ***************************************************************
 
@@ -201,13 +192,11 @@ TASK [Gathering Facts] *********************************************************
 ok: [ANT3CASAPPS01]
 
 TASK [Execute deployment script] ***********************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"msg": "Missing sudo password"}
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c 'cd  && ./deploy.sh'", "delta": "0:00:00.319400", "end": "2024-01-10 10:57:08.371977", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 10:57:08.052577", "stderr": "/bin/bash: ./deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
 ...ignoring
 
 TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"msg": "Missing sudo password"}
+fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c 'cd  && ./rollback.sh change.log'", "delta": "0:00:00.319302", "end": "2024-01-10 10:57:09.059031", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 10:57:08.739729", "stderr": "/bin/bash: ./rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: ./rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
 
 PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
+ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1  
