@@ -3,13 +3,10 @@
   become_user: itdevtra
   gather_facts: yes
   tasks:
-    - name: Execute deployment script
-      script:
-        src: "{{ playbook_dir }}/deploy.sh"
-      register: deploy_result
-      ignore_errors: yes
-
-    - name: Rollback on Deployment Failure
-      script:
-        src: "{{ playbook_dir }}/rollback.sh change.log"
-      when: deploy_result|failed
+    - name: Run deploy.sh script
+      script: "{{ playbook_dir }}/deploy.sh"
+      args:
+        executable: /bin/bash
+        chdir: "{{ playbook_dir }}"
+      ignore_errors: true  # You can modify this based on your requirements
+===============
