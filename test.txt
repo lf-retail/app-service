@@ -4,48 +4,18 @@
   run: |
     cd ${{ github.workspace }}
     ansible-playbook -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
-==================
+==============
+
 - hosts: '{{ target }}'
   become: yes
   become_user: itdevtra
   gather_facts: yes
   tasks:
     - name: Execute deployment script
-      shell: "/bin/bash -c '{{ destination }}/deploy.sh'"
+      shell: "/bin/bash -c './deploy.sh'"
       register: deploy_result
       ignore_errors: yes
 
     - name: Rollback on Deployment Failure
-      shell: "/bin/bash -c '{{ destination }}/rollback.sh change.log'"
+      shell: "/bin/bash -c './rollback.sh change.log'"
       when: deploy_result|failed
-==================
-after changing getting error
-3s
-2s
-0s
-0s
-0s
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  ansible-playbook -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment" ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: 
-  
-
-PLAY [target_jb] ***************************************************************
-
-TASK [Gathering Facts] *********************************************************
-ok: [ANT3CASAPPS01]
-
-TASK [Execute deployment script] ***********************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/deploy.sh'", "delta": "0:00:00.316305", "end": "2024-01-10 12:55:12.350811", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 12:55:12.034506", "stderr": "/bin/bash: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/deploy.sh: No such file or directory", "stderr_lines": ["/bin/bash: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/deploy.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": true, "cmd": "/bin/bash -c '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/rollback.sh change.log'", "delta": "0:00:00.317330", "end": "2024-01-10 12:55:13.023815", "msg": "non-zero return code", "rc": 127, "start": "2024-01-10 12:55:12.706485", "stderr": "/bin/bash: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/rollback.sh: No such file or directory", "stderr_lines": ["/bin/bash: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/rollback.sh: No such file or directory"], "stdout": "", "stdout_lines": []}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
