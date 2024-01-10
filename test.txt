@@ -10,8 +10,20 @@ rollback_change_log() {
    # Rest of the script...
 }
 ==============
-# rollback.sh
-cd "$(dirname "$0")"  # Change to the script's directory
-rollback_change_log() {
-   # Rest of the script...
-}
+- name: Execute deployment script
+  shell: |
+    pwd  # Print the current working directory
+    /bin/bash -c './deploy.sh'
+  args:
+    chdir: '{{ destination }}'
+  register: deploy_result
+  ignore_errors: yes
+
+- name: Rollback on Deployment Failure
+  shell: |
+    pwd  # Print the current working directory
+    /bin/bash -c './rollback.sh change.log'
+  args:
+    chdir: '{{ destination }}'
+  when: deploy_result|failed
+
