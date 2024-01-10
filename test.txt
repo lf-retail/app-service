@@ -183,28 +183,21 @@ else
   echo "Usage: $0 <change.log>"
 fi
 =======================
-getting error
-0s
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
-  ansible-playbook -b --extra-vars "target=target_jb destination=$destination" ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: 
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  tasks:
+    - name: Execute deployment script
+      shell: "/bin/bash -c './deploy.sh'"
+      args:
+        chdir: '{{ destination }}'
+      register: deploy_result
+      ignore_errors: yes
 
-PLAY [target_jb] ***************************************************************
+    - name: Rollback on Deployment Failure
+      shell: "/bin/bash -c './rollback.sh change.log'"
+      args:
+        chdir: '{{ destination }}'
+      when: deploy_result|failed
 
-TASK [Gathering Facts] *********************************************************
-ok: [ANT3CASAPPS01]
-
-TASK [Execute deployment script] ***********************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'github' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 7, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  tasks:\n    - name: Execute deployment script\n      ^ here\n"}
-...ignoring
-
-TASK [Rollback on Deployment Failure] ******************************************
-fatal: [ANT3CASAPPS01]: FAILED! => {"msg": "The task includes an option with an undefined variable. The error was: 'github' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/playbook/IBPS-deployment.yml': line 15, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n    - name: Rollback on Deployment Failure\n      ^ here\n"}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-
-Error: Process completed with exit code 2.
