@@ -266,3 +266,76 @@ changed: [ANT3CASAPPS01 -> localhost] => {
         "Error extracting release.zip. Check if the ZIP file is valid."
     ]
 }
+==========================
+
+#!/bin/bash
+
+# Log file to keep track of deployments and backups
+CHANGE_LOG="change.log"
+
+# Backup directory
+BACKUP_DIR="/ibm/IBM-CAS/BACKUP_RELEASE"
+
+process_line() {
+  local filename
+  local destination
+
+  # Split the line into filename and destination using a comma as the delimiter
+  IFS=',' read -r filename destination <<< "$1"
+
+  # Check if either the filename or destination is empty
+  if [ -z "$filename" ] || [ -z "$destination" ]; then
+    echo "Error: Empty filename or destination in line: $1"
+    return
+  fi
+
+  # Full path to the destination directory
+  full_destination="$destination"
+
+  # Backup the existing file or directory at the destination
+  if [ -e "$full_destination" ]; then
+    mkdir -p "$BACKUP_DIR"
+    backup_file="$BACKUP_DIR/$(basename "$full_destination")_backup_$(date +'%Y%m%d%H%M%S')"
+    mv "$full_destination" "$backup_file"
+    echo "Backed up $full_destination to $backup_file"
+
+    # Add the backup details to the change.log file
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $full_destination to $backup_file" >> "$CHANGE_LOG"
+  else
+    echo "File or directory $full_destination not found, skipping backup"
+  fi
+
+  # Download the ZIP file from GitHub Packages using curl
+  curl -sSL -H "Authorization: token $GITHUB_TOKEN" -o "$filename" "$GITHUB_REPO/$filename"
+
+  if [ $? -eq 0 ]; then
+    echo "Downloaded $filename from GitHub Packages"
+
+    # Unzip the file
+    unzip -q "$filename" -d "$(dirname "$full_destination")"
+
+    if [ $? -eq 0 ]; then
+      echo "Extracted and deployed $filename to $(dirname "$full_destination")"
+
+      # Add the deployment details to the change.log file
+      echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $(dirname "$full_destination")" >> "$CHANGE_LOG"
+    else
+      echo "Error extracting and deploying $filename to $(dirname "$full_destination")"
+    fi
+  else
+    echo "Error downloading $filename from GitHub Packages"
+  fi
+}
+
+# Check if the release.txt file exists
+if [ -e "release.txt" ]; then
+  # Read each line from the release.txt file
+  while IFS= read -r line; do
+    # Skip empty lines and lines starting with #
+    if [[ -n "$line" && "$line" != "#"* ]]; then
+      process_line "$line"
+    fi
+  done < "release.txt"
+else
+  echo "release.txt file not found"
+fi
