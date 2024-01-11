@@ -1,64 +1,83 @@
 #!/bin/bash
 
-# Log file to keep track of deployments and backups
-CHANGE_LOG="change.log"
+# Specify the GitHub token
+GITHUB_TOKEN="YOUR_GITHUB_TOKEN_HERE"
 
-# Backup directory
-BACKUP_DIR="/ibm/IBM-CAS/BACKUP_RELEASE"
+# Specify the GitHub Packages URL for release.zip
+PACKAGE_URL="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/release.zip"
 
+# Download release.zip from GitHub Packages
+curl -H "Authorization: token $GITHUB_TOKEN" -o release.zip -L "$PACKAGE_URL"
+
+if [ $? -eq 0 ]; then
+  echo "Downloaded release.zip from GitHub Packages"
+
+  # Extract the contents of release.zip to a temporary directory
+  temp_dir=$(mktemp -d)
+  unzip -q release.zip -d "$temp_dir"
+
+  if [ $? -eq 0 ]; then
+    echo "Extracted contents to $temp_dir"
+
+    # Process release.txt to deploy application files
+    while IFS=',' read -r filename destination; do
+      # Skip empty lines and lines starting with #
+      if [[ -n "$filename" && -n "$destination" && "$filename" != "#"* ]]; then
+        process_line "$filename" "$destination"
+      fi
+    done < "$temp_dir/release.txt"
+
+    # Remove the temporary directory
+    rm -r "$temp_dir"
+  else
+    echo "Error extracting release.zip. Check if the ZIP file is valid."
+  fi
+else
+  echo "Error downloading release.zip from GitHub Packages"
+fi
+
+# Define the process_line function (as per your original script)
 process_line() {
-  local filename
-  local destination
+  local filename="$1"
+  local destination="$2"
 
-  # Split the line into filename and destination using a comma as the delimiter
-  IFS=',' read -r filename destination <<< "$1"
+  # Perform actions based on the values
+  echo "Deploying $filename to $destination"
 
   # Check if either the filename or destination is empty
   if [ -z "$filename" ] || [ -z "$destination" ]; then
-    echo "Error: Empty filename or destination in line: $1"
+    echo "Error: Empty filename or destination."
     return
   fi
 
-  # Full path to the destination directory
-  full_destination="$destination"
-
   # Backup the existing file or directory at the destination
-  if [ -e "$full_destination" ]; then
-    mkdir -p "$BACKUP_DIR"
-    backup_file="$BACKUP_DIR/$(basename "$full_destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    mv "$full_destination" "$backup_file"
-    echo "Backed up $full_destination to $backup_file"
+  if [ -e "$destination" ]; then
+    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
+    mkdir -p "$backup_dir"
+    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
+    mv "$destination" "$backup_file"
+    echo "Backed up $destination to $backup_file"
 
     # Add the backup details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $full_destination to $backup_file" >> "$CHANGE_LOG"
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
   else
-    echo "File or directory $full_destination not found, skipping backup"
+    echo "File or directory $destination not found, skipping backup"
   fi
 
-  # Download the ZIP file from the provided URL using curl
-  curl -sSL -o "$filename" "$filename"
-
-  if [ $? -eq 0 ]; then
-    echo "Downloaded $filename from the provided URL"
-
+  # Check if the file is a valid ZIP file before attempting to extract
+  if [[ "$filename" == *.zip ]]; then
     # Unzip the file
-    unzip -q "$filename" -d "$(dirname "$full_destination")"
+    unzip -q "$filename" -d "$destination"
 
     if [ $? -eq 0 ]; then
-      echo "Extracted and deployed $filename to $(dirname "$full_destination")"
-
-      # Add the deployment details to the change.log file
-      echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $(dirname "$full_destination")" >> "$CHANGE_LOG"
+      echo "Extracted and deployed $filename to $destination"
     else
-      echo "Error extracting and deploying $filename to $(dirname "$full_destination")"
+      echo "Error extracting and deploying $filename to $destination"
     fi
   else
-    echo "Error downloading $filename from the provided URL"
+    echo "Skipping extraction. $filename is not a ZIP file."
   fi
+
+  # Add the deployment details to the change.log file
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
 }
-
-# Example: URL directly provided in the script
-URL="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/1.0.0/release-1.0.0.zip"
-
-# Process the line with the provided URL
-process_line "$URL"
