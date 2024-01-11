@@ -212,3 +212,57 @@ process_line() {
   # Add the deployment details to the change.log file
   echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
 }
+============================
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535 && echo ansible-tmp-1704961956.8221076-1831857-122567446756535="` echo /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-1831832ktdhyffh/tmpefwogcu3 TO /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535/ /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704961956.8221076-1831857-122567446756535/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
+    "delta": "0:00:00.894027",
+    "end": "2024-01-11 12:32:38.103831",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-11 12:32:37.209804",
+    "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    28  100    28    0     0     32      0 --:--:-- --:--:-- --:--:--    32\n[release.zip]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of release.zip or\n        release.zip.zip, and cannot find release.zip.ZIP, period.",
+    "stderr_lines": [
+        "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current",
+        "                                 Dload  Upload   Total   Spent    Left  Speed",
+        "",
+        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
+        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
+        "100    28  100    28    0     0     32      0 --:--:-- --:--:-- --:--:--    32",
+        "[release.zip]",
+        "  End-of-central-directory signature not found.  Either this file is not",
+        "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
+        "  latter case the central directory and zipfile comment will be found on",
+        "  the last disk(s) of this archive.",
+        "unzip:  cannot find zipfile directory in one of release.zip or",
+        "        release.zip.zip, and cannot find release.zip.ZIP, period."
+    ],
+    "stdout": "Downloaded release.zip from GitHub Packages\nError extracting release.zip. Check if the ZIP file is valid.",
+    "stdout_lines": [
+        "Downloaded release.zip from GitHub Packages",
+        "Error extracting release.zip. Check if the ZIP file is valid."
+    ]
+}
