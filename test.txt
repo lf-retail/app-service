@@ -1,3 +1,9 @@
+gaurav.kumar@rakbank.ae
+
+Deepak Kumar Deepak.Kumar@rakbank.ae
+
+=========================
+
 using deploy.sh
 process_line() {
   local filename
