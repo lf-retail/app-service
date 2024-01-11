@@ -1,38 +1,36 @@
-process_line() {
-    local filename
-    local destination
-
-    # Split the line into filename and destination using a comma as the delimiter 
-    IFS=',' read -r filename destination <<< "$1"
-
-    # Remove carriage return from the destination path
-    destination=$(echo "$destination" | tr -d '\r')
-
-    # Perform actions based on the values
-    echo "Deploying $filename to $destination"
-
-    # Check if either the filename or destination is empty
-    if [ -z "$filename" ] || [ -z "$destination" ]; then
-        echo "Error: Empty filename or destination in line: $1"
-        return
-    fi
-
-    # Backup the existing file at the destination on the targeted server
-    ssh "$ansible_user@$targeted_server" "mkdir -p $(dirname \"$destination\")"
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    ssh "$ansible_user@$targeted_server" "cp \"$destination\" \"$backup_file\""
-    echo "Backed up $destination to $backup_file on the targeted server"
-
-    # Copy the file to the targeted server
-    scp "release/$filename" "$ansible_user@$targeted_server:\"$destination\""
-
-    if [ $? -eq 0 ]; then
-        echo "Copied $filename to targeted server at $destination"
-        
-        # Log the deployment information to change.log
-        echo "Deployed $filename to $destination on $(date +'%Y-%m-%d %H:%M:%S')" >> release/change.log
-    else
-        echo "Error copying $filename to targeted server"
-    fi
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285 && echo ansible-tmp-1704993561.8676977-2017192-175919341691285="` echo /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2017169zptgjp2k/tmp8_acew2b TO /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285/ /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704993561.8676977-2017192-175919341691285/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.006929",
+    "end": "2024-01-11 21:19:22.253572",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-11 21:19:22.246643",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "",
+    "stdout_lines": []
 }
