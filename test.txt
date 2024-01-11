@@ -1,20 +1,88 @@
+using deploy.sh
+process_line() {
+  local filename
+  local destination
+  
+  # Split the line into filename and destination using a comma as the delimiter 
+  IFS=',' read -r filename destination <<< "$1"
+
+  # Perform actions based on the values
+  echo "Deploying $filename to $destination"
+
+  # Check if either the filename or destination is empty
+  if [ -z "$filename" ] || [ -z "$destination" ]; then
+    echo "Error: Empty filename or destination in line: $1"
+    return
+  fi
+
+  # Backup the existing file or directory at the destination
+  if [ -e "$destination" ]; then
+    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
+    mkdir -p "$backup_dir"
+    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
+    mv "$destination" "$backup_file"
+    echo "Backed up $destination to $backup_file"
+
+    # Add the backup details to the change.log file
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
+  else
+    echo "File or directory $destination not found, skipping backup"
+  fi
+
+  # Download the ZIP file from GitHub Packages using curl
+  # Replace GITHUB_TOKEN with your GitHub token or credentials
+  curl -H "Authorization: token TOKEN_GITHUB" -o "$filename" -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/$filename"
+
+  if [ $? -eq 0 ]; then
+    echo "Downloaded $filename from GitHub Packages"
+
+    # Unzip the file
+    unzip -q "$filename" -d "$destination"
+
+    if [ $? -eq 0 ]; then
+      echo "Extracted and deployed $filename to $destination"
+    else
+      echo "Error extracting and deploying $filename to $destination"
+    fi
+
+    # Add the deployment details to the change.log file
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
+  else
+    echo "Error downloading $filename from GitHub Packages"
+  fi
+}
+
+# Check if the release.txt file exists
+if [ -e "release.txt" ]; then
+  # Read each line from the release.txt file
+  while IFS= read -r line; do
+    # Skip empty lines and lines starting with #
+    if [[ -n "$line" && "$line" != "#"* ]]; then
+      process_line "$line"
+    fi
+  done < "release.txt"
+else
+  echo "release.txt file not found"
+fi
+===================
+getting error
 TASK [IBPS-deployment : Deploy Application] ************************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
 <localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
-<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606 && echo ansible-tmp-1704963604.9284117-1841307-197316799701606="` echo /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606 `" ) && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110 && echo ansible-tmp-1704966058.1382196-1859590-178079064248110="` echo /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110 `" ) && sleep 0'
 Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-1840951s8s9n0ht/tmp09ovg5mi TO /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606/AnsiballZ_command.py
-<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606/ /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704963604.9284117-1841307-197316799701606/ > /dev/null 2>&1 && sleep 0'
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-1859504zn2e8yve/tmpn5g10ut5 TO /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110/ /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704966058.1382196-1859590-178079064248110/ > /dev/null 2>&1 && sleep 0'
 changed: [ANT3CASAPPS01 -> localhost] => {
     "changed": true,
-    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
-    "delta": "0:00:00.926317",
-    "end": "2024-01-11 13:00:06.459643",
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.007326",
+    "end": "2024-01-11 13:40:58.543022",
     "invocation": {
         "module_args": {
-            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
             "_uses_shell": true,
             "argv": null,
             "chdir": null,
@@ -28,26 +96,11 @@ changed: [ANT3CASAPPS01 -> localhost] => {
         }
     },
     "rc": 0,
-    "start": "2024-01-11 13:00:05.533326",
-    "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    28  100    28    0     0     31      0 --:--:-- --:--:-- --:--:--    31\r100    28  100    28    0     0     31      0 --:--:-- --:--:-- --:--:--    31\n[release.zip]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of release.zip or\n        release.zip.zip, and cannot find release.zip.ZIP, period.",
-    "stderr_lines": [
-        "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current",
-        "                                 Dload  Upload   Total   Spent    Left  Speed",
-        "",
-        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
-        "100    28  100    28    0     0     31      0 --:--:-- --:--:-- --:--:--    31",
-        "100    28  100    28    0     0     31      0 --:--:-- --:--:-- --:--:--    31",
-        "[release.zip]",
-        "  End-of-central-directory signature not found.  Either this file is not",
-        "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
-        "  latter case the central directory and zipfile comment will be found on",
-        "  the last disk(s) of this archive.",
-        "unzip:  cannot find zipfile directory in one of release.zip or",
-        "        release.zip.zip, and cannot find release.zip.ZIP, period."
-    ],
-    "stdout": "Downloaded release.zip from GitHub Packages\nError extracting release.zip. Check if the ZIP file is valid.",
+    "start": "2024-01-11 13:40:58.535696",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "release.txt file not found",
     "stdout_lines": [
-        "Downloaded release.zip from GitHub Packages",
-        "Error extracting release.zip. Check if the ZIP file is valid."
+        "release.txt file not found"
     ]
 }
