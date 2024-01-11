@@ -70,3 +70,11 @@ if [ -e "release.txt" ]; then
 else
   echo "release.txt file not found"
 fi
+=====
+
+# Use the specified SSH user and host from the script
+ansible_user="itdevtra"
+targeted_server="ANT3CASAPPS01"
+
+# Create directories on the targeted server using SSH
+ssh "$ansible_user@$targeted_server" "mkdir -p $(dirname $destination)"
