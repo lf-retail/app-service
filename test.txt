@@ -127,3 +127,88 @@ changed: [ANT3CASAPPS01 -> localhost] => {
         "Error extracting and deploying newgenapp_jar.ear to /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
     ]
 }
+=================================
+
+#!/bin/bash
+
+# Specify the GitHub token
+GITHUB_TOKEN="YOUR_GITHUB_TOKEN_HERE"
+
+# Specify the GitHub Packages URL for release.zip
+PACKAGE_URL="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/release.zip"
+
+# Download release.zip from GitHub Packages
+curl -H "Authorization: token $GITHUB_TOKEN" -o release.zip -L "$PACKAGE_URL"
+
+if [ $? -eq 0 ]; then
+  echo "Downloaded release.zip from GitHub Packages"
+
+  # Extract the contents of release.zip to a temporary directory
+  temp_dir=$(mktemp -d)
+  unzip -q release.zip -d "$temp_dir"
+
+  if [ $? -eq 0 ]; then
+    echo "Extracted contents to $temp_dir"
+
+    # Process release.txt to deploy application files
+    while IFS=',' read -r filename destination; do
+      # Skip empty lines and lines starting with #
+      if [[ -n "$filename" && -n "$destination" && "$filename" != "#"* ]]; then
+        process_line "$filename" "$destination"
+      fi
+    done < "$temp_dir/release.txt"
+
+    # Remove the temporary directory
+    rm -r "$temp_dir"
+  else
+    echo "Error extracting release.zip. Check if the ZIP file is valid."
+  fi
+else
+  echo "Error downloading release.zip from GitHub Packages"
+fi
+
+# Define the process_line function (as per your original script)
+process_line() {
+  local filename="$1"
+  local destination="$2"
+
+  # Perform actions based on the values
+  echo "Deploying $filename to $destination"
+
+  # Check if either the filename or destination is empty
+  if [ -z "$filename" ] || [ -z "$destination" ]; then
+    echo "Error: Empty filename or destination."
+    return
+  fi
+
+  # Backup the existing file or directory at the destination
+  if [ -e "$destination" ]; then
+    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
+    mkdir -p "$backup_dir"
+    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
+    mv "$destination" "$backup_file"
+    echo "Backed up $destination to $backup_file"
+
+    # Add the backup details to the change.log file
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
+  else
+    echo "File or directory $destination not found, skipping backup"
+  fi
+
+  # Check if the file is a valid ZIP file before attempting to extract
+  if [[ "$filename" == *.zip ]]; then
+    # Unzip the file
+    unzip -q "$filename" -d "$destination"
+
+    if [ $? -eq 0 ]; then
+      echo "Extracted and deployed $filename to $destination"
+    else
+      echo "Error extracting and deploying $filename to $destination"
+    fi
+  else
+    echo "Skipping extraction. $filename is not a ZIP file."
+  fi
+
+  # Add the deployment details to the change.log file
+  echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
+}
