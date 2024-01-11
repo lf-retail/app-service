@@ -1,80 +1,55 @@
-#!/bin/bash
-
-# Function to process each line in release.txt
-process_line() {
-  local filename
-  local destination
-
-  # Split the line into filename and destination using a comma as the delimiter 
-  IFS=',' read -r filename destination <<< "$1"
-
-  # Perform actions based on the values
-  echo "Deploying $filename to $destination"
-
-  # Check if either the filename or destination is empty
-  if [ -z "$filename" ] || [ -z "$destination" ]; then
-    echo "Error: Empty filename or destination in line: $1"
-    return
-  fi
-
-  # Backup the existing file or directory at the destination
-  if [ -e "$destination" ]; then
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    mkdir -p "$backup_dir"
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    mv "$destination" "$backup_file"
-    echo "Backed up $destination to $backup_file"
-
-    # Add the backup details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
-  else
-    echo "File or directory $destination not found, skipping backup"
-  fi
-
-  # Deploy the application file to its destination
-  # You might need to customize this part based on your application structure
-  # For example, copy or move the file to its destination
-  # cp "$filename" "$destination"
-
-  # Add deployment details to the change.log file
-  echo "$(date +'%Y-%m-%d %H:%M:%S') - Deployed $filename to $destination" >> change.log
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823 && echo ansible-tmp-1704976433.1966538-1924383-225892169482823="` echo /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-19243589j9qps4o/tmp8t5m1v0y TO /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823/ /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704976433.1966538-1924383-225892169482823/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:01.007359",
+    "end": "2024-01-11 16:33:54.586435",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-11 16:33:53.579076",
+    "stderr": "  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of release.zip or\n        release.zip.zip, and cannot find release.zip.ZIP, period.",
+    "stderr_lines": [
+        "  End-of-central-directory signature not found.  Either this file is not",
+        "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
+        "  latter case the central directory and zipfile comment will be found on",
+        "  the last disk(s) of this archive.",
+        "unzip:  cannot find zipfile directory in one of release.zip or",
+        "        release.zip.zip, and cannot find release.zip.ZIP, period."
+    ],
+    "stdout": "Downloaded release.zip from GitHub Packages\nContent of release.zip:\nArchive:  release.zip\nError extracting release.zip. Check unzip_error.log for details.\n[release.zip]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of release.zip or\n        release.zip.zip, and cannot find release.zip.ZIP, period.",
+    "stdout_lines": [
+        "Downloaded release.zip from GitHub Packages",
+        "Content of release.zip:",
+        "Archive:  release.zip",
+        "Error extracting release.zip. Check unzip_error.log for details.",
+        "[release.zip]",
+        "  End-of-central-directory signature not found.  Either this file is not",
+        "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
+        "  latter case the central directory and zipfile comment will be found on",
+        "  the last disk(s) of this archive.",
+        "unzip:  cannot find zipfile directory in one of release.zip or",
+        "        release.zip.zip, and cannot find release.zip.ZIP, period."
+    ]
 }
-
-# Download the ZIP file from GitHub Packages using curl
-curl -H "Authorization: token TOKEN_GITHUB" -o release.zip -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip" 2> download_error.log
-
-if [ $? -eq 0 ]; then
-  echo "Downloaded release.zip from GitHub Packages"
-
-  # Display the content of release.zip
-  echo "Content of release.zip:"
-  unzip -l release.zip
-
-  # Unzip the release.zip file
-  unzip -q release.zip 2> unzip_error.log
-
-  # Check if there are any errors during extraction
-  if [ $? -ne 0 ]; then
-    echo "Error extracting release.zip. Check unzip_error.log for details."
-    cat unzip_error.log
-  else
-    # Check if the release.txt file exists
-    if [ -e "release.txt" ]; then
-      # Process each line in the release.txt file
-      while IFS= read -r line; do
-        # Skip empty lines and lines starting with #
-        if [[ -n "$line" && "$line" != "#"* ]]; then
-          process_line "$line"
-        fi
-      done < "release.txt"
-    else
-      echo "release.txt file not found in the extracted contents"
-    fi
-
-    # Remove the release.zip file
-    rm release.zip
-  fi
-else
-  echo "Error downloading release.zip from GitHub Packages. Check download_error.log for details."
-  cat download_error.log
-fi
