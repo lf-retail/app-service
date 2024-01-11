@@ -1,18 +1,10 @@
-using this roles and I can call deploy.sh 
----
-    - name: Deploy Application
-      delegate_to: localhost
-      shell: 'cd {{ destination }} && ./deploy.sh'
-      register: deploy_result
-      ignore_errors: yes
+I have to download the release.zip file from github packages 
+release.zip file contains application files that is can be jar/war/ear and release.txt file
+release.txt file contains application file name and its targeted location 
+i have to copy the th application files into its targeted location
+so i am using deploy.sh script for the above activities
 
-    - name: Rollback on Deployment Failure
-      delegate_to: localhost
-      shell: 'cd {{ destination }} && ./rollback.sh change.log'
-      when: deploy_result|failed
-=================
-using deploy.sh
-cd "$(dirname "$0")"
+#cd "$(dirname "$0")"
 process_line() {
   local filename
   local destination
@@ -78,24 +70,22 @@ if [ -e "release.txt" ]; then
 else
   echo "release.txt file not found"
 fi
-==================================
-
-but getting erroe could not find
-
+=======================
+but getting error
 TASK [IBPS-deployment : Deploy Application] ************************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
 <localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
-<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329 && echo ansible-tmp-1704895004.8185692-1450278-164393836244329="` echo /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329 `" ) && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919 && echo ansible-tmp-1704955298.5833302-1790468-68825460196919="` echo /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919 `" ) && sleep 0'
 Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-14502547cmjwwgj/tmpwzlgvuk8 TO /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329/AnsiballZ_command.py
-<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329/ /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704895004.8185692-1450278-164393836244329/ > /dev/null 2>&1 && sleep 0'
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-17904397v9gxoi_/tmpmeuz_vn6 TO /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919/ /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704955298.5833302-1790468-68825460196919/ > /dev/null 2>&1 && sleep 0'
 changed: [ANT3CASAPPS01 -> localhost] => {
     "changed": true,
     "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
-    "delta": "0:00:00.741187",
-    "end": "2024-01-10 17:56:45.944746",
+    "delta": "0:00:01.094210",
+    "end": "2024-01-11 10:41:40.072301",
     "invocation": {
         "module_args": {
             "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy.sh",
@@ -112,15 +102,15 @@ changed: [ANT3CASAPPS01 -> localhost] => {
         }
     },
     "rc": 0,
-    "start": "2024-01-10 17:56:45.203559",
-    "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    28  100    28    0     0     39      0 --:--:-- --:--:-- --:--:--    39\n[newgenapp_jar.ear]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of newgenapp_jar.ear or\n        newgenapp_jar.ear.zip, and cannot find newgenapp_jar.ear.ZIP, period.",
+    "start": "2024-01-11 10:41:38.978091",
+    "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100    28  100    28    0     0     26      0  0:00:01  0:00:01 --:--:--    26\n[newgenapp_jar.ear]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of newgenapp_jar.ear or\n        newgenapp_jar.ear.zip, and cannot find newgenapp_jar.ear.ZIP, period.",
     "stderr_lines": [
         "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current",
         "                                 Dload  Upload   Total   Spent    Left  Speed",
         "",
         "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
         "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
-        "100    28  100    28    0     0     39      0 --:--:-- --:--:-- --:--:--    39",
+        "100    28  100    28    0     0     26      0  0:00:01  0:00:01 --:--:--    26",
         "[newgenapp_jar.ear]",
         "  End-of-central-directory signature not found.  Either this file is not",
         "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
