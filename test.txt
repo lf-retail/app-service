@@ -339,3 +339,5 @@ if [ -e "release.txt" ]; then
 else
   echo "release.txt file not found"
 fi
+==================
+curl -sSL -H "Authorization: token $GITHUB_TOKEN" -o "$filename" "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/1.0.0/release-1.0.0.zip"
