@@ -1,3 +1,91 @@
+
+using deployment workflow and stored in github repository
+name: IBPS-deployment
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+     #labels: rakdeh3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy-1.sh rollback.sh
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b -vvv --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+===================
+using playbook and stored in github repository
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  roles:
+    - IBPS-deployment
+========================
+using roles and stored in github repository
+---
+    - name: Deploy Application
+      delegate_to: localhost
+      shell: 'cd {{ destination }} && ./deploy-1.sh'
+      register: deploy_result
+      ignore_errors: yes
+
+    - name: Rollback on Deployment Failure
+      delegate_to: localhost
+      shell: 'cd {{ destination }} && ./rollback.sh change.log'
+      when: deploy_result|failed
+=============================
+using ansible configuration ansible.cfg and stored in github repository
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+inventory=hosts.cfg
+roles_path=roles/
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+timeout=30
+ansible_pipelining=True
+============
+usnig host configuration hosts.cfg and stored in github repository
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_jb]
+ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+==================
+I need correct deployment script for the below conditions
+1. need to download the release.zip file from github packages
+2. need to extract it
+3. release.zip file contains application files and release.txt file
+4. release.tx file contains application file name and its targeted location
+5. need to copy and paste the application file into its targeted location
+========================================
+I am already using deployment script as below but getting error
+
 #!/bin/bash
 
 # Function to process each line in release.txt
@@ -32,7 +120,7 @@ process_line() {
   fi
 
   # Download the ZIP file from GitHub Packages using curl
-  curl -H "Authorization: token TOKEN_GITHUB" -o release.zip -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/release.zip"
+  curl -H "Authorization: token TOKEN_GITHUB" -o release.zip -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/1.0.0/release-1.0.0.zip"
 
   if [ $? -eq 0 ]; then
     echo "Downloaded release.zip from GitHub Packages"
