@@ -1,3 +1,4 @@
+using the below script and getting error
 #!/bin/bash
 
 # Function to process each line in release.txt
@@ -67,8 +68,8 @@ if [ $? -eq 0 ]; then
 else
   echo "Error downloading release.zip from GitHub Packages"
 fi
-==========================
-getting error
+==============================
+error:
 TASK [IBPS-deployment : Deploy Application] ************************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
 <localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
