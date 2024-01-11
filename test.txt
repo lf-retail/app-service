@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set SSH user and target server
+ansible_user="itdevtra"
+targeted_server="ANT3CASAPPS01"
+
 process_line() {
   local filename
   local destination
@@ -16,22 +20,12 @@ process_line() {
     return
   fi
 
-  # Backup the existing file at the destination
-  if [ -e "$destination" ]; then
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    
-    # Create the backup directory if it doesn't exist
-    mkdir -p "$backup_dir"
-
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    rsync -a "$destination" "$backup_file"
-    echo "Backed up $destination to $backup_file"
-
-    # Add the backup details to the change.log file
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - Backed up $destination to $backup_file" >> change.log
-  else
-    echo "File $destination not found, skipping backup"
-  fi
+  # Backup the existing file at the destination on the targeted server
+  ssh "$ansible_user@$targeted_server" "mkdir -p $(dirname $destination)"
+  backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
+  backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
+  ssh "$ansible_user@$targeted_server" "cp $destination $backup_file"
+  echo "Backed up $destination to $backup_file on the targeted server"
 
   # Download the file from GitHub Packages using curl
   # Replace TOKEN_GITHUB with your GitHub token or credentials
@@ -44,14 +38,13 @@ process_line() {
   if [ $? -eq 0 ]; then
     echo "Downloaded $filename from GitHub Packages"
 
-    # Add your deployment logic here
-    # For example, you can use 'cp' to copy the file from the source to the destination:
-    cp "$filename" "$destination"
+    # Copy the file to the targeted server
+    scp "$filename" "$ansible_user@$targeted_server:$destination"
 
     if [ $? -eq 0 ]; then
-      echo "Copied $filename to $destination"
+      echo "Copied $filename to targeted server at $destination"
     else
-      echo "Error copying $filename to $destination"
+      echo "Error copying $filename to targeted server"
     fi
   else
     echo "Error downloading $filename from GitHub Packages"
@@ -70,11 +63,3 @@ if [ -e "release.txt" ]; then
 else
   echo "release.txt file not found"
 fi
-=====
-
-# Use the specified SSH user and host from the script
-ansible_user="itdevtra"
-targeted_server="ANT3CASAPPS01"
-
-# Create directories on the targeted server using SSH
-ssh "$ansible_user@$targeted_server" "mkdir -p $(dirname $destination)"
