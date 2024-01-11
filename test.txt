@@ -1,66 +1,84 @@
-#!/bin/bash
-
-# Set SSH user and target server
-ansible_user="itdevtra"
-targeted_server="ANT3CASAPPS01"
-
-# Debug Working Directory
-run: |
-    pwd
-    ls -al
-
-# Download and extract release.zip from GitHub Packages
-curl -H "Authorization: Bearer $TOKEN_GITHUB" -o "release.zip" -L -H "Accept: application/vnd.github.v3+json" "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
-unzip release.zip -d release
-
-process_line() {
-    local filename
-    local destination
-
-    # Split the line into filename and destination using a comma as the delimiter 
-    IFS=',' read -r filename destination <<< "$1"
-
-    # Remove carriage return from the destination path
-    destination=$(echo "$destination" | tr -d '\r')
-
-    # Perform actions based on the values
-    echo "Deploying $filename to $destination"
-
-    # Check if either the filename or destination is empty
-    if [ -z "$filename" ] || [ -z "$destination" ]; then
-        echo "Error: Empty filename or destination in line: $1"
-        return
-    fi
-
-    # Backup the existing file at the destination on the targeted server
-    ssh "$ansible_user@$targeted_server" "mkdir -p $(dirname \"$destination\")"
-    backup_dir="/ibm/IBM-CAS/BACKUP_RELEASE"
-    backup_file="$backup_dir/$(basename "$destination")_backup_$(date +'%Y%m%d%H%M%S')"
-    ssh "$ansible_user@$targeted_server" "cp \"$destination\" \"$backup_file\""
-    echo "Backed up $destination to $backup_file on the targeted server"
-
-    # Copy the file to the targeted server
-    scp "release/$filename" "$ansible_user@$targeted_server:\"$destination\""
-
-    if [ $? -eq 0 ]; then
-        echo "Copied $filename to targeted server at $destination"
-        
-        # Log the deployment information to change.log
-        echo "Deployed $filename to $destination on $(date +'%Y-%m-%d %H:%M:%S')" >> release/change.log
-    else
-        echo "Error copying $filename to targeted server"
-    fi
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884 && echo ansible-tmp-1704993808.3548317-2018313-114504122537884="` echo /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2018291_hz1p81w/tmpyxro_74e TO /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884/ /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704993808.3548317-2018313-114504122537884/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:02.996448",
+    "end": "2024-01-11 21:23:31.813946",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-11 21:23:28.817498",
+    "stderr": "./deploy-1.sh: line 8: run:: command not found\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100   407  100   407    0     0    285      0  0:00:01  0:00:01 --:--:--   285\n\r  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\r100 40087  100 40087    0     0  18363      0  0:00:02  0:00:02 --:--:-- 71969\nDo not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system e...
+    "stderr_lines": [
+        "./deploy-1.sh: line 8: run:: command not found",
+        "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current",
+        "                                 Dload  Upload   Total   Spent    Left  Speed",
+        "",
+        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
+        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
+        "100   407  100   407    0     0    285      0  0:00:01  0:00:01 --:--:--   285",
+        "",
+        "  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0",
+        "100 40087  100 40087    0     0  18363      0  0:00:02  0:00:02 --:--:-- 71969",
+        "Do not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.",
+        "bash: -c: line 0: unexpected EOF while looking for matching `\"'",
+        "bash: -c: line 1: syntax error: unexpected end of file",
+        "Do not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.",
+        "cp: omitting directory ‘/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell’",
+        "Do not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.",
+        "release/newgenapp_jar.ear: No such file or directory"
+    ],
+    "stdout": "/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment\ntotal 28\ndrwxrwxr-x 6 itdevtra itdevtra  202 Jan 11 21:23 .\ndrwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..\n-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 11 21:23 ansible.cfg\n-rwxrwxr-x 1 itdevtra itdevtra 2352 Jan 11 21:23 deploy-1.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 11 21:23 deploy-new.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 11 21:23 deploy.sh\ndrwxrwxr-x 3 itdevtra itdevtra   23 Jan 11 21:23 .github\n-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 11 21:23 hosts.cfg\ndrwxrwxr-x 6 itdevtra itdevtra   89 Jan 11 21:23 IBPS_SAMPLE_EAR\ndrwxrwxr-x 2 itdevtra itdevtra   64 Jan 11 21:23 playbook\n-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 11 21:23 README.md\ndrwxrwxr-x 3 itdevtra itdevtra   29 Jan 11 21:23 roles\n-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 11 21:23 rollback.sh\nArchive:  release.zip\n   creating: release/release/newgenapp_jar.ear/\n   creating: release/release/newgenapp_jar.ear/META-INF/\n  inflating: rel...
+    "stdout_lines": [
+        "/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment",
+        "total 28",
+        "drwxrwxr-x 6 itdevtra itdevtra  202 Jan 11 21:23 .",
+        "drwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..",
+        "-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 11 21:23 ansible.cfg",
+        "-rwxrwxr-x 1 itdevtra itdevtra 2352 Jan 11 21:23 deploy-1.sh",
+        "-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 11 21:23 deploy-new.sh",
+        "-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 11 21:23 deploy.sh",
+        "drwxrwxr-x 3 itdevtra itdevtra   23 Jan 11 21:23 .github",
+        "-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 11 21:23 hosts.cfg",
+        "drwxrwxr-x 6 itdevtra itdevtra   89 Jan 11 21:23 IBPS_SAMPLE_EAR",
+        "drwxrwxr-x 2 itdevtra itdevtra   64 Jan 11 21:23 playbook",
+        "-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 11 21:23 README.md",
+        "drwxrwxr-x 3 itdevtra itdevtra   29 Jan 11 21:23 roles",
+        "-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 11 21:23 rollback.sh",
+        "Archive:  release.zip",
+        "   creating: release/release/newgenapp_jar.ear/",
+        "   creating: release/release/newgenapp_jar.ear/META-INF/",
+        "  inflating: release/release/newgenapp_jar.ear/META-INF/application.xml  ",
+        "  inflating: release/release/newgenapp_jar.ear/META-INF/ibm-application-bnd.xmi  ",
+        " extracting: release/release/newgenapp_jar.ear/META-INF/MANIFEST.MF  ",
+        " extracting: release/release/newgenapp_jar.ear/META-INF/was.ejbmodule  ",
+        " extracting: release/release/newgenapp_jar.ear/META-INF/was.module  ",
+        "  inflating: release/release/newgenapp_jar.ear/META-INF/was.policy  ",
+        "  inflating: release/release/newgenapp_jar.ear/newgenapp.jar  ",
+        "  inflating: release/release/release.txt  ",
+        "Deploying newgenapp_jar.ear to /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backed up /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell to /ibm/IBM-CAS/BACKUP_RELEASE/ANT2CASAPPS01Node01Cell_backup_20240111212331 on the targeted server",
+        "Error copying newgenapp_jar.ear to targeted server"
+    ]
 }
-
-# Check if the release.txt file exists
-if [ -e "release/release/release.txt" ]; then
-    # Read each line from the release.txt file
-    while IFS= read -r line; do
-        # Skip empty lines and lines starting with #
-        if [[ -n "$line" && "$line" != "#"* ]]; then
-            process_line "$line"
-        fi
-    done < "release/release/release.txt"
-else
-    echo "release.txt file not found"
-fi
