@@ -41,7 +41,7 @@ process_line() {
 }
 
 # Download the ZIP file from GitHub Packages using curl
-curl -H "Authorization: token TOKEN_GITHUB" -o release.zip -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/1.0.0/release-1.0.0.zip"
+curl -H "Authorization: token TOKEN_GITHUB" -o release.zip -L "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
 
 if [ $? -eq 0 ]; then
   echo "Downloaded release.zip from GitHub Packages"
@@ -67,3 +67,58 @@ if [ $? -eq 0 ]; then
 else
   echo "Error downloading release.zip from GitHub Packages"
 fi
+==========================
+getting error
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593 && echo ansible-tmp-1704970860.2477326-1892759-75808257287593="` echo /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-1892734lq6wyysy/tmp2wxj16wj TO /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593/ /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1704970860.2477326-1892759-75808257287593/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.914936",
+    "end": "2024-01-11 15:01:01.566510",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-11 15:01:00.651574",
+    "stderr": "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100   156  100   156    0     0    175      0 --:--:-- --:--:-- --:--:--   174\r100   156  100   156    0     0    175      0 --:--:-- --:--:-- --:--:--   174\n[release.zip]\n  End-of-central-directory signature not found.  Either this file is not\n  a zipfile, or it constitutes one disk of a multi-part archive.  In the\n  latter case the central directory and zipfile comment will be found on\n  the last disk(s) of this archive.\nunzip:  cannot find zipfile directory in one of release.zip or\n        release.zip.zip, and cannot find release.zip.ZIP, period.",
+    "stderr_lines": [
+        "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current",
+        "                                 Dload  Upload   Total   Spent    Left  Speed",
+        "",
+        "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0",
+        "100   156  100   156    0     0    175      0 --:--:-- --:--:-- --:--:--   174",
+        "100   156  100   156    0     0    175      0 --:--:-- --:--:-- --:--:--   174",
+        "[release.zip]",
+        "  End-of-central-directory signature not found.  Either this file is not",
+        "  a zipfile, or it constitutes one disk of a multi-part archive.  In the",
+        "  latter case the central directory and zipfile comment will be found on",
+        "  the last disk(s) of this archive.",
+        "unzip:  cannot find zipfile directory in one of release.zip or",
+        "        release.zip.zip, and cannot find release.zip.ZIP, period."
+    ],
+    "stdout": "Downloaded release.zip from GitHub Packages\nrelease.txt file not found in the extracted contents",
+    "stdout_lines": [
+        "Downloaded release.zip from GitHub Packages",
+        "release.txt file not found in the extracted contents"
+    ]
+}
