@@ -1,11 +1,36 @@
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+...
 
-- name: Set permissions for release.zip on Target Server
+---
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Run ls -la on the Target Server
   become: true
   become_user: itdevtra
-  file:
-    path: "{{ Profile_home }}/{{ zip_file_name }}"
-    mode: "0755"
+  command: "ls -la {{ Profile_home }}/{{ zip_file_name }}"
+  register: ls_result    
 
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines  
+    
 - name: Extract release.zip on Target Server
   become: true
   become_user: itdevtra
@@ -13,15 +38,6 @@
     src: "{{ Profile_home }}/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/"
   register: unarchive_result  
-
-- name: Set permissions for extracted files on Target Server
-  become: true
-  become_user: itdevtra
-  file:
-    path: "{{ Profile_home }}/release/{{ item.src }}"
-    mode: "0755"
-  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1') | list }}"
-  when: release_content.stdout_lines | length > 0
 
 - name: Read release.txt content
   become: true
@@ -34,4 +50,4 @@
   become_user: itdevtra
   command: "cd {{ Profile_home }}/release && cp {{ item.src }} {{ item.target }}"
   loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 src=\\1 target=\\2') | map('from_yaml') | list }}"
-  when: release_content.stdout_lines | length > 0
+  when: release_content.stdout_lines | length > 0  
