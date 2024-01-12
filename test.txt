@@ -1,5 +1,3 @@
-# roles/IBPS-deployment/tasks/main.yml
-
 ---
 - name: Download zip from GitHub packages on Runner
   delegate_to: localhost
@@ -10,37 +8,17 @@
     headers:
       Authorization: "token {{ github_token }}"
 
-- name: Create temp directory on Targeted Server
-  become: true
-  become_user: itdevtra
-  file:
-    path: "{{ temp_directory }}"
-    state: directory
-
 - name: Copy zip to Target Server
   copy:
     src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ temp_directory }}/{{ zip_file_name }}"
-  become: true
-  become_user: itdevtra
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
 
-- name: Extract release.zip in temp directory
+- name: Extract release.zip in the temp directory within Profile_home
   become: true
   become_user: itdevtra
-  ansible.builtin.unarchive:
-    src: "{{ temp_directory }}/{{ zip_file_name }}"
-    dest: "{{ temp_directory }}"
-    remote_src: yes
-  args:
-    creates: "{{ temp_directory }}/release.txt"
+  shell: 'unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/temp_directory/"'
 
 - name: Read release.txt content
   become: true
   become_user: itdevtra
-  command: "cat {{ temp_directory }}/release.txt"
-  register: release_content
-
-- name: Copy application files to targeted locations
-  become: true
-  become_user: itdevtra
-  ansible.builtin.shell: "cd {{ temp_directory }} && while IFS=, read -r file target; do cp $file $target; done < release.txt"
+  shell: 'while IFS=, read -r file target; do cp "{{ Profile_home }}/temp_directory/$file" "{{ Profile_home }}/$target"; done < "{{ Profile_home }}/temp_directory/release.txt"'
