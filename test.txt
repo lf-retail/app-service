@@ -23,3 +23,20 @@
   debug:
     msg: "Time taken: {{ (lookup('pipe', 'date +%s') | int) - start_time }}"
   when: unarchive_result.changed
+===================
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  vars:
+    start_time: "{{ lookup('pipe', 'date +%s') }}"
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+  args:
+    creates: "{{ Profile_home }}/release.txt"
+  register: unarchive_result
+
+- name: Print time taken for extraction
+  debug:
+    msg: "Time taken: {{ (lookup('pipe', 'date +%s') | int) - start_time }}"
+  when: unarchive_result.changed
