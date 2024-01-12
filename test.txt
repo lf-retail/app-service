@@ -1,19 +1,38 @@
----
-    - name: Download zip from GitHub packages on Runner
-      delegate_to: localhost
-      run_once: true
-      get_url:
-        url: "{{ zip_file_url }}"
-        dest: "/tmp/{{ zip_file_name }}"
-        headers:
-          Authorization: "token {{ github_token }}"
+#!/bin/bash
 
-    - name: Copy zip to Target Server
-      copy:
-        src: "/tmp/{{ zip_file_name }}"
-        dest: "{{ Profile_home }}/{{ zip_file_name }}"
-      
-    - name: Deploy Application
-      shell: 'cd {{ destination }} && ./deploy-1.sh'
-      register: deploy_result
-      ignore_errors: yes
+# Print the current working directory
+pwd
+
+# Navigate to the script's directory
+cd "$(dirname "$0")"
+
+# Print relevant variables for debugging
+echo "Profile_home: {{ Profile_home }}"
+echo "zip_file_name: {{ zip_file_name }}"
+echo "targeted_location: {{ targeted_location }}"
+
+# Extract release.zip on Target Server
+sudo -u itdevtra tar -xzf "{{ Profile_home }}/{{ zip_file_name }}" -C "{{ Profile_home }}/"
+
+# Run ls -la on the Target Server
+sudo -u itdevtra ls -la "{{ Profile_home }}/release/" > ls_result.txt
+
+# Display ls -la result
+cat ls_result.txt
+
+# Read release.txt content
+release_content=$(sudo -u itdevtra cat "{{ Profile_home }}/release/release.txt")
+
+# Copy application files to targeted location on Target Server
+IFS=$'\n'
+for line in $release_content; do
+  source_file=$(echo $line | sed 's/\(.*\),\(.*\)/\1/')
+  target_file=$(echo $line | sed 's/\(.*\),\(.*\)/\2/')
+  sudo -u itdevtra cp "{{ Profile_home }}/release/$source_file" "{{ targeted_location }}/$target_file"
+done
+
+# Run ls -la on the Target Server
+sudo -u itdevtra ls -la "{{ targeted_location }}" > ls_result_targeted.txt
+
+# Display ls -la result
+cat ls_result_targeted.txt
