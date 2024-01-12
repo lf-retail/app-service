@@ -355,3 +355,51 @@ script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deplo
 auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
 yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
 Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg inventory source with ini plugin
+=========================
+
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077 && echo ansible-tmp-1705053237.3979235-2351289-275714429367077="` echo /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-23512318fx0f12j/tmppgive5og TO /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077/ /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1705053237.3979235-2351289-275714429367077/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.008757",
+    "end": "2024-01-12 13:53:57.788979",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-12 13:53:57.780222",
+    "stderr": "unzip:  cannot find or open {{ Profile_home }}/{{ zip_file_name }}, {{ Profile_home }}/{{ zip_file_name }}.zip or {{ Profile_home }}/{{ zip_file_name }}.ZIP.\n./deploy-1.sh: line 12: {{ Profile_home }}/temp_directory/release.txt: No such file or directory",
+    "stderr_lines": [
+        "unzip:  cannot find or open {{ Profile_home }}/{{ zip_file_name }}, {{ Profile_home }}/{{ zip_file_name }}.zip or {{ Profile_home }}/{{ zip_file_name }}.ZIP.",
+        "./deploy-1.sh: line 12: {{ Profile_home }}/temp_directory/release.txt: No such file or directory"
+    ],
+    "stdout": "Deployment completed successfully.",
+    "stdout_lines": [
+        "Deployment completed successfully."
+    ]
+}
+META: ran handlers
+META: ran handlers
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
