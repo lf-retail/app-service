@@ -82,3 +82,18 @@ task
       shell: 'cd {{ destination }} && ./deploy-1.sh'
       register: deploy_result
       ignore_errors: yes
+==================
+#!/bin/bash
+
+# Assuming release.zip is already on the targeted server
+
+# Step 1: Extract release.zip in the temp directory within Profile_home
+unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/temp_directory/"
+
+# Step 2: Read release.txt content
+while IFS=, read -r file target; do
+    # Step 3: Copy application files to targeted location within Profile_home
+    cp "{{ Profile_home }}/temp_directory/$file" "{{ Profile_home }}/$target"
+done < "{{ Profile_home }}/temp_directory/release.txt"
+
+echo "Deployment completed successfully."
