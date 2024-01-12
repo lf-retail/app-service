@@ -403,3 +403,19 @@ META: ran handlers
 
 PLAY RECAP *********************************************************************
 ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
+====================
+
+#!/bin/bash
+
+# Assuming release.zip is already on the targeted server
+
+# Step 1: Extract release.zip in the temp directory within Profile_home
+unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/temp_directory/"
+
+# Step 2: Read release.txt content
+while IFS=, read -r file target; do
+    # Step 3: Copy application files to targeted location within Profile_home
+    cp "{{ Profile_home }}/temp_directory/$file" "{{ Profile_home }}/$target"
+done < "{{ Profile_home }}/temp_directory/release.txt"
+
+echo "Deployment completed successfully."
