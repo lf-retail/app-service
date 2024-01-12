@@ -1,6 +1,143 @@
+---
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+    remote_src: yes
+  register: unarchive_result  
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ Profile_home }}/release/"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
+
+- name: Read release.txt content
+  become: true
+  become_user: itdevtra
+  shell: cat "{{ Profile_home }}/release/release.txt"
+  register: release_content
+
 - name: Copy application files to targeted location on Target Server
   become: true
   become_user: itdevtra
   command: "cd {{ Profile_home }}/release && cp {{ item[0] }} {{ item[1] }}"
   loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | map('split', ' ') | list }}"
   when: release_content.stdout_lines | length > 0
+
+============================
+TASK [IBPS-deployment : Display ls -la result] *********************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:31
+ok: [ANT3CASAPPS01] => {
+    "ls_result.stdout_lines": [
+        "total 24",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 12 15:50 .",
+        "drwxrwxrwx 5 root     root     12288 Jan 12 15:50 ..",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 10 18:11 newgenapp_jar.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra   108 Jan 11 14:53 release.txt"
+    ]
+}
+
+TASK [IBPS-deployment : Read release.txt content] ******************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:35
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943 && echo ansible-tmp-1705071664.7249417-2465196-24847630833943="` echo /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1705071664.7249417-2465196-24847630833943=/tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2465042d989xg3j/tmp65ufk7gk TO /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2465042d989xg3j/tmp65ufk7gk /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/ /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-12 19:01:42.140131", "stdout": "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "cmd": "cat \\"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/release.txt\\"", "rc": 0, "start": "2024-01-12 19:01:41.826665", "stderr": "", "delta": "0:00:00.313466", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cat \\"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/release.txt\\"", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705071664.7249417-2465196-24847630833943/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": "cat \"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/release.txt\"",
+    "delta": "0:00:00.313466",
+    "end": "2024-01-12 19:01:42.140131",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cat \"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/release.txt\"",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-12 19:01:41.826665",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+    "stdout_lines": [
+        "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ]
+}
+
+TASK [IBPS-deployment : Copy application files to targeted location on Target Server] ***
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:41
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/site-packages/ansible/executor/task_executor.py", line 103, in run
+    items = self._get_loop_items()
+  File "/usr/lib/python3.6/site-packages/ansible/executor/task_executor.py", line 251, in _get_loop_items
+    items = templar.template(self._task.loop)
+  File "/usr/lib/python3.6/site-packages/ansible/template/__init__.py", line 539, in template
+    disable_lookups=disable_lookups,
+  File "/usr/lib/python3.6/site-packages/ansible/template/__init__.py", line 804, in do_template
+    res = j2_concat(rf)
+  File "<template>", line 13, in root
+  File "/usr/lib/python3.6/site-packages/jinja2/asyncfilters.py", line 45, in wrapper
+    return normal_filter(*args, **kwargs)
+  File "/usr/lib/python3.6/site-packages/jinja2/filters.py", line 880, in do_list
+    return list(value)
+  File "/usr/lib/python3.6/site-packages/jinja2/filters.py", line 963, in do_map
+    yield func(item)
+  File "/usr/lib/python3.6/site-packages/jinja2/filters.py", line 1098, in <lambda>
+    name, item, args, kwargs, context=context)
+  File "/usr/lib/python3.6/site-packages/jinja2/environment.py", line 451, in call_filter
+    fail_for_missing_callable('no filter named %r', name)
+  File "/usr/lib/python3.6/site-packages/jinja2/environment.py", line 97, in fail_for_missing_callable
+    raise TemplateRuntimeError(msg)
+jinja2.exceptions.TemplateRuntimeError: no filter named 'split'
+fatal: [ANT3CASAPPS01]: FAILED! => {
+    "msg": "Unexpected failure during module execution.",
+    "stdout": ""
+}
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=7    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+Error: Process completed with exit code 2.
