@@ -14,85 +14,18 @@
         dest: "{{ Profile_home }}/{{ zip_file_name }}"
       
     - name: Deploy Application
-      become: true
-      become_user: itdevtra
-      shell: 'cd {{ Profile_home }} && ./deploy-1.sh'
+      shell: 'cd {{ destination }} && ./deploy-1.sh'
       register: deploy_result
       ignore_errors: yes
 
-=============================
+    #- name: Rollback on Deployment Failure
+     # delegate_to: localhost
+      #shell: 'cd {{ destination }} && ./rollback.sh change.log'
+      #when: deploy_result|failed
 
-#!/bin/bash
-ls -la $Profile_home
-
-# deploy-1.sh
-
-Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-zip_file_name="release.zip"
-
-echo "Profile_home: $Profile_home"
-echo "zip_file_name: $zip_file_name"
-
-# Step 1: Extract release.zip in the temp directory within Profile_home
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/temp_directory/"
-
-# Step 2: Read release.txt content
-while IFS=, read -r file target; do
-    # Step 3: Copy application files to targeted location within Profile_home
-    cp "$Profile_home/temp_directory/$file" "$Profile_home/$target"
-done < "$Profile_home/temp_directory/release.txt"
-==================
-TASK [IBPS-deployment : Deploy Application] ************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954 && echo ansible-tmp-1705057495.577436-2379301-78884903194954="` echo /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1705057495.577436-2379301-78884903194954=/tmp/ansible-tmp-1705057495.577436-2379301-78884903194954\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2379240af4p61av/tmpvi_p2c_4 TO /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2379240af4p61av/tmpvi_p2c_4 /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/ /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (1, b'\r\n{"changed": true, "end": "2024-01-12 15:05:32.919657", "stdout": "", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy-1.sh", "failed": true, "delta": "0:00:00.317462", "stderr": "/bin/sh: ./deploy-1.sh: No such file or directory", "rc": 127, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy-1.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-01-12 15:05:32.602195", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705057495.577436-2379301-78884903194954/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy-1.sh",
-    "delta": "0:00:00.317462",
-    "end": "2024-01-12 15:05:32.919657",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy-1.sh",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 127,
-    "start": "2024-01-12 15:05:32.602195",
-    "stderr": "/bin/sh: ./deploy-1.sh: No such file or directory",
-    "stderr_lines": [
-        "/bin/sh: ./deploy-1.sh: No such file or directory"
-    ],
-    "stdout": "",
-    "stdout_lines": []
-}
-...ignoring
-META: ran handlers
-META: ran handlers
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1 
+    #- name: Clean up zip file from Runner
+     # delegate_to: localhost
+      #file:
+       # path: "/tmp/{{ zip_file_name }}"
+        #state: absent
+      #run_once: true       
