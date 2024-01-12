@@ -1,84 +1,29 @@
-#!/bin/bash
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+...
 
-# deploy-1.sh
+---
+    - name: Download zip from GitHub packages on Runner
+      delegate_to: localhost
+      run_once: true
+      get_url:
+        url: "{{ zip_file_url }}"
+        dest: "/tmp/{{ zip_file_name }}"
+        headers:
+          Authorization: "token {{ github_token }}"
 
-Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-zip_file_name="release.zip"
+    - name: Copy zip to Target Server
+      copy:
+        src: "/tmp/{{ zip_file_name }}"
+        dest: "{{ Profile_home }}/{{ zip_file_name }}"
+      
+    - name: Deploy Application
+      delegate_to: localhost
+      shell: 'cd {{ destination }} && ./deploy-1.sh'
+      register: deploy_result
+      ignore_errors: yes
 
-# Step 0: Check if release.zip exists in the specified location
-if [ ! -f "$Profile_home/$zip_file_name" ]; then
-    echo "Error: $zip_file_name not found in $Profile_home."
-    exit 1
-fi
-
-# Step 1: Extract release.zip in the temp directory within Profile_home
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/temp_directory/"
-
-# Step 2: Read release.txt content
-while IFS=, read -r file target; do
-    # Step 3: Copy application files to targeted location within Profile_home
-    cp "$Profile_home/temp_directory/$file" "$Profile_home/$target"
-done < "$Profile_home/temp_directory/release.txt"
-
-echo "Deployment completed successfully."
-==================
-
-TASK [IBPS-deployment : Deploy Application] ************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
-<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
-<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342 && echo ansible-tmp-1705054249.0340984-2357396-12922770627342="` echo /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342 `" ) && sleep 0'
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2357338mc3n67qx/tmp5fm26tv7 TO /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342/AnsiballZ_command.py
-<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342/ /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342/AnsiballZ_command.py && sleep 0'
-<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1705054249.0340984-2357396-12922770627342/ > /dev/null 2>&1 && sleep 0'
-fatal: [ANT3CASAPPS01 -> localhost]: FAILED! => {
-    "changed": true,
-    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
-    "delta": "0:00:00.015602",
-    "end": "2024-01-12 14:10:49.440455",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 1,
-    "start": "2024-01-12 14:10:49.424853",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "total 28\ndrwxrwxr-x 6 itdevtra itdevtra  202 Jan 12 14:10 .\ndrwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..\n-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 12 14:10 ansible.cfg\n-rwxrwxr-x 1 itdevtra itdevtra  780 Jan 12 14:10 deploy-1.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 12 14:10 deploy-new.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 12 14:10 deploy.sh\ndrwxrwxr-x 3 itdevtra itdevtra   23 Jan 12 14:10 .github\n-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 12 14:10 hosts.cfg\ndrwxrwxr-x 6 itdevtra itdevtra   89 Jan 12 14:10 IBPS_SAMPLE_EAR\ndrwxrwxr-x 2 itdevtra itdevtra   64 Jan 12 14:10 playbook\n-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 12 14:10 README.md\ndrwxrwxr-x 3 itdevtra itdevtra   45 Jan 12 14:10 roles\n-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 12 14:10 rollback.sh\nError: release.zip not found in /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin.",
-    "stdout_lines": [
-        "total 28",
-        "drwxrwxr-x 6 itdevtra itdevtra  202 Jan 12 14:10 .",
-        "drwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..",
-        "-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 12 14:10 ansible.cfg",
-        "-rwxrwxr-x 1 itdevtra itdevtra  780 Jan 12 14:10 deploy-1.sh",
-        "-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 12 14:10 deploy-new.sh",
-        "-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 12 14:10 deploy.sh",
-        "drwxrwxr-x 3 itdevtra itdevtra   23 Jan 12 14:10 .github",
-        "-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 12 14:10 hosts.cfg",
-        "drwxrwxr-x 6 itdevtra itdevtra   89 Jan 12 14:10 IBPS_SAMPLE_EAR",
-        "drwxrwxr-x 2 itdevtra itdevtra   64 Jan 12 14:10 playbook",
-        "-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 12 14:10 README.md",
-        "drwxrwxr-x 3 itdevtra itdevtra   45 Jan 12 14:10 roles",
-        "-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 12 14:10 rollback.sh",
-        "Error: release.zip not found in /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin."
-    ]
-}
-...ignoring
-META: ran handlers
-META: ran handlers
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1 
