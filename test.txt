@@ -141,3 +141,197 @@ Should be written as:
     with_items:
       - "{{ foo }}"
 Error: Process completed with exit code 4.
+=======================
+
+TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:2
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844 && echo ansible-tmp-1705052880.5249352-2349195-108207805075844="` echo /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/net_tools/basics/get_url.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmpddgm9vfk TO /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/AnsiballZ_get_url.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/ /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "checksum_dest": null,
+    "checksum_src": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b",
+    "dest": "/tmp/release-2.0.0.zip",
+    "elapsed": 4,
+    "gid": 1009,
+    "group": "itdevtra",
+    "invocation": {
+        "module_args": {
+            "attributes": null,
+            "backup": null,
+            "checksum": "",
+            "client_cert": null,
+            "client_key": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp/release-2.0.0.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": false,
+            "force_basic_auth": false,
+            "group": null,
+            "headers": {
+                "Authorization": "token ***"
+            },
+            "http_agent": "ansible-httpget",
+            "mode": null,
+            "owner": null,
+            "path": "/tmp/release-2.0.0.zip",
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "sha256sum": "",
+            "src": null,
+            "timeout": 10,
+            "tmp_dest": null,
+            "unsafe_writes": null,
+            "url": "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip",
+            "url_password": null,
+            "url_username": null,
+            "use_proxy": true,
+            "validate_certs": true
+        }
+    },
+    "md5sum": "12569d0ddf2bee780fc35535d77b545f",
+    "mode": "0664",
+    "msg": "OK (40087 bytes)",
+    "owner": "itdevtra",
+    "size": 40087,
+    "src": "/tmp/ansible-tmp-1705052880.5249352-2349195-108207805075844/tmp8ai80v3b",
+    "state": "file",
+    "status_code": 200,
+    "uid": 1008,
+    "url": "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+}
+
+TASK [IBPS-deployment : Copy zip to Target Server] *****************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:11
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782 && echo ansible-tmp-1705052885.427553-2349836-194868149658782="` echo /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1705052885.427553-2349836-194868149658782=/tmp/ansible-tmp-1705052885.427553-2349836-194868149658782\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/stat.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmpdefyy85k TO /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_stat.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmpdefyy85k /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_stat.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/ /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_stat.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_stat.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"invocation": {"module_args": {"checksum_algorithm": "sha1", "get_checksum": true, "follow": false, "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "get_md5": null, "get_mime": true, "get_attributes": true}}, "stat": {"exists": false}, "changed": false}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> PUT /tmp/release-2.0.0.zip TO /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /tmp/release-2.0.0.zip /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/ /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/copy.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmp3b_addtw TO /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_copy.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmp3b_addtw /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_copy.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/ /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_copy.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/AnsiballZ_copy.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"src": "/tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source", "changed": true, "group": "itdevtra", "uid": 1012, "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b", "md5sum": "12569d0ddf2bee780fc35535d77b545f", "owner": "itdevtra", "state": "file", "gid": 1013, "mode": "0664", "invocation": {"module_args": {"directory_mode": null, "force": true, "remote_src": null, "_original_basename": "release-2.0.0.zip", "owner": null, "follow": false, "local_follow": null, "group": null, "unsafe_writes": null, "setype": null, "content": null, "serole": null, "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "selevel": null, "regexp": null, "validate": null, "src": "/tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source", "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b", "seuser": null, "delimiter": null, "mode": null, "attributes": null, "backup": false}}, "size": 40087}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b",
+    "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+    "diff": [],
+    "gid": 1013,
+    "group": "itdevtra",
+    "invocation": {
+        "module_args": {
+            "_original_basename": "release-2.0.0.zip",
+            "attributes": null,
+            "backup": false,
+            "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b",
+            "content": null,
+            "delimiter": null,
+            "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": true,
+            "group": null,
+            "local_follow": null,
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": "/tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source",
+            "unsafe_writes": null,
+            "validate": null
+        }
+    },
+    "md5sum": "12569d0ddf2bee780fc35535d77b545f",
+    "mode": "0664",
+    "owner": "itdevtra",
+    "size": 40087,
+    "src": "/tmp/ansible-tmp-1705052885.427553-2349836-194868149658782/source",
+    "state": "file",
+    "uid": 1012
+}
+
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359 && echo ansible-tmp-1705052886.5040371-2349992-195528437591359="` echo /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2349170tlu__p7o/tmp8oiohkwl TO /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359/ /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1705052886.5040371-2349992-195528437591359/ > /dev/null 2>&1 && sleep 0'
+changed: [ANT3CASAPPS01 -> localhost] => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.015174",
+    "end": "2024-01-12 13:48:06.899173",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-12 13:48:06.883999",
+    "stderr": "unzip:  cannot find or open {{ Profile_home }}/{{ zip_file_name }}, {{ Profile_home }}/{{ zip_file_name }}.zip or {{ Profile_home }}/{{ zip_file_name }}.ZIP.\n./deploy-1.sh: line 12: {{ Profile_home }}/temp_directory/release.txt: No such file or directory",
+    "stderr_lines": [
+        "unzip:  cannot find or open {{ Profile_home }}/{{ zip_file_name }}, {{ Profile_home }}/{{ zip_file_name }}.zip or {{ Profile_home }}/{{ zip_file_name }}.ZIP.",
+        "./deploy-1.sh: line 12: {{ Profile_home }}/temp_directory/release.txt: No such file or directory"
+    ],
+    "stdout": "Deployment completed successfully.",
+    "stdout_lines": [
+        "Deployment completed successfully."
+    ]
+}
+META: ran handlers
+META: ran handlers
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
