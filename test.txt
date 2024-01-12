@@ -19,7 +19,6 @@
     dest: "{{ Profile_home }}/{{ zip_file_name }}"
   become: true
   become_user: itdevtra
-  #become_method: su
 
 - name: Set permissions for release.zip on Target Server
   become: true
@@ -27,17 +26,14 @@
   file:
     path: "{{ Profile_home }}/{{ zip_file_name }}"
     mode: "0755"
-  #when: release_content.stdout_lines | length > 0
 
 - name: Extract release.zip on Target Server
   become: true
   become_user: itdevtra
-  unarchive:
-    src: "{{ Profile_home }}/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/"
+  command: unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/"
   args:
-    creates: "{{ Profile_home }}/release.txt" 
-  register: unarchive_result  
+    creates: "{{ Profile_home }}/release.txt"
+  register: unarchive_result
 
 - name: Set permissions for extracted files on Target Server
   become: true
@@ -60,11 +56,3 @@
   command: "cd {{ Profile_home }} && cp {{ item.src }} {{ item.target }}"
   loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 src=\\1 target=\\2') | map('from_yaml') | list }}"
   when: release_content.stdout_lines | length > 0
-========================
-TASK [IBPS-deployment : Extract release.zip on Target Server] ******************
-fatal: [ANT3CASAPPS01]: FAILED! => {"changed": false, "msg": "Could not find or access '/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip' on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=5    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-
-Error: Process completed with exit code 2.
