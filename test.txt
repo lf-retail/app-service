@@ -44,3 +44,41 @@ while IFS=, read -r file target; do
 done < /path/on/target/server/temp_directory/release.txt
 
 echo "Deployment completed successfully."
+
+============================
+defauls
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+...
+task
+---
+    - name: Download zip from GitHub packages on Runner
+      delegate_to: localhost
+      run_once: true
+      get_url:
+        url: "{{ zip_file_url }}"
+        dest: "/tmp/{{ zip_file_name }}"
+        headers:
+          Authorization: "token {{ github_token }}"
+
+    - name: Copy zip to Target Server
+      copy:
+        src: "/tmp/{{ zip_file_name }}"
+        dest: "{{ Profile_home }}/{{ zip_file_name }}
+
+    - name: Clean up zip file from Runner
+      delegate_to: localhost
+      file:
+        path: "/tmp/{{ zip_file_name }}"
+        state: absent
+      run_once: true          
+      
+    - name: Deploy Application
+      delegate_to: localhost
+      shell: 'cd {{ destination }} && ./deploy-1.sh'
+      register: deploy_result
+      ignore_errors: yes
