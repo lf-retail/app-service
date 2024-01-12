@@ -84,3 +84,46 @@ META: ran handlers
 
 PLAY RECAP *********************************************************************
 ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1 
+=====================
+
+#!/bin/bash
+
+# deploy-1.sh
+
+Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+zip_file_name="release.zip"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_name: $zip_file_name"
+
+# Step 1: Extract release.zip in the temp directory within Profile_home
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/temp_directory/"
+
+# Step 2: Read release.txt content
+while IFS=, read -r file target; do
+    # Step 3: Copy application files to targeted location within Profile_home
+    cp "$Profile_home/temp_directory/$file" "$Profile_home/$target"
+done < "$Profile_home/temp_directory/release.txt"
+----------
+# roles/IBPS-deployment/tasks/main.yml
+
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Deploy Application
+  become: true
+  become_user: itdevtra
+  shell: 'cd {{ Profile_home }} && ./deploy-1.sh'
+  register: deploy_result
+  ignore_errors: yes
