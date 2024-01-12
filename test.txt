@@ -1,11 +1,41 @@
+---
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Set permissions for release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  file:
+    path: "{{ Profile_home }}/{{ zip_file_name }}"
+    mode: "0755"
+
 - name: Extract release.zip on Target Server
   become: true
   become_user: itdevtra
   unarchive:
     src: "{{ Profile_home }}/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/"
-  register: unarchive_result
+  register: unarchive_result  
 
+- name: Set permissions for extracted files on Target Server
+  become: true
+  become_user: itdevtra
+  file:
+    path: "{{ Profile_home }}/{{ item.src }}"
+    mode: "0755"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1') | list }}"
+  when: release_content.stdout_lines | length > 0
 
 - name: Read release.txt content
   become: true
