@@ -7,6 +7,156 @@ Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/comm
 <10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp8khtfy0f TO /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py
 <10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
 <10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp8khtfy0f /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/ /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-12 19:15:22.322966", "stdout": "", "cmd": ["cd", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release", "&&", "cp", "n", "e"], "rc": 0, "start": "2024-01-12 19:15:22.007399", "stderr": "", "delta": "0:00:00.315567", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release && cp n e", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => (item=newgenapp_jar.ear /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell) => {
+    "ansible_loop_var": "item",
+    "changed": true,
+    "cmd": [
+        "cd",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release",
+        "&&",
+        "cp",
+        "n",
+        "e"
+    ],
+    "delta": "0:00:00.315567",
+    "end": "2024-01-12 19:15:22.322966",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release && cp n e",
+            "_uses_shell": false,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "item": "newgenapp_jar.ear /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+    "rc": 0,
+    "start": "2024-01-12 19:15:22.007399",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "",
+    "stdout_lines": []
+}
+
+TASK [IBPS-deployment : Run ls -la on the Target Server] ***********************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:48
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316 && echo ansible-tmp-1705072485.55278-2469619-66310560793316="` echo /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1705072485.55278-2469619-66310560793316=/tmp/ansible-tmp-1705072485.55278-2469619-66310560793316\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp31ey0xp9 TO /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp31ey0xp9 /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/ /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-12 19:15:23.983217", "stdout": "total 144\\ndrwxrwxrwx 36 root root 4096 Dec 25  2019 .\\ndrwxrwxrwx  6 root root 4096 Dec 11  2019 ..\\ndrwxrwxrwx  4 root root 4096 Sep 21  2017 axis2.ear\\ndrwxr-xr-x  4 root root 4096 May 15  2019 bam.ear\\ndrwxr-xr-x  4 root root 4096 May 15  2019 brms.ear\\ndrwxr-xr-x  4 root root 4096 May 16  2019 chat.ear\\ndrwxr-xr-x  3 root root 4096 May 16  2019 classificator_ejb.ear\\ndrwxr-xr-x  3 root root 4096 Jul 12  2019 classificator_ejb_HF28.ear\\ndrwxrwxrwx  5 root root 4096 Feb  9  2017 DefaultApplication.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 formviewer.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 iforms.ear\\ndrwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear\\ndrwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear\\ndrwxrwxrwx  3 root root 4096 May 29  2017 newgenapp_jar.ear\\ndrwxr-xr-x  3 root root 4096 May 17  2019 ofme_ejb.ear\\ndrwxr-xr-x  4 root root 4096 May 16  2019 ofservices.ear\\ndrwxr-xr-x  4 root root 4096 May 16  2019 omniapp.ear\\ndrwxr-xr-x  3 root root 4096 May 16  2019 omniapp_ejb.ear\\ndrwxr-xr-x  3 root root 4096 May 14  2019 omnidocs_ejb.ear\\ndrwxr-xr-x  4 root root 4096 May 14  2019 omnidocs_war.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 omniforms.ear\\ndrwxr-xr-x  3 root root 4096 May 17  2019 omnirules_ejb.ear\\ndrwxr-xr-x  4 root root 4096 May 14  2019 OpAll_war.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 orm.ear\\ndrwxr-xr-x  4 root root 4096 May 17  2019 otms.ear\\ndrwxr-xr-x  4 root root 4096 Jun 10  2019 pmweb.ear\\ndrwxr-xr-x  3 root root 4096 May 17  2019 pmweb_ejb.ear\\ndrwxrwxrwx  3 root root 4096 Feb  9  2017 query.ear\\ndrwxr-xr-x  3 root root 4096 May 17  2019 reportingsolution_ejb.ear\\ndrwxr-xr-x  4 root root 4096 Jun 27  2018 test_war.ear\\ndrwxr-xr-x  3 root root 4096 May 17  2019 TimerServiceBean.ear\\ndrwxr-xr-x  4 root root 4096 Dec 25  2019 webdesktop.ear\\ndrwxr-xr-x  3 root root 4096 Feb 21  2019 wfcustom_ejb_jar1.ear\\ndrwxr-xr-x  3 root root 4096 Dec 12  2019 wfcustom_ejb_jar.ear\\ndrwxr-xr-x  3 root root 4096 May 29  2019 WFS.ear", "cmd": ["ls", "-la", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"], "rc": 0, "start": "2024-01-12 19:15:22.660657", "stderr": "", "delta": "0:00:01.322560", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705072485.55278-2469619-66310560793316/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": [
+        "ls",
+        "-la",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ],
+    "delta": "0:00:01.322560",
+    "end": "2024-01-12 19:15:23.983217",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+            "_uses_shell": false,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-12 19:15:22.660657",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "total 144\ndrwxrwxrwx 36 root root 4096 Dec 25  2019 .\ndrwxrwxrwx  6 root root 4096 Dec 11  2019 ..\ndrwxrwxrwx  4 root root 4096 Sep 21  2017 axis2.ear\ndrwxr-xr-x  4 root root 4096 May 15  2019 bam.ear\ndrwxr-xr-x  4 root root 4096 May 15  2019 brms.ear\ndrwxr-xr-x  4 root root 4096 May 16  2019 chat.ear\ndrwxr-xr-x  3 root root 4096 May 16  2019 classificator_ejb.ear\ndrwxr-xr-x  3 root root 4096 Jul 12  2019 classificator_ejb_HF28.ear\ndrwxrwxrwx  5 root root 4096 Feb  9  2017 DefaultApplication.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 formviewer.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 iforms.ear\ndrwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear\ndrwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear\ndrwxrwxrwx  3 root root 4096 May 29  2017 newgenapp_jar.ear\ndrwxr-xr-x  3 root root 4096 May 17  2019 ofme_ejb.ear\ndrwxr-xr-x  4 root root 4096 May 16  2019 ofservices.ear\ndrwxr-xr-x  4 root root 4096 May 16  2019 omniapp.ear\ndrwxr-xr-x  3 root root 4096 May 16  2019 omniapp_ejb.ear\ndrwxr-xr-x  3 root root 4096 May 14  2019 omnidocs_ejb.ear\ndrwxr-xr-x  4 root root 4096 May 14  2019 omnidocs_war.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 omniforms.ear\ndrwxr-xr-x  3 root root 4096 May 17  2019 omnirules_ejb.ear\ndrwxr-xr-x  4 root root 4096 May 14  2019 OpAll_war.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 orm.ear\ndrwxr-xr-x  4 root root 4096 May 17  2019 otms.ear\ndrwxr-xr-x  4 root root 4096 Jun 10  2019 pmweb.ear\ndrwxr-xr-x  3 root root 4096 May 17  2019 pmweb_ejb.ear\ndrwxrwxrwx  3 root root 4096 Feb  9  2017 query.ear\ndrwxr-xr-x  3 root root 4096 May 17  2019 reportingsolution_ejb.ear\ndrwxr-xr-x  4 root root 4096 Jun 27  2018 test_war.ear\ndrwxr-xr-x  3 root root 4096 May 17  2019 TimerServiceBean.ear\ndrwxr-xr-x  4 root root 4096 Dec 25  2019 webdesktop.ear\ndrwxr-xr-x  3 root root 4096 Feb 21  2019 wfcustom_ejb_jar1.ear\ndrwxr-xr-x  3 root root 4096 Dec 12  2019 wfcustom_ejb_jar.ear\ndrwxr-xr-x  3 root root 4096 May 29  2019 WFS.ear",
+    "stdout_lines": [
+        "total 144",
+        "drwxrwxrwx 36 root root 4096 Dec 25  2019 .",
+        "drwxrwxrwx  6 root root 4096 Dec 11  2019 ..",
+        "drwxrwxrwx  4 root root 4096 Sep 21  2017 axis2.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 bam.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 brms.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 chat.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 classificator_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 Jul 12  2019 classificator_ejb_HF28.ear",
+        "drwxrwxrwx  5 root root 4096 Feb  9  2017 DefaultApplication.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 formviewer.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 iforms.ear",
+        "drwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear",
+        "drwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear",
+        "drwxrwxrwx  3 root root 4096 May 29  2017 newgenapp_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 ofme_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 ofservices.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 omniapp.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 omniapp_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 May 14  2019 omnidocs_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 omnidocs_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 omniforms.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 omnirules_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 OpAll_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 orm.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 otms.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 10  2019 pmweb.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 pmweb_ejb.ear",
+        "drwxrwxrwx  3 root root 4096 Feb  9  2017 query.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 reportingsolution_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 27  2018 test_war.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 TimerServiceBean.ear",
+        "drwxr-xr-x  4 root root 4096 Dec 25  2019 webdesktop.ear",
+        "drwxr-xr-x  3 root root 4096 Feb 21  2019 wfcustom_ejb_jar1.ear",
+        "drwxr-xr-x  3 root root 4096 Dec 12  2019 wfcustom_ejb_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 29  2019 WFS.ear"
+    ]
+}
+
+TASK [IBPS-deployment : Display ls -la result] *********************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:54
+ok: [ANT3CASAPPS01] => {
+    "ls_result.stdout_lines": [
+        "total 144",
+        "drwxrwxrwx 36 root root 4096 Dec 25  2019 .",
+        "drwxrwxrwx  6 root root 4096 Dec 11  2019 ..",
+        "drwxrwxrwx  4 root root 4096 Sep 21  2017 axis2.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 bam.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 brms.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 chat.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 classificator_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 Jul 12  2019 classificator_ejb_HF28.ear",
+        "drwxrwxrwx  5 root root 4096 Feb  9  2017 DefaultApplication.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 formviewer.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 iforms.ear",
         "drwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear",
         "drwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear",
         "drwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear",
