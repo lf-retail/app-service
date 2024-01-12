@@ -1,6 +1,41 @@
-- name: Copy application files to targeted location on Target Server
-  become: true
-  become_user: itdevtra
-  command: "cd {{ Profile_home }}/release && cp {{ item.0 }} {{ item.1 }}"
-  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | list }}"
-  when: release_content.stdout_lines | length > 0
+TASK [IBPS-deployment : Copy application files to targeted location on Target Server] ***
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:41
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351 && echo ansible-tmp-1705072484.884691-2469611-186838505489351="` echo /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1705072484.884691-2469611-186838505489351=/tmp/ansible-tmp-1705072484.884691-2469611-186838505489351\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp8khtfy0f TO /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-24695180fkid06n/tmp8khtfy0f /tmp/ansible-tmp-1705072484.884691-2469611-186838505489351/AnsiballZ_command.py\n', b'')
+        "drwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear",
+        "drwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear",
+        "drwxrwxrwx  3 root root 4096 May 29  2017 newgenapp_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 ofme_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 ofservices.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 omniapp.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 omniapp_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 May 14  2019 omnidocs_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 omnidocs_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 omniforms.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 omnirules_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 OpAll_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 orm.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 otms.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 10  2019 pmweb.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 pmweb_ejb.ear",
+        "drwxrwxrwx  3 root root 4096 Feb  9  2017 query.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 reportingsolution_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 27  2018 test_war.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 TimerServiceBean.ear",
+        "drwxr-xr-x  4 root root 4096 Dec 25  2019 webdesktop.ear",
+        "drwxr-xr-x  3 root root 4096 Feb 21  2019 wfcustom_ejb_jar1.ear",
+        "drwxr-xr-x  3 root root 4096 Dec 12  2019 wfcustom_ejb_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 29  2019 WFS.ear"
+    ]
+}
+META: ran handlers
+META: ran handlers
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=10   changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
