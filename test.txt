@@ -97,3 +97,47 @@ while IFS=, read -r file target; do
 done < "{{ Profile_home }}/temp_directory/release.txt"
 
 echo "Deployment completed successfully."
+=================================
+
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment
+  ansible-playbook -b -vvv --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment" ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+  
+ansible-playbook 2.8.18
+  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/ansible.cfg
+  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
+Using /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/ansible.cfg as config file
+host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
+script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
+auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
+yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg as it did not pass it's verify_file() method
+Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/hosts.cfg inventory source with ini plugin
+ERROR! Syntax Error while loading YAML.
+  did not find expected key
+
+The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml': line 19, column 16, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+      file:
+        path: "/tmp/{{ zip_file_name }}"
+               ^ here
+We could be wrong, but this one looks like it might be an issue with
+missing quotes. Always quote template expression brackets when they
+start a value. For instance:
+
+    with_items:
+      - {{ foo }}
+
+Should be written as:
+
+    with_items:
+      - "{{ foo }}"
+Error: Process completed with exit code 4.
