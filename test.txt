@@ -1,56 +1,27 @@
----
-- name: Download zip from GitHub packages on Runner
-  delegate_to: localhost
-  run_once: true
-  get_url:
-    url: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    headers:
-      Authorization: "token {{ github_token }}"
+#!/bin/bash
 
-- name: Copy release.zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+# Extract release.zip on Target Server
+sudo -u itdevtra tar -xzf "{{ Profile_home }}/{{ zip_file_name }}" -C "{{ Profile_home }}/"
 
-- name: Extract release.zip on Target Server
-  become: true
-  become_user: itdevtra
-  unarchive:
-    src: "{{ Profile_home }}/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/"
-    remote_src: yes
-  register: unarchive_result  
+# Run ls -la on the Target Server
+sudo -u itdevtra ls -la "{{ Profile_home }}/release/" > ls_result.txt
 
-- name: Run ls -la on the Target Server
-  become: true
-  become_user: itdevtra
-  command: "ls -la {{ Profile_home }}/release/"
-  register: ls_result    
+# Display ls -la result
+cat ls_result.txt
 
-- name: Display ls -la result
-  debug:
-    var: ls_result.stdout_lines   
+# Read release.txt content
+release_content=$(sudo -u itdevtra cat "{{ Profile_home }}/release/release.txt")
 
-- name: Read release.txt content
-  become: true
-  become_user: itdevtra
-  shell: cat "{{ Profile_home }}/release/release.txt"
-  register: release_content
+# Copy application files to targeted location on Target Server
+IFS=$'\n'
+for line in $release_content; do
+  source_file=$(echo $line | sed 's/\(.*\),\(.*\)/\1/')
+  target_file=$(echo $line | sed 's/\(.*\),\(.*\)/\2/')
+  sudo -u itdevtra cp "{{ Profile_home }}/release/$source_file" "{{ targeted_location }}/$target_file"
+done
 
-- name: Copy application files to targeted location on Target Server
-  become: true
-  become_user: itdevtra
-  command: "cd {{ Profile_home }}/release && cp {{ item.0 }} {{ item.1 }}"
-  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | list }}"
-  when: release_content.stdout_lines | length > 0
+# Run ls -la on the Target Server
+sudo -u itdevtra ls -la "{{ targeted_location }}" > ls_result_targeted.txt
 
-- name: Run ls -la on the Target Server
-  become: true
-  become_user: itdevtra
-  command: "ls -la {{ targeted_location }}"
-  register: ls_result    
-
-- name: Display ls -la result
-  debug:
-    var: ls_result.stdout_lines 
+# Display ls -la result
+cat ls_result_targeted.txt
