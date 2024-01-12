@@ -1,14 +1,37 @@
-- name: Copy release.zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/{{ zip_file_name }}"
 
-- name: Run ls -la on the Target Server
+- name: Set permissions for release.zip on Target Server
   become: true
   become_user: itdevtra
-  command: "ls -la {{ Profile_home }}/{{ zip_file_name }}"
-  register: ls_result
+  file:
+    path: "{{ Profile_home }}/{{ zip_file_name }}"
+    mode: "0755"
 
-- name: Display ls -la result
-  debug:
-    var: ls_result.stdout_lines
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+  register: unarchive_result  
+
+- name: Set permissions for extracted files on Target Server
+  become: true
+  become_user: itdevtra
+  file:
+    path: "{{ Profile_home }}/release/{{ item.src }}"
+    mode: "0755"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1') | list }}"
+  when: release_content.stdout_lines | length > 0
+
+- name: Read release.txt content
+  become: true
+  become_user: itdevtra
+  shell: cat "{{ Profile_home }}/release/release.txt"
+  register: release_content
+
+- name: Copy application files to targeted location on Target Server
+  become: true
+  become_user: itdevtra
+  command: "cd {{ Profile_home }}/release && cp {{ item.src }} {{ item.target }}"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 src=\\1 target=\\2') | map('from_yaml') | list }}"
+  when: release_content.stdout_lines | length > 0
