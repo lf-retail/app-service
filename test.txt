@@ -1,69 +1,14 @@
----
-- name: Download zip from GitHub packages on Runner
-  delegate_to: localhost
-  run_once: true
-  get_url:
-    url: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    headers:
-      Authorization: "token {{ github_token }}"
-
 - name: Copy release.zip to Target Server
   copy:
     src: "/tmp/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/{{ zip_file_name }}"
 
-- name: Set permissions for release.zip on Target Server
+- name: Run ls -la on the Target Server
   become: true
   become_user: itdevtra
-  file:
-    path: "{{ Profile_home }}/{{ zip_file_name }}"
-    mode: "0755"
+  command: "ls -la {{ Profile_home }}/{{ zip_file_name }}"
+  register: ls_result
 
-- name: Extract release.zip on Target Server
-  become: true
-  become_user: itdevtra
-  unarchive:
-    src: "{{ Profile_home }}/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/"
-  register: unarchive_result  
-
-- name: Set permissions for extracted files on Target Server
-  become: true
-  become_user: itdevtra
-  file:
-    path: "{{ Profile_home }}/release/{{ item.src }}"
-    mode: "0755"
-  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1') | list }}"
-  when: release_content.stdout_lines | length > 0
-
-- name: Read release.txt content
-  become: true
-  become_user: itdevtra
-  shell: cat "{{ Profile_home }}/release/release.txt"
-  register: release_content
-
-- name: Copy application files to targeted location on Target Server
-  become: true
-  become_user: itdevtra
-  command: "cd {{ Profile_home }}/release && cp {{ item.src }} {{ item.target }}"
-  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 src=\\1 target=\\2') | map('from_yaml') | list }}"
-  when: release_content.stdout_lines | length > 0
-================
-TASK [IBPS-deployment : Extract release.zip on Target Server] ******************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:23
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705067833.8260055-2443451-44170010803182 && echo ansible-tmp-1705067833.8260055-2443451-44170010803182="` echo /tmp/ansible-tmp-1705067833.8260055-2443451-44170010803182 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1705067833.8260055-2443451-44170010803182=/tmp/ansible-tmp-1705067833.8260055-2443451-44170010803182\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705067833.8260055-2443451-44170010803182/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "changed": false,
-    "msg": "Could not find or access '/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip' on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"
-}
-
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-
-Error: Process completed with exit code 2.
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines
