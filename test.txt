@@ -1,3 +1,53 @@
+---
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ Profile_home }}"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines  
+    
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+    remote_src: yes
+  register: unarchive_result  
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ Profile_home }}"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
+
+- name: Read release.txt content
+  become: true
+  become_user: itdevtra
+  shell: cat "{{ Profile_home }}/release/release.txt"
+  register: release_content
+
 - name: Copy application files to targeted location on Target Server
   become: true
   become_user: itdevtra
