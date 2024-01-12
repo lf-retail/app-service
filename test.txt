@@ -1,55 +1,89 @@
-TASK [IBPS-deployment : Deploy Application] ************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330 && echo ansible-tmp-1705075064.7592502-2484242-151787822120330="` echo /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1705075064.7592502-2484242-151787822120330=/tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2484173htiiv5ji/tmpp2p69km7 TO /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2484173htiiv5ji/tmpp2p69km7 /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/ /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (1, b'\r\n{"changed": true, "end": "2024-01-12 19:58:22.481872", "stdout": "", "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh", "failed": true, "delta": "0:00:00.369474", "stderr": "/bin/sh: line 0: cd: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment: No such file or directory", "rc": 1, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-01-12 19:58:22.112398", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1705075064.7592502-2484242-151787822120330/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "changed": true,
-    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
-    "delta": "0:00:00.369474",
-    "end": "2024-01-12 19:58:22.481872",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 1,
-    "start": "2024-01-12 19:58:22.112398",
-    "stderr": "/bin/sh: line 0: cd: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment: No such file or directory",
-    "stderr_lines": [
-        "/bin/sh: line 0: cd: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment: No such file or directory"
-    ],
-    "stdout": "",
-    "stdout_lines": []
-}
-...ignoring
-META: ran handlers
-META: ran handlers
+name: IBPS-deployment
+on:
+  workflow_dispatch:
 
-PLAY RECAP *********************************************************************
-ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1   
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b -vvv --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+=================
+ansible.cfg
+
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+inventory=hosts.cfg
+roles_path=roles/
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+timeout=30
+ansible_pipelining=True
+
+===============
+hosts.cfg
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_jb]
+ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+=============
+defaults/main.yml
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+ansible_user: itdevtra
+...
+
+task/main.yml
+---
+    - name: Download zip from GitHub packages on Runner
+      delegate_to: localhost
+      run_once: true
+      get_url:
+        url: "{{ zip_file_url }}"
+        dest: "/tmp/{{ zip_file_name }}"
+        headers:
+          Authorization: "token {{ github_token }}"
+
+    - name: Copy zip to Target Server
+      copy:
+        src: "/tmp/{{ zip_file_name }}"
+        dest: "{{ Profile_home }}/{{ zip_file_name }}"
+      
+    - name: Deploy Application
+      shell: 'cd {{ destination }} && ./deploy.sh'
+      register: deploy_result
+      ignore_errors: yes
