@@ -1,31 +1,46 @@
+# roles/IBPS-deployment/tasks/main.yml
+
 ---
-    - name: Download zip from GitHub packages on Runner
-      delegate_to: localhost
-      run_once: true
-      get_url:
-        url: "{{ zip_file_url }}"
-        dest: "/tmp/{{ zip_file_name }}"
-        headers:
-          Authorization: "token {{ github_token }}"
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
 
-    - name: Copy zip to Target Server
-      copy:
-        src: "/tmp/{{ zip_file_name }}"
-        dest: "{{ Profile_home }}/{{ zip_file_name }}"
-      
-    - name: Deploy Application
-      shell: 'cd {{ destination }} && ./deploy-1.sh'
-      register: deploy_result
-      ignore_errors: yes
+- name: Create temp directory on Targeted Server
+  become: true
+  become_user: itdevtra
+  file:
+    path: "{{ temp_directory }}"
+    state: directory
 
-    #- name: Rollback on Deployment Failure
-     # delegate_to: localhost
-      #shell: 'cd {{ destination }} && ./rollback.sh change.log'
-      #when: deploy_result|failed
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ temp_directory }}/{{ zip_file_name }}"
+  become: true
+  become_user: itdevtra
 
-    #- name: Clean up zip file from Runner
-     # delegate_to: localhost
-      #file:
-       # path: "/tmp/{{ zip_file_name }}"
-        #state: absent
-      #run_once: true       
+- name: Extract release.zip in temp directory
+  become: true
+  become_user: itdevtra
+  ansible.builtin.unarchive:
+    src: "{{ temp_directory }}/{{ zip_file_name }}"
+    dest: "{{ temp_directory }}"
+    remote_src: yes
+  args:
+    creates: "{{ temp_directory }}/release.txt"
+
+- name: Read release.txt content
+  become: true
+  become_user: itdevtra
+  command: "cat {{ temp_directory }}/release.txt"
+  register: release_content
+
+- name: Copy application files to targeted locations
+  become: true
+  become_user: itdevtra
+  ansible.builtin.shell: "cd {{ temp_directory }} && while IFS=, read -r file target; do cp $file $target; done < release.txt"
