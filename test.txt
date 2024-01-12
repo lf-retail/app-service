@@ -8,17 +8,25 @@
     headers:
       Authorization: "token {{ github_token }}"
 
-- name: Copy zip to Target Server
+- name: Copy release.zip to Target Server temp directory
   copy:
     src: "/tmp/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/{{ zip_file_name }}"
 
-- name: Extract release.zip in the temp directory within Profile_home
+- name: Extract release.zip on Target Server
   become: true
   become_user: itdevtra
-  shell: 'unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/temp_directory/"'
+  command: unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}/"
 
 - name: Read release.txt content
   become: true
   become_user: itdevtra
-  shell: 'while IFS=, read -r file target; do cp "{{ Profile_home }}/temp_directory/$file" "{{ Profile_home }}/$target"; done < "{{ Profile_home }}/temp_directory/release.txt"'
+  shell: cat "{{ Profile_home }}/release.txt"
+  register: release_content
+
+- name: Copy application files to targeted location on Target Server
+  become: true
+  become_user: itdevtra
+  command: "cd {{ Profile_home }} && cp {{ item.src }} {{ item.target }}"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 src=\\1 target=\\2') | map('from_yaml') | list }}"
+  when: release_content.stdout_lines | length > 0
