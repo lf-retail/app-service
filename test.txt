@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # deploy-1.sh
-
+ls -la
 Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
 zip_file_name="release.zip"
 
@@ -15,3 +15,65 @@ while IFS=, read -r file target; do
     # Step 3: Copy application files to targeted location within Profile_home
     cp "$Profile_home/temp_directory/$file" "$Profile_home/$target"
 done < "$Profile_home/temp_directory/release.txt"
+=======================
+TASK [IBPS-deployment : Deploy Application] ************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment/roles/IBPS-deployment/tasks/main.yml:16
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066 && echo ansible-tmp-1705053867.6552737-2355329-256631188458066="` echo /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2355268ned21he1/tmpaqjjxlwc TO /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066/AnsiballZ_command.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066/ /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066/AnsiballZ_command.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1705053867.6552737-2355329-256631188458066/ > /dev/null 2>&1 && sleep 0'
+fatal: [ANT3CASAPPS01 -> localhost]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+    "delta": "0:00:00.012182",
+    "end": "2024-01-12 14:04:28.082668",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ansible/GITHUB_RUNNER/actions-runner10/_work/IBPS-Deployment/IBPS-Deployment && ./deploy-1.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 1,
+    "start": "2024-01-12 14:04:28.070486",
+    "stderr": "unzip:  cannot find or open /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip, /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip.zip or /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip.ZIP.\n./deploy-1.sh: line 18: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory/release.txt: No such file or directory",
+    "stderr_lines": [
+        "unzip:  cannot find or open /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip, /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip.zip or /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release.zip.ZIP.",
+        "./deploy-1.sh: line 18: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory/release.txt: No such file or directory"
+    ],
+    "stdout": "total 28\ndrwxrwxr-x 6 itdevtra itdevtra  202 Jan 12 14:04 .\ndrwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..\n-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 12 14:04 ansible.cfg\n-rwxrwxr-x 1 itdevtra itdevtra  607 Jan 12 14:04 deploy-1.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 12 14:04 deploy-new.sh\n-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 12 14:04 deploy.sh\ndrwxrwxr-x 3 itdevtra itdevtra   23 Jan 12 14:04 .github\n-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 12 14:04 hosts.cfg\ndrwxrwxr-x 6 itdevtra itdevtra   89 Jan 12 14:04 IBPS_SAMPLE_EAR\ndrwxrwxr-x 2 itdevtra itdevtra   64 Jan 12 14:04 playbook\n-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 12 14:04 README.md\ndrwxrwxr-x 3 itdevtra itdevtra   45 Jan 12 14:04 roles\n-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 12 14:04 rollback.sh",
+    "stdout_lines": [
+        "total 28",
+        "drwxrwxr-x 6 itdevtra itdevtra  202 Jan 12 14:04 .",
+        "drwxrwxr-x 3 itdevtra itdevtra   29 Jan  9 10:18 ..",
+        "-rw-rw-r-- 1 itdevtra itdevtra  428 Jan 12 14:04 ansible.cfg",
+        "-rwxrwxr-x 1 itdevtra itdevtra  607 Jan 12 14:04 deploy-1.sh",
+        "-rw-rw-r-- 1 itdevtra itdevtra 2391 Jan 12 14:04 deploy-new.sh",
+        "-rw-rw-r-- 1 itdevtra itdevtra 2755 Jan 12 14:04 deploy.sh",
+        "drwxrwxr-x 3 itdevtra itdevtra   23 Jan 12 14:04 .github",
+        "-rw-rw-r-- 1 itdevtra itdevtra  110 Jan 12 14:04 hosts.cfg",
+        "drwxrwxr-x 6 itdevtra itdevtra   89 Jan 12 14:04 IBPS_SAMPLE_EAR",
+        "drwxrwxr-x 2 itdevtra itdevtra   64 Jan 12 14:04 playbook",
+        "-rw-rw-r-- 1 itdevtra itdevtra   17 Jan 12 14:04 README.md",
+        "drwxrwxr-x 3 itdevtra itdevtra   45 Jan 12 14:04 roles",
+        "-rwxrwxr-x 1 itdevtra itdevtra 1079 Jan 12 14:04 rollback.sh"
+    ]
+}
+...ignoring
+META: ran handlers
+META: ran handlers
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=1 
