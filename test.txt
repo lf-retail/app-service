@@ -1,1 +1,88 @@
-# Add the backup details to the change.log file
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: "{{ ansible_user }}"
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+    remote_src: yes
+  register: unarchive_result  
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: "ls -la {{ Profile_home }}/release/"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
+
+- name: Read release.txt content
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: cat "{{ Profile_home }}/release/release.txt"
+  register: release_content
+  
+- name: Create backup directory for each application
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: "mkdir -p {{ backup_location }}/{{ item.1 }}/backup"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^.+?,(.+)$', '\\1') | list }}"
+  when: 
+    - release_content.stdout_lines | length > 0
+    - not (backup_location ~ '/backup$' and (item.1 | regex_search(backup_location | regex_replace('/backup$', '')) | bool))
+
+	
+- name: Backup old deployment files for each application
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: "cp -r {{ targeted_location }}/{{ item.0 }} {{ backup_location }}/{{ item.1 }}/backup/"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | list }}"
+  when: release_content.stdout_lines | length > 0
+  
+- name: Add backup details to change.log file
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: |
+    echo "Backup details for {{ item.1 }} at $(date):" >> {{ backup_location }}/{{ item.1 }}/change.log
+    echo "-----------------------------" >> {{ backup_location }}/{{ item.1 }}/change.log
+    ls -la {{ backup_location }}/{{ item.1 }}/backup/ >> {{ backup_location }}/{{ item.1 }}/change.log
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^.+?,(.+)$', '\\1') | list }}"
+  when: release_content.stdout_lines | length > 0
+
+  
+	
+- name: Copy application files to targeted location on Target Server
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: "cd {{ Profile_home }}/release && cp {{ item.0 }} {{ item.1 }}"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | list }}"
+  when: release_content.stdout_lines | length > 0
+  
+- name: Rollback to previous deployment if needed
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: |
+    latest_backup=$(ls -td {{ backup_location }}/{{ item.1 }}/backup/* | head -n 1)
+    if [ -n "$latest_backup" ]; then
+      echo "Rolling back {{ item.1 }} to the previous deployment."
+      cp -r $latest_backup/* {{ item.2 }}
+    else
+      echo "No previous backups found for {{ item.1 }}. Skipping rollback."
+    fi
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+?),(.+)$', '\\1 \\2 \\3') | list }}"
+  when: release_content.stdout_lines | length > 0 and deploy_result.failed
