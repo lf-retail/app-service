@@ -1,89 +1,56 @@
-name: IBPS-deployment
-on:
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Debug Working Directory
-      run: |
-        ls -al
-
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
-
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -b -vvv --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
-=================
-ansible.cfg
-
-[defaults]
-host_key_checking=False
-deprecation_warnings=False
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-remote_tmp=/tmp
-inventory=hosts.cfg
-roles_path=roles/
-comment_warnings=False
-command_warnings=False
-interpreter_python=auto
-ANSIBLE_DEPRECATION_WARNINGS=False
-ANSIBLE_COMMAND_WARNINGS=False
-allow_world_readable_tmpfiles=yes
-timeout=30
-ansible_pipelining=True
-
-===============
-hosts.cfg
-
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
-
-[target_jb]
-ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
-=============
-defaults/main.yml
 ---
-ibps_server: 10.15.13.148:9043
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
-zip_file_name: "{{ zip_file_url | basename }}"
-Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-ansible_user: itdevtra
-...
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
 
-task/main.yml
----
-    - name: Download zip from GitHub packages on Runner
-      delegate_to: localhost
-      run_once: true
-      get_url:
-        url: "{{ zip_file_url }}"
-        dest: "/tmp/{{ zip_file_name }}"
-        headers:
-          Authorization: "token {{ github_token }}"
+- name: Copy release.zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
 
-    - name: Copy zip to Target Server
-      copy:
-        src: "/tmp/{{ zip_file_name }}"
-        dest: "{{ Profile_home }}/{{ zip_file_name }}"
-      
-    - name: Deploy Application
-      shell: 'cd {{ destination }} && ./deploy.sh'
-      register: deploy_result
-      ignore_errors: yes
+- name: Extract release.zip on Target Server
+  become: true
+  become_user: itdevtra
+  unarchive:
+    src: "{{ Profile_home }}/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/"
+    remote_src: yes
+  register: unarchive_result  
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ Profile_home }}/release/"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
+
+- name: Read release.txt content
+  become: true
+  become_user: itdevtra
+  shell: cat "{{ Profile_home }}/release/release.txt"
+  register: release_content
+
+- name: Copy application files to targeted location on Target Server
+  become: true
+  become_user: itdevtra
+  command: "cd {{ Profile_home }}/release && cp {{ item.0 }} {{ item.1 }}"
+  loop: "{{ release_content.stdout_lines | map('regex_replace', '^(.+?),(.+)$', '\\1 \\2') | list }}"
+  when: release_content.stdout_lines | length > 0
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ targeted_location }}"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines 
