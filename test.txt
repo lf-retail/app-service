@@ -54,3 +54,16 @@
 - name: Display ls -la result
   debug:
     var: ls_result.stdout_lines 
+
+============================
+
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+ansible_user: itdevtra
+backup_location: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup
+...
