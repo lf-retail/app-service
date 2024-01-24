@@ -186,3 +186,67 @@ unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
 # ... (rest of your deployment script)
 
 echo "Release.zip has been successfully extracted on the target server."
+====================
+#!/bin/bash
+
+# Replace these variables with their actual values
+profile_home="/your/actual/profile/home"
+zip_file_name="your_zip_file_name"
+targeted_location="/your/actual/targeted/location"
+backup_location="/your/actual/backup/location"
+
+# Extract release.zip to the target directory
+unzip -q "$profile_home/$zip_file_name" -d "$profile_home"
+
+# List files after extraction in the specified path
+ls -la "$profile_home/release/"
+
+# Read the content of release.txt
+release_content=$(cat "$profile_home/release/release.txt" 2>/dev/null)
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    for app_info in $(echo "$release_content" | awk -F',' '{print $1,$2}'); do
+        app_name=$(echo "$app_info" | awk '{print $1}')
+        app_targeted_location=$(echo "$app_info" | awk '{print $2}')
+        backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+        # Create backup directory for each application without timestamp
+        mkdir -p "$backup_location/$app_name/backup"
+
+        # Backup old deployment files
+        cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
+
+        # Add backup details to change.log file
+        echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
+        echo "-----------------------------" >> "$backup_location/$app_name/change.log"
+        ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
+
+        # Copy application files to targeted location with the latest timestamp
+        cp -r "$app_name" "$app_targeted_location"
+    done
+
+    # Check for success in the change.log file
+    if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
+        echo "Deployment successful. No rollback needed."
+    else
+        echo "Deployment failed. Rolling back..."
+
+        # Rollback steps
+        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
+
+        if [ -n "$latest_backup" ]; then
+            echo "Rolling back to the latest backup: $latest_backup"
+            cp -r "$latest_backup" "$targeted_location/$app_name"
+        else
+            echo "No valid backup found for rollback."
+        fi
+
+        echo "Rollback completed."
+    fi
+fi
+
+# Additional steps if needed after extraction
+# ...
+
+echo "Release.zip has been successfully extracted on the target server."
