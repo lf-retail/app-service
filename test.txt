@@ -196,3 +196,9 @@ fatal: [ANT3CASAPPS01]: FAILED! => {
 PLAY RECAP *********************************************************************
 ANT3CASAPPS01              : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 Error: Process completed with exit code 2.
+=================
+
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
