@@ -45,3 +45,29 @@
   command: ls -al "{{ targeted_location }}"
   become: yes
   become_user: "{{ ansible_user }}"
+==============
+
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ Profile_home }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: 'cd {{ Profile_home }} && ./deploy.sh'
+  register: deploy_result
+  ignore_errors: yes
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
