@@ -1,72 +1,47 @@
-#!/bin/bash
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+ 
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    
+#- name: Check if deploy already exists on Target Server
+ # stat:
+  #  path: "{{ Profile_home }}/deploy.sh"
+  #become: yes
+  #become_user: "{{ ansible_user }}"
+  #register: list_files
 
-# Replace these variables with their actual values
-Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-zip_file_url="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
-zip_file_name=$(basename "$zip_file_url")
-backup_location="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
+- name: Copy deploy to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+  #when: list_files.stat.exists == False
 
-# List files before extraction in the specified path
-ls -la "$Profile_home"
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ Profile_home }}"
+  become: yes
+  become_user: "{{ ansible_user }}"  
 
-# Extract release.zip to the target directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: 'cd {{ Profile_home }} && ./deploy.sh'
+  register: deploy_result
+  ignore_errors: yes
+  #when: list_files.stat.exists
 
-# List files after extraction in the specified path
-ls -la "$Profile_home/release/"
-===============
-
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:41
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854 && echo ansible-tmp-1706085747.785281-4030225-203071162944854="` echo /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1706085747.785281-4030225-203071162944854=/tmp/ansible-tmp-1706085747.785281-4030225-203071162944854\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-4030144wh6nj5nk/tmp_w36qhl_ TO /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-4030144wh6nj5nk/tmp_w36qhl_ /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/ /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (1, b'\r\n{"changed": true, "end": "2024-01-24 12:43:22.486806", "stdout": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "failed": true, "delta": "0:00:00.320179", "stderr": "ls: cannot access : No such file or directory\\nunzip:  cannot find or open /, /.zip or /.ZIP.\\nls: cannot access /release/: No such file or directory", "rc": 2, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-01-24 12:43:22.166627", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706085747.785281-4030225-203071162944854/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
-    "delta": "0:00:00.320179",
-    "end": "2024-01-24 12:43:22.486806",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 2,
-    "start": "2024-01-24 12:43:22.166627",
-    "stderr": "ls: cannot access : No such file or directory\nunzip:  cannot find or open /, /.zip or /.ZIP.\nls: cannot access /release/: No such file or directory",
-    "stderr_lines": [
-        "ls: cannot access : No such file or directory",
-        "unzip:  cannot find or open /, /.zip or /.ZIP.",
-        "ls: cannot access /release/: No such file or directory"
-    ],
-    "stdout": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
-    "stdout_lines": [
-        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-    ]
-}
-...ignoring
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
