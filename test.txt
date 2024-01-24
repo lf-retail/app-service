@@ -11,6 +11,8 @@
   copy:
     src: "/tmp/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    remote_src: yes
+
     
 #- name: Check if deploy already exists on Target Server
  # stat:
