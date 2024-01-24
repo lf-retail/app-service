@@ -202,3 +202,87 @@ Error: Process completed with exit code 2.
   copy:
     src: "/tmp/{{ zip_file_name }}"
     dest: "{{ Profile_home }}/{{ zip_file_name }}"
+================
+"-rwxr-xr-x  1 itdevtra itdevtra  40087 Jan 12 13:48 release-2.0.0.zip"
+
+TASK [IBPS-deployment : Copy zip to Target Server] *****************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:10
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887 && echo ansible-tmp-1706091282.9160862-4060717-165690151773887="` echo /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706091282.9160862-4060717-165690151773887=/tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/stat.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-4060671ufj6mbjw/tmpn040u2iw TO /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_stat.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-4060671ufj6mbjw/tmpn040u2iw /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_stat.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/ /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_stat.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_stat.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"invocation": {"module_args": {"checksum_algorithm": "sha1", "get_checksum": true, "follow": false, "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "get_md5": null, "get_mime": true, "get_attributes": true}}, "stat": {"charset": "binary", "uid": 1012, "exists": true, "attr_flags": "", "woth": false, "isreg": true, "device_type": 0, "mtime": 1705052922.474776, "block_size": 4096, "inode": 1189136, "isgid": false, "size": 40087, "executable": true, "isuid": false, "readable": true, "version": "18446744071929698949", "pw_name": "itdevtra", "gid": 1013, "ischr": false, "wusr": true, "writeable": true, "mimetype": "application/zip", "blocks": 80, "xoth": true, "islnk": false, "nlink": 1, "issock": false, "rgrp": true, "gr_name": "itdevtra", "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "xusr": true, "atime": 1706081557.8684046, "isdir": false, "ctime": 1705064495.1500282, "isblk": false, "wgrp": false, "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b", "dev": 64779, "roth": true, "isfifo": false, "mode": "0755", "xgrp": true, "rusr": true, "attributes": []}, "changed": false}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/file.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-4060671ufj6mbjw/tmp65f2uszj TO /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_file.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-4060671ufj6mbjw/tmp65f2uszj /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_file.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/ /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_file.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/AnsiballZ_file.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"group": "itdevtra", "uid": 1012, "changed": false, "owner": "itdevtra", "state": "file", "gid": 1013, "mode": "0755", "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "invocation": {"module_args": {"directory_mode": null, "force": false, "remote_src": null, "_original_basename": "release-2.0.0.zip", "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "owner": null, "follow": true, "group": null, "unsafe_writes": null, "setype": null, "content": null, "serole": null, "selevel": null, "state": "file", "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "access_time": null, "access_time_format": "%Y%m%d%H%M.%S", "modification_time": null, "regexp": null, "src": null, "seuser": null, "recurse": false, "_diff_peek": null, "delimiter": null, "mode": null, "modification_time_format": "%Y%m%d%H%M.%S", "attributes": null, "backup": null}}, "diff": {"after": {"path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip"}, "before": {"path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip"}}, "size": 40087}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706091282.9160862-4060717-165690151773887/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+ok: [ANT3CASAPPS01] => {
+    "changed": false,
+    "checksum": "f3b9751645cd871d5fa9eaa84bb6b3e05798b10b",
+    "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+    "diff": {
+        "after": {
+            "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip"
+        },
+        "before": {
+            "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip"
+        }
+    },
+    "gid": 1013,
+    "group": "itdevtra",
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": "release-2.0.0.zip",
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "backup": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+            "directory_mode": null,
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": null,
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+            "recurse": false,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "file",
+            "unsafe_writes": null
+        }
+    },
+    "mode": "0755",
+    "owner": "itdevtra",
+    "path": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+    "size": 40087,
+    "state": "file",
+    "uid": 1012
+}
