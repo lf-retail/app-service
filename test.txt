@@ -62,3 +62,58 @@ echo "Release.zip has been successfully extracted on the target server."
 #!/bin/bash
 
 ls -la "{{ Profile_home }}
+
+
+TASK [IBPS-deployment : Run deploy on Target Server] ***************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:34
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808 && echo ansible-tmp-1706097781.901781-4097785-246180769889808="` echo /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706097781.901781-4097785-246180769889808=/tmp/ansible-tmp-1706097781.901781-4097785-246180769889808\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-409769562px9ri8/tmpiy31473d TO /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-409769562px9ri8/tmpiy31473d /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/ /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (1, b'\r\n{"changed": true, "end": "2024-01-24 16:03:56.856091", "stdout": "", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "failed": true, "delta": "0:00:00.351804", "stderr": "./deploy.sh: line 3: unexpected EOF while looking for matching `\\"\'\\n./deploy.sh: line 4: syntax error: unexpected end of file", "rc": 2, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-01-24 16:03:56.504287", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706097781.901781-4097785-246180769889808/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+fatal: [ANT3CASAPPS01]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
+    "delta": "0:00:00.351804",
+    "end": "2024-01-24 16:03:56.856091",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 2,
+    "start": "2024-01-24 16:03:56.504287",
+    "stderr": "./deploy.sh: line 3: unexpected EOF while looking for matching `\"'\n./deploy.sh: line 4: syntax error: unexpected end of file",
+    "stderr_lines": [
+        "./deploy.sh: line 3: unexpected EOF while looking for matching `\"'",
+        "./deploy.sh: line 4: syntax error: unexpected end of file"
+    ],
+    "stdout": "",
+    "stdout_lines": []
+}
+...ignoring
+META: ran handlers
+META: ran handlers
