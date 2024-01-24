@@ -57,3 +57,8 @@ if [ -n "$release_content" ]; then
 fi
 
 echo "Release.zip has been successfully extracted on the target server."
+==============
+
+#!/bin/bash
+
+ls -la "{{ Profile_home }}
