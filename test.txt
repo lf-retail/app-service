@@ -1,39 +1,89 @@
-- name: Download zip from GitHub packages on Runner
-  delegate_to: localhost
-  run_once: true
-  get_url:
-    url: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    headers:
-      Authorization: "token {{ TOKEN_GITHUB }}"
+#!/bin/bash
+ 
+# Extract release.zip to the target directory
 
-- name: Copy zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/{{ zip_file_name }}"
-    
-- name: Check if deploy.sh already exists on Target Server
-  stat:
-    path: "{{ Profile_home }}/deploy.sh"
-  become: yes
-  become_user: "{{ ansible_user }}"
-  register: deploy_file_status    
+unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}"
+ 
+# List files after extraction in the specified path
 
-- name: Copy deploy.sh to Target Server
-  copy:
-    src: "{{ github.workspace }}/deploy.sh"  # Update the path to your deploy.sh file
-    dest: "{{ Profile_home }}/deploy.sh"
-    mode: '0755'  # Ensure execute permissions
-  when: deploy_file_status.stat.exists == False    
+ls -la "{{ Profile_home }}/release/"
+ 
+# Read the content of release.txt
 
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ Profile_home }}"
-  become: yes
-  become_user: "{{ ansible_user }}"
+release_content=$(cat "{{ Profile_home }}/release/release.txt" 2>/dev/null)
+ 
+# Backup old deployment files for each application with timestamp
 
-- name: Run deploy.sh on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: 'cd {{ Profile_home }} && ./deploy.sh'
-  register: deploy_result
-  ignore_errors: yes
+if [ -n "$release_content" ]; then
+
+    targeted_location="{{ targeted_location }}"
+
+    backup_location="{{ backup_location }}"
+
+    for app_info in $(echo "$release_content" | awk -F',' '{print $1,$2}'); do
+
+        app_name=$(echo "$app_info" | awk '{print $1}')
+
+        app_targeted_location=$(echo "$app_info" | awk '{print $2}')
+
+        backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+        # Create backup directory for each application without timestamp
+
+        mkdir -p "$backup_location/$app_name/backup"
+
+        # Backup old deployment files
+
+        cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
+
+        # Add backup details to change.log file
+
+        echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
+
+        echo "-----------------------------" >> "$backup_location/$app_name/change.log"
+
+        ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
+
+        # Copy application files to targeted location with the latest timestamp
+
+        cp -r "$app_name" "$app_targeted_location"
+
+    done
+
+    # Check for success in the change.log file
+
+    if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
+
+        echo "Deployment successful. No rollback needed."
+
+    else
+
+        echo "Deployment failed. Rolling back..."
+
+        # Rollback steps
+
+        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
+ 
+        if [ -n "$latest_backup" ]; then
+
+            echo "Rolling back to the latest backup: $latest_backup"
+
+            cp -r "$latest_backup" "$targeted_location/$app_name"
+
+        else
+
+            echo "No valid backup found for rollback."
+
+        fi
+
+        echo "Rollback completed."
+
+    fi
+
+fi
+ 
+# Additional steps if needed after extraction
+
+# ...
+ 
+echo "Release.zip has been successfully extracted on the target server."
