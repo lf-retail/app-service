@@ -144,3 +144,55 @@ ok: [ANT3CASAPPS01] => {
     "state": "file",
     "uid": 1012
 }
+===============
+
+TASK [IBPS-deployment : Copy zip to Target Server] *****************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:10
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552 && echo ansible-tmp-1706090789.8494263-4058371-125079527817552="` echo /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706090789.8494263-4058371-125079527817552=/tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/copy.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-40583261thh6nsi/tmphmg60c4f TO /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552/AnsiballZ_copy.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-40583261thh6nsi/tmphmg60c4f /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552/AnsiballZ_copy.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552/ /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552/AnsiballZ_copy.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706090789.8494263-4058371-125079527817552/AnsiballZ_copy.py && sleep 0'"'"''
+<10.15.13.148> (1, b'\r\n{"msg": "Source /tmp/release-2.0.0.zip not found", "failed": true, "invocation": {"module_args": {"directory_mode": null, "force": true, "remote_src": true, "_original_basename": null, "owner": null, "follow": false, "local_follow": null, "group": null, "unsafe_writes": null, "setype": null, "content": null, "serole": null, "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip", "selevel": null, "regexp": null, "validate": null, "src": "/tmp/release-2.0.0.zip", "checksum": null, "seuser": null, "delimiter": null, "mode": null, "attributes": null, "backup": false}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
+fatal: [ANT3CASAPPS01]: FAILED! => {
+    "changed": false,
+    "invocation": {
+        "module_args": {
+            "_original_basename": null,
+            "attributes": null,
+            "backup": false,
+            "checksum": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release-2.0.0.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": true,
+            "group": null,
+            "local_follow": null,
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": true,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": "/tmp/release-2.0.0.zip",
+            "unsafe_writes": null,
+            "validate": null
+        }
+    },
+    "msg": "Source /tmp/release-2.0.0.zip not found"
+}
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+Error: Process completed with exit code 2.
