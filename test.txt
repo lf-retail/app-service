@@ -1,63 +1,151 @@
+using default/main.yml
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+ansible_user: itdevtra
+backup_location: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup
+...
+=====================
+using tasks/main.yml
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+ 
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    
+#- name: Check if deploy already exists on Target Server
+ # stat:
+  #  path: "{{ Profile_home }}/deploy.sh"
+  #become: yes
+  #become_user: "{{ ansible_user }}"
+  #register: list_files
+
+- name: Copy deploy to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+  #when: list_files.stat.exists == False
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ Profile_home }}"
+  become: yes
+  become_user: "{{ ansible_user }}"  
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: 'cd {{ Profile_home }} && ./deploy.sh'
+  register: deploy_result
+  ignore_errors: yes
+  #when: list_files.stat.exists
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
+==================
+using deploy.sh
 #!/bin/bash
-
-# Replace these variables with their actual values
-profile_home="/your/actual/profile/home"
-zip_file_name="your_zip_file_name"
-targeted_location="/your/actual/targeted/location"
-backup_location="/your/actual/backup/location"
-
+ 
 # Extract release.zip to the target directory
-unzip -q "$profile_home/$zip_file_name" -d "$profile_home"
 
+unzip -q "{{ Profile_home }}/{{ zip_file_name }}" -d "{{ Profile_home }}"
+ 
 # List files after extraction in the specified path
-ls -la "$profile_home/release/"
 
+ls -la "{{ Profile_home }}/release/"
+ 
 # Read the content of release.txt
-release_content=$(cat "$profile_home/release/release.txt" 2>/dev/null)
 
+release_content=$(cat "{{ Profile_home }}/release/release.txt" 2>/dev/null)
+ 
 # Backup old deployment files for each application with timestamp
+
 if [ -n "$release_content" ]; then
+
+    targeted_location="{{ targeted_location }}"
+
+    backup_location="{{ backup_location }}"
+
     for app_info in $(echo "$release_content" | awk -F',' '{print $1,$2}'); do
+
         app_name=$(echo "$app_info" | awk '{print $1}')
+
         app_targeted_location=$(echo "$app_info" | awk '{print $2}')
+
         backup_timestamp=$(date +'%Y%m%d%H%M%S')
 
         # Create backup directory for each application without timestamp
+
         mkdir -p "$backup_location/$app_name/backup"
 
         # Backup old deployment files
+
         cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
 
         # Add backup details to change.log file
+
         echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
+
         echo "-----------------------------" >> "$backup_location/$app_name/change.log"
+
         ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
 
         # Copy application files to targeted location with the latest timestamp
+
         cp -r "$app_name" "$app_targeted_location"
+
     done
 
     # Check for success in the change.log file
+
     if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
+
         echo "Deployment successful. No rollback needed."
+
     else
+
         echo "Deployment failed. Rolling back..."
 
         # Rollback steps
-        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
 
+        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
+ 
         if [ -n "$latest_backup" ]; then
+
             echo "Rolling back to the latest backup: $latest_backup"
+
             cp -r "$latest_backup" "$targeted_location/$app_name"
+
         else
+
             echo "No valid backup found for rollback."
+
         fi
 
         echo "Rollback completed."
+
     fi
+
 fi
-
+ 
 # Additional steps if needed after extraction
-# ...
 
+# ...
+ 
 echo "Release.zip has been successfully extracted on the target server."
