@@ -19,34 +19,6 @@
   #become_user: "{{ ansible_user }}"
   #register: list_files
 
-- name: Copy deploy to Target Server
-  copy:
-    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
-    dest: "{{ Profile_home }}/deploy.sh"
-    mode: '755'
-  become: yes
-  become_user: "{{ ansible_user }}"
-  #when: list_files.stat.exists == False
-
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ Profile_home }}"
-  become: yes
-  become_user: "{{ ansible_user }}"  
-
-- name: Run deploy on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: 'cd {{ Profile_home }} && ./deploy.sh'
-  register: deploy_result
-  ignore_errors: yes
-  #when: list_files.stat.exists
-
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ targeted_location }}"
-  become: yes
-  become_user: "{{ ansible_user }}"
-==============
-
 - name: Copy deploy.sh to Target Server
   copy:
     src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
@@ -67,7 +39,23 @@
   register: deploy_result
   ignore_errors: yes
 
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ targeted_location }}"
-  become: yes
-  become_user: "{{ ansible_user }}"
+#- name: List contents of the directory after copying deploy.sh
+ # command: ls -al "{{ targeted_location }}"
+  #become: yes
+  #become_user: "{{ ansible_user }}"
+========================
+#!/bin/bash
+
+# Replace these variables with their actual values
+#Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+#zip_file_url="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
+#zip_file_name=$(basename "$zip_file_url")
+#backup_location="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
+
+pwd
+
+# List files before extraction in the specified path
+ls -la "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+=====================
+        "drwxrwxr-x  3 itdevtra itdevtra   4096 Jan 12 15:50 release",
+        "-rwxr-xr-x  1 itdevtra itdevtra  40087 Jan 12 13:48 release-2.0.0.zip",
