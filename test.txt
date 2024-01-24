@@ -1,105 +1,3 @@
-using cd workflow
-
-name: IBPS-deployment
-on:
-  workflow_dispatch:
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Debug Working Directory
-      run: |
-        ls -al
-        pwd
-
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy-1.sh rollback.sh
-
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
-============
-
-using ansible playbook
-
-- hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-  gather_facts: yes
-  roles:
-    - IBPS-deployment
-======================
-
-using ansible roles defaults/main.yml
----
-ibps_server: 10.15.13.148:9043
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0/release-1.0.0.zip"
-zip_file_name: "{{ zip_file_url | basename }}"
-Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-ansible_user: "itdevtra"
-backup_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
-...
-=================
-using ansible roles tasks/main.yml
-- name: Download zip from GitHub packages on Runner
-  delegate_to: localhost
-  run_once: true
-  get_url:
-    url: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    headers:
-      Authorization: "token {{ github_token }}"
- 
-- name: Copy zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/{{ zip_file_name }}"
-    mode: '0755'
-
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ Profile_home }}"
-  become: yes
-  become_user: "{{ ansible_user }}"    
-    
-- name: Copy deploy.sh to Target Server
-  copy:
-    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
-    dest: "{{ Profile_home }}/deploy.sh"
-    mode: '0755'
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ Profile_home }}"
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Run deploy on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: 'cd {{ Profile_home }} && ./deploy.sh'
-  register: deploy_result
-  ignore_errors: yes
-
-#- name: List contents of the directory after copying deploy.sh
- # command: ls -al "{{ targeted_location }}"
-  #become: yes
-  #become_user: "{{ ansible_user }}"
-=================
-using deploy.sh
 #!/bin/bash
 
 # Extract release.zip to the target directory
@@ -111,11 +9,14 @@ ls -la "{{ Profile_home }}/release/"
 # Read the content of release.txt
 release_content=$(cat "{{ Profile_home }}/release/release.txt" 2>/dev/null)
 
+# Set GitHub token as an environment variable
+export GITHUB_TOKEN="{{ github_token }}"
+
 # Backup old deployment files for each application with timestamp
 if [ -n "$release_content" ]; then
     targeted_location="{{ targeted_location }}"
     backup_location="{{ backup_location }}"
-    
+
     while IFS=, read -r app_name app_targeted_location; do
         backup_timestamp=$(date +'%Y%m%d%H%M%S')
 
