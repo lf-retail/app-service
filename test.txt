@@ -59,8 +59,3 @@ if [ -n "$release_content" ]; then
         echo "Rollback completed."
     fi
 fi
-
-# Additional steps if needed after extraction
-# ...
-
-echo "Release.zip has been successfully extracted on the target server."
