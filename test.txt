@@ -3,112 +3,16 @@
 # Replace these variables with their actual values
 Profile_home="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
 zip_file_url="https://maven.pkg.github.com/rakbank-internal/IBPS-Deployment/Rak/IBPS/release/2.0.0/release-2.0.0.zip"
-zip_file_name="{{ zip_file_url | basename }}"
+zip_file_name=$(basename "$zip_file_url")
 backup_location="/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
 
 # List files before extraction in the specified path
-ls -la "$profile_home
+ls -la "$Profile_home"
 
 # Extract release.zip to the target directory
-unzip -q "$profile_home/$zip_file_name" -d "$profile_home"
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
 
 # List files after extraction in the specified path
-ls -la "$profile_home/release/"
+ls -la "$Profile_home/release/"
 
-# Read the content of release.txt
-release_content=$(cat "$profile_home/release/release.txt" 2>/dev/null)
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    for app_info in $(echo "$release_content" | awk -F',' '{print $1,$2}'); do
-        app_name=$(echo "$app_info" | awk '{print $1}')
-        app_targeted_location=$(echo "$app_info" | awk '{print $2}')
-        backup_timestamp=$(date +'%Y%m%d%H%M%S')
-
-        # Create backup directory for each application without timestamp
-        mkdir -p "$backup_location/$app_name/backup"
-
-        # Backup old deployment files
-        cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
-
-        # Add backup details to change.log file
-        echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
-        echo "-----------------------------" >> "$backup_location/$app_name/change.log"
-        ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
-
-        # Copy application files to targeted location with the latest timestamp
-        cp -r "$app_name" "$app_targeted_location"
-    done
-
-    # Check for success in the change.log file
-    if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
-        echo "Deployment successful. No rollback needed."
-    else
-        echo "Deployment failed. Rolling back..."
-
-        # Rollback steps
-        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
-
-        if [ -n "$latest_backup" ]; then
-            echo "Rolling back to the latest backup: $latest_backup"
-            cp -r "$latest_backup" "$targeted_location/$app_name"
-        else
-            echo "No valid backup found for rollback."
-        fi
-
-        echo "Rollback completed."
-    fi
-fi
-========
-
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:41
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022 && echo ansible-tmp-1706082580.1756415-4011364-73501907644022="` echo /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1706082580.1756415-4011364-73501907644022=/tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-4011279wefraco_/tmp614raylc TO /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-4011279wefraco_/tmp614raylc /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/ /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (1, b'\r\n{"changed": true, "end": "2024-01-24 11:50:34.801641", "stdout": "", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "failed": true, "delta": "0:00:00.333081", "stderr": "./deploy.sh: line 16: unexpected EOF while looking for matching `\\"\'\\n./deploy.sh: line 17: syntax error: unexpected end of file", "rc": 2, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-01-24 11:50:34.468560", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> Failed to connect to the host via ssh: Shared connection to 10.15.13.148 closed.
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706082580.1756415-4011364-73501907644022/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-fatal: [ANT3CASAPPS01]: FAILED! => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
-    "delta": "0:00:00.333081",
-    "end": "2024-01-24 11:50:34.801641",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 2,
-    "start": "2024-01-24 11:50:34.468560",
-    "stderr": "./deploy.sh: line 16: unexpected EOF while looking for matching `\"'\n./deploy.sh: line 17: syntax error: unexpected end of file",
-    "stderr_lines": [
-        "./deploy.sh: line 16: unexpected EOF while looking for matching `\"'",
-        "./deploy.sh: line 17: syntax error: unexpected end of file"
-    ],
-    "stdout": "",
-    "stdout_lines": []
-}
-...ignoring
+# Rest of your script...
