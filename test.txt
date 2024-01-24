@@ -149,3 +149,40 @@ fi
 # ...
  
 echo "Release.zip has been successfully extracted on the target server."
+================
+
+---
+- name: Download zip from GitHub packages on Runner
+  # ... (existing tasks)
+
+- name: Copy deploy to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+  # Pass variables to the script as arguments
+  args:
+    chdir: "{{ Profile_home }}"
+    executable: /bin/bash
+    cmd: "./deploy.sh {{ ibps_server }} {{ github_token }} {{ zip_file_url }} {{ zip_file_name }} {{ Profile_home }} {{ targeted_location }} {{ ansible_user }} {{ backup_location }}"
+------------
+#!/bin/bash
+
+# Extract arguments passed from Ansible playbook
+ibps_server="$1"
+github_token="$2"
+zip_file_url="$3"
+zip_file_name="$4"
+Profile_home="$5"
+targeted_location="$6"
+ansible_user="$7"
+backup_location="$8"
+
+# Extract release.zip to the target directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# ... (rest of your deployment script)
+
+echo "Release.zip has been successfully extracted on the target server."
