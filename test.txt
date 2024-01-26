@@ -49,3 +49,23 @@ jar xf "$Profile_home/$zip_file_name" -C "$Profile_home"
 
 # Print the contents after extraction
 ls -la "$Profile_home"
+=====================
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+ls -la "$Profile_home"
+
+# Use unzip with -u option to update existing files
+unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# Print the contents after extraction
+ls -la "$Profile_home"
+
+
