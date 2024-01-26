@@ -20,3 +20,50 @@ release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 
 # Print the content of release_content
 echo "$release_content"
+==================
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+    backup_location="{{ backup_location }}"
+
+    while IFS=, read -r app_name app_targeted_location; do
+        backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+        # Create backup directory for each application without timestamp
+        mkdir -p "$backup_location/$app_name/backup"
+
+        # Backup old deployment files
+        cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
+
+        # Add backup details to change.log file
+        echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
+        echo "-----------------------------" >> "$backup_location/$app_name/change.log"
+        ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
+
+        # Copy application files to targeted location with the latest timestamp
+        cp -r "$app_name" "$app_targeted_location"
+
+    done <<< "$release_content"
+
+    # Check for success in the change.log file
+    if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
+        echo "Deployment successful. No rollback needed."
+    else
+        echo "Deployment failed. Rolling back..."
+
+        # Rollback steps
+        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
+
+        if [ -n "$latest_backup" ]; then
+            echo "Rolling back to the latest backup: $latest_backup"
+            cp -r "$latest_backup" "$targeted_location/$app_name"
+        else
+            echo "No valid backup found for rollback."
+        fi
+
+        echo "Rollback completed."
+    fi
+fi
+
+echo "Release.zip has been successfully extracted on the target server."
