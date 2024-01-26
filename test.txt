@@ -156,3 +156,8 @@ changed: [ANT3CASAPPS01] => {
     "stdout": "",
     "stdout_lines": []
 }
+============
+# List files in the backup location after moving
+backup_directory="$backup_location"
+echo "Backup Directory: $backup_directory"
+ls -la "$backup_directory"
