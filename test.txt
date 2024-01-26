@@ -13,7 +13,7 @@ ls -la "$Profile_home"
 unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
 
 # List files after extraction in the specified path
-ls -la "{{ Profile_home }}/release/"
+ls -la "$Profile_home/release/"
 
 # Read the content of release.txt
-release_content=$(cat "{{ Profile_home }}/release/release.txt" 2>/dev/null)
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
