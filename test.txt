@@ -68,11 +68,10 @@ fi
 
 echo "Release.zip has been successfully extracted on the target server."
 ==================
-
 # Backup old deployment files for each application with timestamp
 if [ -n "$release_content" ]; then
     targeted_location="{{ targeted_location }}"
-    backup_location="{{ backup_location }}"
+    backup_location="$backup_location"  # Use the variable passed from Ansible
 
     # Iterate through each line in release_content
     while IFS=, read -r app_name app_targeted_location; do
