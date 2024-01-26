@@ -13,3 +13,21 @@ ls -la "$1"
 #ls -la "$1"
 ls -la $(which unzip)
 "-rwxr-xr-x 2 root root 189600 Dec  7  2021 /usr/bin/unzip"
+===================
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+ls -la "$1"
+
+# Specify the full path for the zip file and destination directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# Print the contents after extraction
+ls -la "$Profile_home"
