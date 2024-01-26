@@ -1,10 +1,11 @@
 - name: Run deploy on Target Server
   become: yes
   become_user: "{{ ansible_user }}"
-  shell: "cd {{ Profile_home }} && ./deploy.sh '{{ Profile_home }}' '{{ zip_file_url }}' '{{ zip_file_name }}'"
+  shell: "cd {{ Profile_home }} && ./deploy.sh {{ Profile_home }} {{ zip_file_url }} {{ zip_file_name }}"
   register: deploy_result
   ignore_errors: yes
-=================
+===============
+
 #!/bin/bash
 Profile_home="$1"
 zip_file_url="$2"
@@ -13,4 +14,3 @@ zip_file_name="$3"
 ls -la "$1"
 unzip -q "$1/$3" -d "$1"
 ls -la "$1"
-================
