@@ -17,3 +17,6 @@ ls -la "$Profile_home/release/"
 
 # Read the content of release.txt
 release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
