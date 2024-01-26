@@ -1,13 +1,16 @@
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }} && ./deploy.sh '{{ Profile_home }}' '{{ zip_file_url }}' '{{ zip_file_name }}'"
+  register: deploy_result
+  ignore_errors: yes
+=================
 #!/bin/bash
 Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
 
-# Check if the directory exists
-if [ -d "$Profile_home" ]; then
-    # Change into the directory
-    cd "$Profile_home" || exit 1
-
-    # List the contents of the directory
-    ls -la
-else
-    echo "Directory does not exist: $Profile_home"
-fi
+ls -la "$1"
+unzip -q "$1/$3" -d "$1"
+ls -la "$1"
+================
