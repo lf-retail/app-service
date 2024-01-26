@@ -67,3 +67,29 @@ if [ -n "$release_content" ]; then
 fi
 
 echo "Release.zip has been successfully extracted on the target server."
+==================
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+    backup_location="{{ backup_location }}"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Backup timestamp
+            backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$targeted_location/$app_targeted_location"
+            backup_path="$backup_location/$app_name-$backup_timestamp"
+
+            # Move old deployment files to backup location
+            mv "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+        fi
+    done <<< "$release_content"
+fi
