@@ -1,100 +1,53 @@
-#!/bin/bash
-
-Profile_home: "$1"
-
-ls -la $1
-==============
-
-- name: Run deploy on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: "cd {{ Profile_home }} && ./deploy.sh '{{ ibps_server }}' '{{ github_token }}' '{{ zip_file_url }}' '{{ zip_file_name }}' '{{ Profile_home }}' '{{ targeted_location }}' '{{ ansible_user }}' '{{ backup_location }}'"
-  register: deploy_result
-  ignore_errors: yes
-  
-  =========================
-
-
-#!/bin/bash
-
-# Extract arguments passed from Ansible playbook
-ibps_server="$1"
-github_token="$2"
-zip_file_url="$3"
-zip_file_name="$4"
-Profile_home="$5"
-targeted_location="$6"
-ansible_user="$7"
-backup_location="$8"
-
-# Extract release.zip to the target directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
-
-# List files after extraction in the specified path
-ls -la "$Profile_home/release/"
-
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    for app_info in $(echo "$release_content" | awk -F',' '{print $1,$2}'); do
-        app_name=$(echo "$app_info" | awk '{print $1}')
-        app_targeted_location=$(echo "$app_info" | awk '{print $2}')
-        backup_timestamp=$(date +'%Y%m%d%H%M%S')
-
-        # Create backup directory for each application without timestamp
-        mkdir -p "$backup_location/$app_name/backup"
-
-        # Backup old deployment files
-        cp -r "$targeted_location/$app_name" "$backup_location/$app_name/backup_$backup_timestamp"
-
-        # Add backup details to change.log file
-        echo "Backup details for $app_name at $(date):" >> "$backup_location/$app_name/change.log"
-        echo "-----------------------------" >> "$backup_location/$app_name/change.log"
-        ls -la "$backup_location/$app_name/backup/" >> "$backup_location/$app_name/change.log"
-
-        # Copy application files to targeted location with the latest timestamp
-        cp -r "$app_name" "$app_targeted_location"
-    done
-
-    # Check for success in the change.log file
-    if grep -q "Backup details" "$backup_location/$app_name/change.log"; then
-        echo "Deployment successful. No rollback needed."
-    else
-        echo "Deployment failed. Rolling back..."
-
-        # Rollback steps
-        latest_backup=$(ls -d "$backup_location/$app_name/backup_"* | sort -r | head -n 1)
-
-        if [ -n "$latest_backup" ]; then
-            echo "Rolling back to the latest backup: $latest_backup"
-            cp -r "$latest_backup" "$targeted_location/$app_name"
-        else
-            echo "No valid backup found for rollback."
-        fi
-
-        echo "Rollback completed."
-    fi
-fi
-
-# Additional steps if needed after extraction
-# ...
-
-echo "Release.zip has been successfully extracted on the target server."
-================
-
 TASK [IBPS-deployment : Run deploy on Target Server] ***************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:34
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467 && echo ansible-tmp-1706252950.5301275-782267-181045793655467="` echo /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1706252950.5301275-782267-181045793655467=/tmp/ansible-tmp-1706252950.5301275-782267-181045793655467\n', b'')
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706261095.179736-843369-48318082534643 && echo ansible-tmp-1706261095.179736-843369-48318082534643="` echo /tmp/ansible-tmp-1706261095.179736-843369-48318082534643 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706261095.179736-843369-48318082534643=/tmp/ansible-tmp-1706261095.179736-843369-48318082534643\n', b'')
 Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-781375mjn4sikb/tmp32y6npb3 TO /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467/AnsiballZ_command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-8430311vlacnix/tmp3ef3gl7m TO /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/AnsiballZ_command.py
 <10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-781375mjn4sikb/tmp32y6npb3 /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467/AnsiballZ_command.py\n', b'')
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-8430311vlacnix/tmp3ef3gl7m /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/AnsiballZ_command.py\n', b'')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467/ /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/ /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/AnsiballZ_command.py && sleep 0'"'"''
 <10.15.13.148> (0, b'', b'')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706252950.5301275-782267-181045793655467/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-26 13:25:52.932281", "stdout": "", "cmd": ["cd", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin", "&&", "./deploy.sh", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"], "rc": 0, "start": "2024-01-26 13:25:52.601978", "stderr": "", "delta": "0:00:00.330303", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh \'/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\'", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706261095.179736-843369-48318082534643/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": [
+        "cd",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
+        "&&",
+        "./deploy.sh",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+    ],
+    "delta": "0:00:00.330303",
+    "end": "2024-01-26 13:25:52.932281",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh '/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin'",
+            "_uses_shell": false,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-26 13:25:52.601978",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "",
+    "stdout_lines": []
+}
+META: ran handlers
+META: ran handlers
