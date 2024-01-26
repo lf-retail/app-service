@@ -1,3 +1,10 @@
+#!/bin/bash
+
+Profile_home: "$1"
+
+ls -la $1
+==============
+
 - name: Run deploy on Target Server
   become: yes
   become_user: "{{ ansible_user }}"
@@ -6,6 +13,7 @@
   ignore_errors: yes
   
   =========================
+
 
 #!/bin/bash
 
