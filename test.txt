@@ -60,3 +60,5 @@ fi
 ====================
 
 ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
+
+newgenapp_jar.ear
