@@ -53,8 +53,8 @@ if [ -n "$release_content" ]; then
             new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
             targeted_path="$targeted_location/$app_targeted_location"
 
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$targeted_path"
+            # Copy new deployment files to targeted location using rsync for efficiency
+            rsync -a --delete "$new_deployment_path/" "$targeted_path/"
 
             # Print information about the copy
             echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
