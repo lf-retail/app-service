@@ -148,3 +148,78 @@ Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/comm
 <10.15.13.148> (0, b'', b'')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
 <10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706343228.4982626-1326608-44724285278695/AnsiballZ_command.py && sleep 0'"'"''
+=====================
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+ls -la "$Profile_home"
+
+# Use unzip with -u option to update existing files
+unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# List files after extraction in the specified path
+ls -la "$Profile_home/release/"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Backup old deployment files for each application with timestamp
+backup_list=()  # Initialize an array to store backup locations
+
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Iterate through each line in release_content in parallel
+    parallel --tagstring {1} -j 5 \
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Backup timestamp
+            backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$targeted_location/$app_targeted_location"
+            backup_path="$backup_location/$app_name-$backup_timestamp"
+
+            # Move old deployment files to backup location
+            mv "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+            
+            # Add the backup path to the array
+            backup_list+=("$backup_path")
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$targeted_location/$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            rsync -a --delete "$new_deployment_path/" "$targeted_path/"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        else
+            # Print a message if app_targeted_location is empty
+            echo "Warning: Empty target location for $app_name. Skipping."
+        fi
+    done ::: "$release_content"
+fi
+
+# List backup locations after completion of the backup process
+echo "Backup Locations:"
+for backup_loc in "${backup_list[@]}"; do
+    echo "$backup_loc"
+done
