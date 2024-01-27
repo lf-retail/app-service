@@ -223,3 +223,71 @@ echo "Backup Locations:"
 for backup_loc in "${backup_list[@]}"; do
     echo "$backup_loc"
 done
+==============
+TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252 && echo ansible-tmp-1706345733.010353-1340763-252590649163252="` echo /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/net_tools/basics/get_url.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-1340733bblod4yx/tmpcqmr54k2 TO /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252/AnsiballZ_get_url.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252/ /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1706345733.010353-1340763-252590649163252/ > /dev/null 2>&1 && sleep 0'
+fatal: [ANT3CASAPPS01 -> localhost]: FAILED! => {
+    "changed": false,
+    "dest": "/tmp/release-5.0.0.zip",
+    "elapsed": 46,
+    "gid": 1009,
+    "group": "itdevtra",
+    "invocation": {
+        "module_args": {
+            "attributes": null,
+            "backup": null,
+            "checksum": "",
+            "client_cert": null,
+            "client_key": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp/release-5.0.0.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": false,
+            "force_basic_auth": false,
+            "group": null,
+            "headers": {
+                "Authorization": "token ***"
+            },
+            "http_agent": "ansible-httpget",
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "sha256sum": "",
+            "src": null,
+            "timeout": 10,
+            "tmp_dest": null,
+            "unsafe_writes": null,
+            "url": "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/5.0.0/release-5.0.0.zip",
+            "url_password": null,
+            "url_username": null,
+            "use_proxy": true,
+            "validate_certs": true
+        }
+    },
+    "mode": "0664",
+    "msg": "Request failed: <urlopen error _ssl.c:880: The handshake operation timed out>",
+    "owner": "itdevtra",
+    "size": 2221639,
+    "state": "file",
+    "uid": 1008,
+    "url": "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/5.0.0/release-5.0.0.zip"
+}
+
+NO MORE HOSTS LEFT *************************************************************
+
+PLAY RECAP *********************************************************************
+ANT3CASAPPS01              : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
