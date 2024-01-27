@@ -56,3 +56,7 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
+====================
+
+ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
