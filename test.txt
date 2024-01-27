@@ -29,8 +29,8 @@ if [ -n "$release_content" ]; then
 
     # Iterate through each line in release_content
     while IFS=, read -r app_name app_targeted_location; do
-        # Check if the app_targeted_location is not empty
-        if [ -n "$app_targeted_location" ]; then
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
             # Backup timestamp
             backup_timestamp=$(date +'%Y%m%d%H%M%S')
 
