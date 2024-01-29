@@ -56,7 +56,17 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+======================
 
+Hi Gaurav/Suresh,
+
+We are developing the CD part for the application of IBPS and we need support for verification . As we discussed I am scheduling the meeting tomorrow at 4pm.
+
+Thanks,
+Shanmuganathan M.
+
+Gaurav.Kumar@rakbank.ae
+Suresh.Shanmugam@rakbank.ae
 ====================
 
 ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
