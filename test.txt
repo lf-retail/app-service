@@ -72,3 +72,55 @@ Suresh.Shanmugam@rakbank.ae
 ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
 
 newgenapp_jar.ear
+=================================
+
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+# Use unzip with -u option to update existing files
+unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# List files after extraction in the specified path
+ls -la "$Profile_home/release/"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Backup timestamp
+            backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$targeted_location/$app_targeted_location"
+            backup_path="$backup_location/$app_name-$backup_timestamp"
+
+            # Move old deployment files to backup location
+            mv "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+            
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$targeted_location/$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
