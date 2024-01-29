@@ -124,3 +124,35 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+===========================
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+ls -la "$Profile_home"
+
+# Use unzip with -u option to update existing files
+echo "Trying to unzip $Profile_home/$zip_file_name to $Profile_home"
+unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+unzip_exit_code=$?
+
+# Print the exit code of unzip
+echo "Unzip Exit Code: $unzip_exit_code"
+
+# List files after extraction in the specified path
+ls -la "$Profile_home/release/"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Rest of your script...
