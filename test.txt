@@ -321,3 +321,10 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
+
+    "stdout_lines": [
+        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
+        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0/release-1.0.0.zip",
+        "zip_file_name: release-1.0.0.zip",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
