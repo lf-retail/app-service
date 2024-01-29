@@ -188,3 +188,11 @@ echo "zip_file_url: $zip_file_url"
 echo "zip_file_name: $zip_file_name"
 
 du -h "$Profile_home"
+
+
+==========
+
+unzip -uq -P 4 "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+df -h
+
