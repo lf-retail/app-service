@@ -277,6 +277,8 @@ ls -la "$Profile_home"
 
 # Use unzip with -u option to update existing files
 unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+tar -xf /path/to/your/file.zip -C /path/to/extract
+
 
 # List files after extraction in the specified path
 ls -la "$Profile_home/release/"
