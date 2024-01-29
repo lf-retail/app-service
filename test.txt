@@ -156,3 +156,35 @@ release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 echo "$release_content"
 
 # Rest of your script...
+=========
+
+    "stdout_lines": [
+        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
+        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip",
+        "zip_file_name: release-1.0.0.2.zip",
+        "8.0K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/sdk",
+        "28K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory/release/newgenapp_jar.ear/META-INF",
+        "76K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory/release/newgenapp_jar.ear",
+        "84K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory/release",
+        "88K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/temp_directory",
+        "20K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear/META-INF",
+        "356K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear",
+        "28K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear/META-INF",
+        "76K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear",
+        "440K\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release",
+        "6.3M\t/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+    ]
+
+====
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+du -h "$Profile_home"
