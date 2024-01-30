@@ -410,3 +410,5 @@ strace -f -o strace_output.txt unzip -uq "$Profile_home/$zip_file_name" -d "$Pro
 # Display the contents of the strace output file
 cat strace_output.txt
 
+================
+pv "$Profile_home/$zip_file_name" | unzip -u -d "$Profile_home" - && echo "Extraction completed."
