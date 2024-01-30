@@ -65,55 +65,71 @@ if [ -n "$release_content" ]; then
 fi
 ================
 
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:34
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944 && echo ansible-tmp-1706629171.93908-2969752-278679894044944="` echo /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1706629171.93908-2969752-278679894044944=/tmp/ansible-tmp-1706629171.93908-2969752-278679894044944\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2969665rkaztsan/tmpshhdijzt TO /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2969665rkaztsan/tmpshhdijzt /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/ /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-30 19:40:36.057667", "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip\\nzip_file_name: release2-1.0.2.zip\\nMerging contents with existing release directory.", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip release2-1.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "rc": 0, "start": "2024-01-30 19:40:35.706851", "stderr": "cp: cannot stat \\u2018/tmp/tmp.tPQfFxezzM/release2-/*\\u2019: No such file or directory", "delta": "0:00:00.350816", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip release2-1.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706629171.93908-2969752-278679894044944/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip release2-1.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
-    "delta": "0:00:00.350816",
-    "end": "2024-01-30 19:40:36.057667",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip release2-1.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-01-30 19:40:35.706851",
-    "stderr": "cp: cannot stat ‘/tmp/tmp.tPQfFxezzM/release2-/*’: No such file or directory",
-    "stderr_lines": [
-        "cp: cannot stat ‘/tmp/tmp.tPQfFxezzM/release2-/*’: No such file or directory"
-    ],
-    "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip\nzip_file_name: release2-1.0.2.zip\nMerging contents with existing release directory.",
-    "stdout_lines": [
-        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
-        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.2/release2-1.0.2.zip",
-        "zip_file_name: release2-1.0.2.zip",
-        "Merging contents with existing release directory."
-    ]
-}
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+ls -la "$Profile_home"
+
+# Extract release version from the zip file name (assuming the format is release-X.Y.Z.zip)
+release_version=$(echo "$zip_file_name" | grep -oP 'release-\K[0-9]+\.[0-9]+\.[0.9]+')
+release_dir="release2-$release_version"  # Modify the directory name to release2
+
+# Create a temporary directory for extraction
+temp_dir=$(mktemp -d)
+
+# Extract the new release to the temporary directory
+unzip -q "$Profile_home/$zip_file_name" -d "$temp_dir"
+
+# If the release directory already exists, merge the contents
+if [ -d "$Profile_home/$release_dir" ]; then
+    echo "Merging contents with an existing release directory."
+
+    # Copy the new files over the existing ones
+    cp -r "$temp_dir/$release_dir/"* "$Profile_home/$release_dir/"
+
+    # Clean up the temporary directory
+    rm -r "$temp_dir"
+else
+    # If the release directory doesn't exist, move the temporary directory to the target location
+    mv "$temp_dir/$release_dir" "$Profile_home/"
+
+    # Clean up the temporary directory
+    rm -r "$temp_dir/$release_dir"
+fi
+
+# List files after extraction in the specified path
+ls -la "$Profile_home/$release_dir"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/$release_dir/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Deploy new files for each application
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/$release_dir/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$targeted_location/$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
