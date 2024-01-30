@@ -387,3 +387,26 @@ while IFS=, read -r app_name app_targeted_location; do
         echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
     fi
 done <<< "$release_content"
+=========================
+
+strace -f -o strace_output.txt unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+cat strace_output.txt
+
+top
+
+htop
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_name="$2"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_name: $zip_file_name"
+
+# Use strace to trace system calls during the extraction process
+strace -f -o strace_output.txt unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+# Display the contents of the strace output file
+cat strace_output.txt
+
