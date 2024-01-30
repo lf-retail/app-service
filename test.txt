@@ -14,8 +14,25 @@ ls -la "$Profile_home"
 release_version=$(echo "$zip_file_name" | grep -oP 'release-\K[0-9]+\.[0-9]+\.[0-9]+')
 release_dir="release2-$release_version"  # Modify the directory name to release2
 
-# Use unzip with -u option to update existing files
-unzip -uq "$Profile_home/$zip_file_name" -d "$Profile_home"
+# Create a temporary directory for extraction
+temp_dir=$(mktemp -d)
+
+# Extract the new release to the temporary directory
+unzip -q "$Profile_home/$zip_file_name" -d "$temp_dir"
+
+# If the release directory already exists, merge the contents
+if [ -d "$Profile_home/$release_dir" ]; then
+    echo "Merging contents with existing release directory."
+
+    # Copy the new files over the existing ones
+    cp -r "$temp_dir/$release_dir/"* "$Profile_home/$release_dir/"
+
+    # Clean up the temporary directory
+    rm -r "$temp_dir"
+else
+    # If the release directory doesn't exist, move the temporary directory to the target location
+    mv "$temp_dir/$release_dir" "$Profile_home/"
+fi
 
 # List files after extraction in the specified path
 ls -la "$Profile_home/$release_dir"
