@@ -415,3 +415,12 @@ pv "$Profile_home/$zip_file_name" | unzip -u -d "$Profile_home" - && echo "Extra
 
 
 rakbank-internal/ibps-was-ansible-cd/.github/workflows/ibps_deployment.yml@refs/heads/dev
+==============
+release2-1.0.2.zip
+ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
+==================
+release2-1.0.3.zip
+omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
+===========
+release2-1.0.4.zip
+WFS.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
