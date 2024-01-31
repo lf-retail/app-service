@@ -138,3 +138,63 @@ changed: [ANT3CASAPPS01] => {
         "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i"
     ]
 }
+==============
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ backup_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+TASK [IBPS-deployment : List contents of the directory after copying deploy.sh] ***
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179 && echo ansible-tmp-1706690543.608726-3335467-175776060749179="` echo /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706690543.608726-3335467-175776060749179=/tmp/ansible-tmp-1706690543.608726-3335467-175776060749179\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3335448aqyonfi1/tmpvhmb358t TO /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3335448aqyonfi1/tmpvhmb358t /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/ /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-31 12:43:29.928638", "stdout": "total 12\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .\\ndrwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i", "cmd": ["ls", "-al", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"], "rc": 0, "start": "2024-01-31 12:43:28.610382", "stderr": "", "delta": "0:00:01.318256", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -al \\"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup\\"", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": [
+        "ls",
+        "-al",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
+    ],
+    "delta": "0:00:01.318256",
+    "end": "2024-01-31 12:43:29.928638",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "ls -al \"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup\"",
+            "_uses_shell": false,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-01-31 12:43:28.610382",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "total 12\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .\ndrwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i",
+    "stdout_lines": [
+        "total 12",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .",
+        "drwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i"
+    ]
+}
