@@ -413,3 +413,6 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+=====================
+
+ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
