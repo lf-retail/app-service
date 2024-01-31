@@ -416,3 +416,20 @@ fi
 =====================
 
 ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+======
+
+ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+===============
+---
+- name: Main Playbook
+  hosts: your_target_hosts
+  gather_facts: true
+
+  tasks:
+    - name: Include deploy playbook
+      import_playbook: main-deploy.yml
+      when: deploy_mode | default(false)
+
+    - name: Include rollback playbook
+      import_playbook: main-rollback.yml
+      when: rollback_mode | default(false)
