@@ -535,3 +535,57 @@ deploy_or_rollback "$release_content"
 
 # Rollback files
 deploy_or_rollback "$rollback_content"
+=================
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release2"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release2/release.txt" 2>/dev/null)
+
+# Read the content of rollback.txt
+rollback_content=$(cat "$Profile_home/release2/rollback.txt" 2>/dev/null)
+
+# Set the targeted location variable
+targeted_location="{{ targeted_location }}"
+
+# Function to deploy or rollback files
+deploy_or_rollback() {
+    content=$1
+
+    # Iterate through each line in content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Define paths for deployment or rollback
+            source_path="$Profile_home/release2/$app_name"
+            target_path="$targeted_location/$app_targeted_location"
+
+            # Copy files to or from the target location
+            cp -r "$source_path" "$target_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $source_path -> $target_path"
+        fi
+    done <<< "$content"
+}
+
+# Deploy new files
+deploy_or_rollback "$release_content"
+
+# Rollback files
+deploy_or_rollback "$rollback_content"
