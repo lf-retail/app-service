@@ -58,35 +58,7 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
-======================
-
-drwxrwxr-x 6 itdevtra itdevtra  4096 Jan 31 11:52 .",
-        "drwxrwxrwx 5 root     root     12288 Jan 31 11:52 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:26 newgenapp_jar.ear",
-        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 ofme_ejb.ear",
-        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 omniapp_ejb.ear",
-        "-rw-rw-r-- 1 itdevtra itdevtra   415 Jan 30 09:34 release.txt",
-        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 WFS.ear",
-        "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "WFS.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: newgenapp_jar.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/newgenapp_jar.ear-20240131115250",
-        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/newgenapp_jar.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: ofme_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/ofme_ejb.ear-20240131115250",
-        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/ofme_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: omniapp_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/omniapp_ejb.ear-20240131115250",
-        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/omniapp_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: WFS.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/WFS.ear-20240131115250",
-        "Copy: WFS.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/WFS.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-    ]
-}
-====================
-
+========================
 #!/bin/bash
 Profile_home="$1"
 zip_file_url="$2"
@@ -96,105 +68,39 @@ backup_location="$4"
 echo "Profile_home: $Profile_home"
 echo "zip_file_url: $zip_file_url"
 echo "zip_file_name: $zip_file_name"
-echo "backup_location: $backup_location"
 
-ls -la "$backup_location"
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release2"
 
-==================
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
 
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.1/release2-1.0.1.zip release2-1.0.1.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
-    "delta": "0:00:00.326153",
-    "end": "2024-01-31 12:29:43.534808",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.1/release2-1.0.1.zip release2-1.0.1.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-01-31 12:29:43.208655",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.1/release2-1.0.1.zip\nzip_file_name: release2-1.0.1.zip\nbackup_location: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup\ntotal 12\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .\ndrwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i",
-    "stdout_lines": [
-        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
-        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release2/1.0.1/release2-1.0.1.zip",
-        "zip_file_name: release2-1.0.1.zip",
-        "backup_location: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
-        "total 12",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .",
-        "drwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i"
-    ]
-}
-==============
-- name: List contents of the directory after copying deploy.sh
-  command: ls -al "{{ backup_location }}"
-  become: yes
-  become_user: "{{ ansible_user }}"
+# List files after extraction in the specified path
+ls -la "$Profile_home/release2"
 
-TASK [IBPS-deployment : List contents of the directory after copying deploy.sh] ***
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179 && echo ansible-tmp-1706690543.608726-3335467-175776060749179="` echo /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1706690543.608726-3335467-175776060749179=/tmp/ansible-tmp-1706690543.608726-3335467-175776060749179\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3335448aqyonfi1/tmpvhmb358t TO /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3335448aqyonfi1/tmpvhmb358t /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/ /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-01-31 12:43:29.928638", "stdout": "total 12\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .\\ndrwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i", "cmd": ["ls", "-al", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"], "rc": 0, "start": "2024-01-31 12:43:28.610382", "stderr": "", "delta": "0:00:01.318256", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -al \\"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup\\"", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706690543.608726-3335467-175776060749179/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": [
-        "ls",
-        "-al",
-        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
-    ],
-    "delta": "0:00:01.318256",
-    "end": "2024-01-31 12:43:29.928638",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "ls -al \"/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup\"",
-            "_uses_shell": false,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-01-31 12:43:28.610382",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "total 12\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .\ndrwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i",
-    "stdout_lines": [
-        "total 12",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .",
-        "drwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i"
-    ]
-}
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release2/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Deploy new files for each application
+if [ -n "$release_content" ]; then
+    targeted_location="{{ targeted_location }}"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release2/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$targeted_location/$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
