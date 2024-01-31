@@ -58,3 +58,30 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+======================
+
+drwxrwxr-x 6 itdevtra itdevtra  4096 Jan 31 11:52 .",
+        "drwxrwxrwx 5 root     root     12288 Jan 31 11:52 ..",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:26 newgenapp_jar.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 ofme_ejb.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 omniapp_ejb.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra   415 Jan 30 09:34 release.txt",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 30 09:33 WFS.ear",
+        "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "WFS.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: newgenapp_jar.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/newgenapp_jar.ear-20240131115250",
+        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/newgenapp_jar.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: ofme_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/ofme_ejb.ear-20240131115250",
+        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/ofme_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: omniapp_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/omniapp_ejb.ear-20240131115250",
+        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/omniapp_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: WFS.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/WFS.ear-20240131115250",
+        "Copy: WFS.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release2/WFS.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ]
+}
