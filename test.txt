@@ -481,3 +481,84 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+===========
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release2"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Read the content of release.txt and rollback.txt
+release_content=$(cat "$Profile_home/release2/release.txt" 2>/dev/null)
+rollback_content=$(cat "$Profile_home/release2/rollback.txt" 2>/dev/null)
+
+# Function to deploy or rollback files
+function deploy_or_rollback() {
+    local action=$1
+    local content=$2
+
+    if [ -n "$content" ]; then
+        # Iterate through each line in content
+        while IFS=, read -r app_name app_targeted_location; do
+            # Check if the app_targeted_location is not empty
+            if [ -n "$app_targeted_location" ]; then
+                # Define paths for deployment or rollback
+                source_path="$Profile_home/release2/$app_name"
+                target_path="$targeted_location/$app_targeted_location"
+
+                # Perform action (deploy or rollback)
+                $action "$source_path" "$target_path" "$app_name"
+            fi
+        done <<< "$content"
+    fi
+}
+
+# Function to deploy files
+function deploy() {
+    local source_path=$1
+    local target_path=$2
+    local app_name=$3
+
+    # Copy new deployment files to targeted location
+    cp -r "$source_path" "$target_path"
+
+    # Print information about the copy
+    echo "Deploy: $app_name - $source_path -> $target_path"
+}
+
+# Function to rollback files
+function rollback() {
+    local source_path=$1
+    local target_path=$2
+    local app_name=$3
+
+    # Backup timestamp
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+    # Construct backup path
+    backup_path="$backup_location/$app_name-$backup_timestamp"
+
+    # Move old deployment files to backup location
+    mv "$target_path" "$backup_path"
+
+    # Print information about the rollback
+    echo "Rollback: $app_name - $target_path -> $backup_path"
+}
+
+# Deploy new files
+deploy_or_rollback deploy "$release_content"
+
+# Rollback files
+deploy_or_rollback rollback "$rollback_content"
