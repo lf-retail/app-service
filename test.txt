@@ -445,3 +445,32 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+=========
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release2"
+rm -rf "$Profile_home/release"
+rm -rf "$Profile_home/release1"
+rm -rf "$Profile_home/release-1.0.0.1.zip"
+rm -rf "$Profile_home/release-1.0.0.2.zip"
+rm -rf "$Profile_home/release-1.0.0.zip"
+rm -rf "$Profile_home/release-1.0.1.zip"
+rm -rf "$Profile_home/release-1.0.2.zip"
+rm -rf "$Profile_home/release-1.0.3.zip"
+rm -rf "$Profile_home/release1-1.0.0.zip"
+rm -rf "$Profile_home/release1-3.0.0.zip"
+rm -rf "$Profile_home/release2-"
+rm -rf "$Profile_home/release3"
+rm -rf "$Profile_home/release3-1.0.0.zip"
+
+ls -la "$Profile_home
