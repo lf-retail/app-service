@@ -158,68 +158,48 @@ release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 # Print the content of release_content
 echo "$release_content"
 
-# Backup and deploy files
-backup_and_deploy() {
-    local app_name=$1
-    local app_targeted_location=$2
-
-    # Backup timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-
-    # Define paths for old deployment files and backup location
-    old_deployment_path="$targeted_location/$app_targeted_location"
-    backup_path="$backup_location/$app_name-$backup_timestamp"
-
-    # Move old deployment files to backup location
-    mv "$old_deployment_path" "$backup_path"
-
-    # Print information about the backup
-    echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-    # Define paths for new deployment files and targeted location
-    new_deployment_path="$Profile_home/release/$app_name"
-    targeted_path="$targeted_location/$app_targeted_location"
-
-    # Copy new deployment files to targeted location
-    cp -r "$new_deployment_path" "$targeted_path"
-
-    # Print information about the copy
-    echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
-}
-
-# Backup and deploy new files for each application
+# Backup old files for each application with timestamp
 if [ -n "$release_content" ]; then
     targeted_location="{{ targeted_location }}"
+    backup_location="$backup_location"
 
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if the app_targeted_location is not empty
-        if [ -n "$app_targeted_location" ]; then
-            backup_and_deploy "$app_name" "$app_targeted_location"
+    # Iterate through each file in the release directory
+    for file_path in "$Profile_home/release/"*; do
+        if [ -d "$file_path" ]; then
+            # Extract the app_name and app_targeted_location from the directory name
+            app_name=$(basename "$file_path")
+            app_targeted_location=$(grep "$app_name" <<< "$release_content" | cut -d ',' -f 2)
+
+            # Check if the app_targeted_location is not empty
+            if [ -n "$app_targeted_location" ]; then
+                # Backup timestamp
+                backup_timestamp=$(date +'%Y%m%d%H%M%S')
+
+                # Define paths for old deployment files and backup location
+                old_deployment_path="$targeted_location/$app_targeted_location"
+                backup_path="$backup_location/$app_name-$backup_timestamp"
+
+                # Move old deployment files to backup location
+                mv "$old_deployment_path" "$backup_path"
+
+                # Print information about the backup
+                echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+                # Define paths for new deployment files and targeted location
+                new_deployment_path="$Profile_home/release/$app_name"
+                targeted_path="$targeted_location/$app_targeted_location"
+
+                # Copy new deployment files to targeted location
+                cp -r "$new_deployment_path" "$targeted_path"
+
+                # Print information about the copy
+                echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+            fi
         fi
-    done <<< "$release_content"
+    done
+
+    # List the contents of the backup location
+    echo "Backup Location Contents:"
+    ls -la "$backup_location"
 fi
 
-# List the contents of the backup location
-echo "Backup Location Contents:"
-ls -la "$backup_location"
-===============================
-
-       "Backup: newgenapp_jar.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/newgenapp_jar.ear-20240201134119",
-        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: ofme_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/ofme_ejb.ear-20240201134119",
-        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: omniapp_ejb.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        " -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/omniapp_ejb.ear-20240201134119",
-        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup: WFS.ear - {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup/WFS.ear-20240201134119",
-        "Copy: WFS.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/WFS.ear -> {{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Backup Location Contents:",
-        "total 12",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 .",
-        "drwxrwxrwx 93 root     root     4096 Jan 13 12:43 ..",
-        "drwxrwxr-x  3 itdevtra itdevtra 4096 Jan 13 12:43 i"
-    ]
-}
