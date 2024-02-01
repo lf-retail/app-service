@@ -109,3 +109,23 @@ if [ -f "$release_content_file" ]; then
 else
     echo "Error: $release_content_file not found."
 fi
+==============
+
+       "total 36",
+        "drwxrwxr-x 6 itdevtra itdevtra  4096 Feb  1 14:19 .",
+        "drwxrwxrwx 6 root     root     12288 Feb  1 14:19 ..",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 newgenapp_jar.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 ofme_ejb.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 omniapp_ejb.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra   413 Jan 31 14:30 release.txt",
+        "-rw-rw-r-- 1 itdevtra itdevtra     0 Jan 31 14:30 rollback.txt",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 WFS.ear",
+        "Contents of /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/release.txt:",
+        "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "WFS.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01CellCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ]
+}
