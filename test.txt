@@ -135,71 +135,52 @@ if [ -n "$release_content" ]; then
     ls -la "$backup_location"
 fi
 ======================
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-echo "Profile_home: $Profile_home"
-echo "zip_file_url: $zip_file_url"
-echo "zip_file_name: $zip_file_name"
-
-# Remove the existing release directory if it exists
-rm -rf "$Profile_home/release"
-
-# Use unzip to extract contents into the specified directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release"
-
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old files for each application with timestamp
-if [ -n "$release_content" ]; then
-    targeted_location="{{ targeted_location }}"
-    backup_location="$backup_location"
-
-    # Iterate through each file in the release directory
-    for file_path in "$Profile_home/release/"*; do
-        if [ -d "$file_path" ]; then
-            # Extract the app_name and app_targeted_location from the directory name
-            app_name=$(basename "$file_path")
-            app_targeted_location=$(grep "$app_name" <<< "$release_content" | cut -d ',' -f 2)
-
-            # Check if the app_targeted_location is not empty
-            if [ -n "$app_targeted_location" ]; then
-                # Backup timestamp
-                backup_timestamp=$(date +'%Y%m%d%H%M%S')
-
-                # Define paths for old deployment files and backup location
-                old_deployment_path="$targeted_location/$app_targeted_location"
-                backup_path="$backup_location/$app_name-$backup_timestamp"
-
-                # Move old deployment files to backup location
-                mv "$old_deployment_path" "$backup_path"
-
-                # Print information about the backup
-                echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-                # Define paths for new deployment files and targeted location
-                new_deployment_path="$Profile_home/release/$app_name"
-                targeted_path="$targeted_location/$app_targeted_location"
-
-                # Copy new deployment files to targeted location
-                cp -r "$new_deployment_path" "$targeted_path"
-
-                # Print information about the copy
-                echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
-            fi
-        fi
-    done
-
-    # List the contents of the backup location
-    echo "Backup Location Contents:"
-    ls -la "$backup_location"
-fi
-
+TASK [IBPS-deployment : Run deploy on Target Server] ***************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:24
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626 && echo ansible-tmp-1706780883.0154793-3852172-146058556072626="` echo /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706780883.0154793-3852172-146058556072626=/tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3852028ti3ldzwr/tmpcl96vgq7 TO /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3852028ti3ldzwr/tmpcl96vgq7 /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/ /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-01 13:49:09.941481", "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\\nzip_file_name: release-1.0.0.2.zip", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "rc": 0, "start": "2024-02-01 13:49:09.580102", "stderr": "", "delta": "0:00:00.361379", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706780883.0154793-3852172-146058556072626/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
+    "delta": "0:00:00.361379",
+    "end": "2024-02-01 13:49:09.941481",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-02-01 13:49:09.580102",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\nzip_file_name: release-1.0.0.2.zip",
+    "stdout_lines": [
+        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
+        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip",
+        "zip_file_name: release-1.0.0.2.zip"
+    ]
+}
