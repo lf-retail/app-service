@@ -83,3 +83,65 @@ if [ -f "$release_content_file" ]; then
 else
     echo "Error: $release_content_file not found."
 fi
+=============
+TASK [IBPS-deployment : Run deploy on Target Server] ***************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:24
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175 && echo ansible-tmp-1706782198.802189-3860452-146613562326175="` echo /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1706782198.802189-3860452-146613562326175=/tmp/ansible-tmp-1706782198.802189-3860452-146613562326175\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-38603850j7uyxns/tmp1b67v4qa TO /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-38603850j7uyxns/tmp1b67v4qa /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/ /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-01 14:11:05.725446", "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\\nzip_file_name: release-1.0.0.2.zip\\ntotal 36\\ndrwxrwxr-x 6 itdevtra itdevtra  4096 Feb  1 14:11 .\\ndrwxrwxrwx 6 root     root     12288 Feb  1 14:11 ..\\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 newgenapp_jar.ear\\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 ofme_ejb.ear\\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 omniapp_ejb.ear\\n-rw-rw-r-- 1 itdevtra itdevtra   413 Jan 31 14:30 release.txt\\n-rw-rw-r-- 1 itdevtra itdevtra     0 Jan 31 14:30 rollback.txt\\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 WFS.ear\\nCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r\\nCopy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r\\nCopy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "rc": 0, "start": "2024-02-01 14:11:05.368701", "stderr": "", "delta": "0:00:00.356745", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1706782198.802189-3860452-146613562326175/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
+    "delta": "0:00:00.356745",
+    "end": "2024-02-01 14:11:05.725446",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-02-01 14:11:05.368701",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\nzip_file_name: release-1.0.0.2.zip\ntotal 36\ndrwxrwxr-x 6 itdevtra itdevtra  4096 Feb  1 14:11 .\ndrwxrwxrwx 6 root     root     12288 Feb  1 14:11 ..\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 newgenapp_jar.ear\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 ofme_ejb.ear\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 omniapp_ejb.ear\n-rw-rw-r-- 1 itdevtra itdevtra   413 Jan 31 14:30 release.txt\n-rw-rw-r-- 1 itdevtra itdevtra     0 Jan 31 14:30 rollback.txt\ndrwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 WFS.ear\nCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\r\nCopy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\r\nCopy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+    "stdout_lines": [
+        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
+        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip",
+        "zip_file_name: release-1.0.0.2.zip",
+        "total 36",
+        "drwxrwxr-x 6 itdevtra itdevtra  4096 Feb  1 14:11 .",
+        "drwxrwxrwx 6 root     root     12288 Feb  1 14:11 ..",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 newgenapp_jar.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 ofme_ejb.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 omniapp_ejb.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra   413 Jan 31 14:30 release.txt",
+        "-rw-rw-r-- 1 itdevtra itdevtra     0 Jan 31 14:30 rollback.txt",
+        "drwxrwxr-x 3 itdevtra itdevtra  4096 Jan 31 14:15 WFS.ear",
+        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> //ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ]
+}
