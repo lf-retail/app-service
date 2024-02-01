@@ -129,7 +129,8 @@ if [ -n "$release_content" ]; then
             fi
         fi
     done
-fi
 
-# Print the backup location after deploying application files
-echo "Backup Location: $backup_location"
+    # List the contents of the backup location
+    echo "Backup Location Contents:"
+    ls -la "$backup_location"
+fi
