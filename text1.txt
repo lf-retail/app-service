@@ -1,11 +1,70 @@
+name: IBPS-deployment
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh executable
+      run: |
+        chmod +x deploy.sh #rollback.sh
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+
+=======================
+
 - name: Include deploy playbook
   import_playbook: main-deploy.yml
   when: deploy_mode | default(true) | bool
 
 - name: Include rollback playbook
   import_playbook: main-rollback.yml
-  when: rollback_mode | default(false) | bool
+  when: rollback_mode | default(true) | bool
+
+========================
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd" ./playbook/IBPS-deployment.yml
+  ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+ansible-playbook 2.8.18
+  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg
+  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
+Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
+host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg inventory source with ini plugin
+ERROR! this task 'import_playbook' has extra params, which is only allowed in the following modules: import_role, meta, command, import_tasks, raw, win_command, include_role, set_fact, win_shell, shell, include_vars, script, group_by, add_host, include_tasks, include
+
+The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml': line 1, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
 
 
-ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
-
+- name: Include deploy playbook
+  ^ here
+Error: Process completed with exit code 4.
