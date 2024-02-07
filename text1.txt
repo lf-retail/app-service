@@ -1,70 +1,52 @@
-name: IBPS-deployment
-on:
-  workflow_dispatch:
+#!/bin/bash
 
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+rm -rf "$Profile_home/release"
 
-    - name: Debug Working Directory
-      run: |
-        ls -al
-        pwd
-    - name: Make deploy.sh executable
-      run: |
-        chmod +x deploy.sh #rollback.sh
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
-        #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+# Use unzip with -u option to update existing files
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
 
-=======================
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 
-- name: Include deploy playbook
-  import_playbook: main-deploy.yml
-  when: deploy_mode | default(true) | bool
+# Print the content of release_content
+echo "$release_content"
 
-- name: Include rollback playbook
-  import_playbook: main-rollback.yml
-  when: rollback_mode | default(true) | bool
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    targeted_location="$targeted_location"
+    backup_location="$backup_location"  # Use the variable passed from Ansible
 
-========================
-Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
-  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
-  #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd" ./playbook/IBPS-deployment.yml
-  ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
-  shell: /usr/bin/bash -e {0}
-  env:
-    TOKEN_GITHUB: ***
-ansible-playbook 2.8.18
-  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg
-  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python3.6/site-packages/ansible
-  executable location = /usr/bin/ansible-playbook
-  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
-Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
-host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
-script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
-auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
-yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
-Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg inventory source with ini plugin
-ERROR! this task 'import_playbook' has extra params, which is only allowed in the following modules: import_role, meta, command, import_tasks, raw, win_command, include_role, set_fact, win_shell, shell, include_vars, script, group_by, add_host, include_tasks, include
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Backup timestamp
+            backup_timestamp=$(date +'%Y%m%d%H%M%S')
 
-The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml': line 1, column 3, but may
-be elsewhere in the file depending on the exact syntax problem.
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$targeted_location/$app_targeted_location"
+            backup_path="$backup_location/$app_name-$backup_timestamp"
 
-The offending line appears to be:
+            # Move old deployment files to backup location
+            mv "$old_deployment_path" "$backup_path"
 
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+            
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$targeted_location/$app_targeted_location"
 
-- name: Include deploy playbook
-  ^ here
-Error: Process completed with exit code 4.
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
