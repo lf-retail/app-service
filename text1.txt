@@ -1,34 +1,114 @@
-#!/bin/bash
+using workflow
+name: IBPS-deployment
+on:
+  workflow_dispatch:
 
-Profile_home="$1"
-backup_location="$2"
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
 
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-# Rollback old deployment files for each application based on the latest backup
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh executable
+      run: |
+        chmod +x deploy.sh #rollback.sh
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }}" ./playbook/IBPS-deployment.yml
+        #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+================================
+using playbook
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  roles:
+    - IBPS-deployment
+===================================
+using deploy.sh
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+ 
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    mode: '0755'
 
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if the app_targeted_location is not empty
-        if [ -n "$app_targeted_location" ]; then
-            # Find the latest backup directory for the current application
-            latest_backup=$(ls -td "$backup_location/$app_name-"* | head -n1)
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
 
-            # Extract the filename from the latest backup directory
-            backup_filename=$(basename "$latest_backup")
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }} && ./deploy.sh {{ Profile_home }} {{ zip_file_url }} {{ zip_file_name }} {{ backup_location }}"
+  register: deploy_result
+  ignore_errors: yes
 
-            # Construct paths for the latest backup files and targeted location
-            backup_path="$latest_backup"
-            targeted_path="$app_targeted_location/$backup_filename"
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ backup_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"  
 
-            # Copy files from the latest backup to targeted location
-            cp -r "$backup_path" "$targeted_path"
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
 
-            # Print information about the rollback
-            echo "Rollback: $app_name - $backup_path -> $targeted_path"
-        fi
-    done <<< "$release_content"
-fi
+- name: Clean up zip file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ zip_file_name }}"
+    state: absent
+  run_once: true   
+======================
+using rollback.sh
+
+- name: Copy rollback.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/rollback.sh"
+    dest: "{{ Profile_home }}/rollback.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }} && ./rollback.sh {{ Profile_home }} {{ backup_location }}"
+  register: deploy_result
+  ignore_errors: yes
+
+- name: List contents of the directory after copying rollback.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Clean up zip file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ zip_file_name }}"
+    state: absent
+  run_once: true   
