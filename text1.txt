@@ -196,3 +196,6 @@ ansible-playbook 2.8.18
   python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
 Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
 Error: Process completed with exit code 1.
+
+
+ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
