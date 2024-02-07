@@ -50,3 +50,51 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+=====================
+
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+ 
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    mode: '0755'
+
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }} && ./deploy.sh {{ Profile_home }} {{ zip_file_url }} {{ zip_file_name }} {{ backup_location }}"
+  register: deploy_result
+  ignore_errors: yes
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ backup_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"  
+
+- name: List contents of the directory after copying deploy.sh
+  command: ls -al "{{ targeted_location }}"
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Clean up zip file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ zip_file_name }}"
+    state: absent
+  run_once: true   
