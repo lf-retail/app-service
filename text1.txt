@@ -112,3 +112,16 @@ using rollback.sh
     path: "/tmp/{{ zip_file_name }}"
     state: absent
   run_once: true   
+=======
+
+---
+- name: " STOP WAS APP SERVER"
+  import_tasks: main-deploy.yml
+  tags:
+    - deploy
+
+- name: " STOP WAS APP SERVER"
+  import_tasks: main-rollback.yml
+  tags:
+    - rollback    
+    
