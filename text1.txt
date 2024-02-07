@@ -184,3 +184,15 @@ ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.w
     - name: Include rollback playbook
       import_playbook: main-rollback.yml
       when: rollback_mode | default(true)
+=========================
+
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+ERROR! the playbook: rollback_mode=true could not be found
+ansible-playbook 2.8.18
+  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg
+  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
+Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
+Error: Process completed with exit code 1.
