@@ -199,3 +199,36 @@ Error: Process completed with exit code 1.
 
 
 ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+
+
+
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  #ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd" ./playbook/IBPS-deployment.yml
+  ansible-playbook -vvv -b --extra-vars "target=target_jb destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+ansible-playbook 2.8.18
+  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg
+  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
+Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
+host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg inventory source with ini plugin
+ERROR! this task 'import_playbook' has extra params, which is only allowed in the following modules: script, include_role, win_shell, add_host, group_by, include, include_vars, include_tasks, raw, import_role, shell, command, set_fact, win_command, meta, import_tasks
+
+The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml': line 1, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+- name: Include deploy playbook
+  ^ here
+Error: Process completed with exit code 4.
