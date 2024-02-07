@@ -135,3 +135,42 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+===================
+
+#!/bin/bash
+
+Profile_home="$1"
+backup_location="$2"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Rollback old deployment files for each application based on the latest backup
+if [ -n "$release_content" ]; then
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Find the latest backup directory for the current application
+            latest_backup=$(ls -td "$backup_location/$app_name-"* | head -n1)
+
+            # Extract the filename from the latest backup directory
+            backup_filename=$(basename "$latest_backup")
+
+            # Extract the original filename without the timestamp
+            original_filename=$(echo "$backup_filename" | sed 's/-[0-9]*$//')
+
+            # Construct paths for the latest backup files and targeted location
+            backup_path="$latest_backup"
+            targeted_path="$app_targeted_location/$original_filename"
+
+            # Copy files from the latest backup to targeted location
+            cp -r "$backup_path" "$targeted_path"
+
+            # Print information about the rollback
+            echo "Rollback: $app_name - $backup_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
