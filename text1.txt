@@ -50,3 +50,41 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+============
+#!/bin/bash
+
+Profile_home="$1"
+targeted_location="$2"
+backup_location="$3"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Rollback old deployment files for each application based on the latest timestamp
+if [ -n "$release_content" ]; then
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Find the latest backup directory for the application
+            latest_backup=$(ls -td "$backup_location/$app_name-"* | head -n 1)
+
+            # Check if a backup directory exists for the application
+            if [ -n "$latest_backup" ]; then
+                # Define the path for the old deployment files
+                old_deployment_path="$latest_backup/$app_targeted_location"
+                
+                # Define the path for the targeted location
+                targeted_path="$targeted_location/$app_targeted_location"
+
+                # Copy old deployment files from backup to targeted location
+                cp -r "$old_deployment_path" "$targeted_path"
+
+                # Print information about the rollback
+                echo "Rollback: $app_name - $old_deployment_path -> $targeted_path"
+            else
+                echo "No backup found for $app_name."
+            fi
+        fi
+    done <<< "$release_content"
+fi
