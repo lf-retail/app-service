@@ -54,8 +54,7 @@ fi
 #!/bin/bash
 
 Profile_home="$1"
-targeted_location="$2"
-backup_location="$3"
+backup_location="$2"
 
 # Read the content of release.txt
 release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
@@ -72,10 +71,10 @@ if [ -n "$release_content" ]; then
             # Check if a backup directory exists for the application
             if [ -n "$latest_backup" ]; then
                 # Define the path for the old deployment files
-                old_deployment_path="$latest_backup/$app_targeted_location"
-                
+                old_deployment_path="$latest_backup/$app_name"
+
                 # Define the path for the targeted location
-                targeted_path="$targeted_location/$app_targeted_location"
+                targeted_path="$app_targeted_location"
 
                 # Copy old deployment files from backup to targeted location
                 cp -r "$old_deployment_path" "$targeted_path"
