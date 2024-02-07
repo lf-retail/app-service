@@ -125,3 +125,30 @@ using rollback.sh
   tags:
     - rollback    
     
+============
+
+- name: Deploy or Rollback
+  include_tasks: main-deploy.yml
+  when: deploy_or_rollback == 'deploy'
+  tags:
+    - deploy
+
+- name: Deploy or Rollback
+  include_tasks: main-rollback.yml
+  when: deploy_or_rollback == 'rollback'
+  tags:
+    - rollback
+-------------
+- name: Run Ansible Playbook
+  env:
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+  run: |
+    cd ${{ github.workspace }}
+    ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_or_rollback=deploy" ./playbook/IBPS-deployment.yml
+-----------
+- name: Run Ansible Playbook - Rollback
+  env:
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+  run: |
+    cd ${{ github.workspace }}
+    ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_or_rollback=rollback" ./playbook/IBPS-deployment.yml
