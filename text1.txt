@@ -186,3 +186,4 @@ Path: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAP
 Thanks,
 Shanmuganathan M.
 	
+Request for Snapshot of UAT Server (10.15.13.148)
