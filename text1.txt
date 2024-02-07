@@ -232,3 +232,13 @@ The offending line appears to be:
 - name: Include deploy playbook
   ^ here
 Error: Process completed with exit code 4.
+
+
+
+- name: Include deploy playbook
+  import_playbook: main-deploy.yml
+  when: deploy_mode | default(true)
+
+- name: Include rollback playbook
+  import_playbook: main-rollback.yml
+  when: rollback_mode | default(true)
