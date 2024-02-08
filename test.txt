@@ -354,9 +354,6 @@ rm -rf "$Profile_home/release"
 # Use unzip to extract contents into the specified directory
 unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
 
-# List files after extraction in the specified path
-#ls -la "$Profile_home/release"
-
 # Read the content of release.txt
 release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 
@@ -365,37 +362,19 @@ echo "$release_content"
 
 # Deploy new files for each application
 if [ -n "$release_content" ]; then
-    targeted_location="{{ targeted_location }}"
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if the app_targeted_location is not empty
+        if [ -n "$app_targeted_location" ]; then
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"
+            targeted_path="$app_targeted_location"
 
-    # Iterate through each file in the release directory
-    for file_path in "$Profile_home/release/"*; do
-        if [ -d "$file_path" ]; then
-            # Extract the app_name and app_targeted_location from the directory name
-            app_name=$(basename "$file_path")
-            app_targeted_location=$(grep "$app_name" <<< "$release_content" | cut -d ',' -f 2)
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
 
-            # Check if the app_targeted_location is not empty
-            if [ -n "$app_targeted_location" ]; then
-                # Define paths for new deployment files and targeted location
-                new_deployment_path="$Profile_home/release/$app_name"
-                targeted_path="$targeted_location/$app_targeted_location"
-
-                # Copy new deployment files to targeted location
-                cp -r "$new_deployment_path" "$targeted_path"
-
-                # Print information about the copy
-                echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
-            fi
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
         fi
-    done
+    done <<< "$release_content"
 fi
-================
-
- "start": "2024-02-08 16:32:23.889085",
-    "stderr": "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell’: No such file or directory",
-    "stderr_lines": [
-        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
-        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
-        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
-        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell’: No such file or directory"
-    ],
