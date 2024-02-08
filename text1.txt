@@ -175,15 +175,4 @@ if [ -n "$release_content" ]; then
     done <<< "$release_content"
 fi
 ==========================
-
-Hi Sreedevi,
-
-Do you have any snapshot for the below UAT server 
-
-Serverip: 10.15.13.148
-Path: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
-
-Thanks,
-Shanmuganathan M.
-	
-Request for Snapshot of UAT Server (10.15.13.148)
+CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
