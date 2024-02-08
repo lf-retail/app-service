@@ -441,3 +441,35 @@ ok: [ANT3CASAPPS01] => {
         "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
     ]
 }
+=================
+
+#!/bin/bash
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Read the content of release.txt and process each line
+while IFS=, read -r app_name app_targeted_location; do
+    if [ -n "$app_targeted_location" ]; then
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$app_name"
+        targeted_path="$app_targeted_location"
+
+        # Copy new deployment files to targeted location
+        cp -r "$new_deployment_path" "$targeted_path"
+
+        # Print information about the copy
+        echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+    fi
+done < "$Profile_home/release/release.txt"
