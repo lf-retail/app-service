@@ -586,3 +586,14 @@ ok: [ANT3CASAPPS01] => {
         "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
     ]
 }
+===================
+
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ targeted_location }}"
+  register: ls_result    
+
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
