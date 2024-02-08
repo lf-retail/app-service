@@ -719,3 +719,48 @@ newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedAp
 ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
 omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
 WFS.ear,/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell
+=================
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Read the content of release.txt and process each line
+while IFS=, read -r app_name app_targeted_location; do
+    if [ -n "$app_targeted_location" ]; then
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$app_name"
+        targeted_path="$app_targeted_location"
+
+        # Check if the file exists in the targeted location and if it's the same
+        if [ -f "$targeted_path/$app_name" ]; then
+            local_checksum=$(md5sum "$new_deployment_path" | awk '{ print $1 }')
+            remote_checksum=$(md5sum "$targeted_path/$app_name" 2>/dev/null | awk '{ print $1 }')
+
+            if [ "$local_checksum" != "$remote_checksum" ]; then
+                # Copy new deployment files to targeted location
+                cp -r "$new_deployment_path" "$targeted_path"
+
+                # Print information about the copy
+                echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+            else
+                echo "Skipping copy of $app_name. File already exists and checksum matches."
+            fi
+        else
+            echo "Skipping copy of $app_name. Targeted location $targeted_path does not exist."
+        fi
+    fi
+done < "$Profile_home/release/release.txt"
