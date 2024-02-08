@@ -1,120 +1,38 @@
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:24
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638 && echo ansible-tmp-1707406787.7279842-3245114-260834053990638="` echo /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707406787.7279842-3245114-260834053990638=/tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3245038buurgsf6/tmp9v78k6j0 TO /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3245038buurgsf6/tmp9v78k6j0 /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/ /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-08 19:41:05.298321", "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\\nzip_file_name: release-1.0.0.2.zip\\nCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r\\nCopy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r\\nCopy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/backup /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "rc": 0, "start": "2024-02-08 19:41:04.951450", "stderr": "", "delta": "0:00:00.346871", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/backup /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707406787.7279842-3245114-260834053990638/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/backup /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-    "delta": "0:00:00.346871",
-    "end": "2024-02-08 19:41:05.298321",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./deploy.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip release-1.0.0.2.zip /ibm/IBM-CAS/WebSphere/backup /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-02-08 19:41:04.951450",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin\nzip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip\nzip_file_name: release-1.0.0.2.zip\nCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\r\nCopy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\r\nCopy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-    "stdout_lines": [
-        "Profile_home: /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin",
-        "zip_file_url: https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.2/release-1.0.0.2.zip",
-        "zip_file_name: release-1.0.0.2.zip",
-        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-    ]
-}
+#!/bin/bash
 
-TASK [IBPS-deployment : Run ls -la on the Target Server] ***********************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:31
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860 && echo ansible-tmp-1707406788.6075678-3245122-169024760658860="` echo /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707406788.6075678-3245122-169024760658860=/tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3245038buurgsf6/tmpo8_ra_bh TO /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3245038buurgsf6/tmpo8_ra_bh /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/ /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-08 19:41:05.975324", "stdout": "total 12\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .\\ndrwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear", "cmd": ["ls", "-la", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"], "rc": 0, "start": "2024-02-08 19:41:05.650008", "stderr": "", "delta": "0:00:00.325316", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707406788.6075678-3245122-169024760658860/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": [
-        "ls",
-        "-la",
-        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-    ],
-    "delta": "0:00:00.325316",
-    "end": "2024-02-08 19:41:05.975324",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-            "_uses_shell": false,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-02-08 19:41:05.650008",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "total 12\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .\ndrwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear",
-    "stdout_lines": [
-        "total 12",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .",
-        "drwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
-    ]
-}
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
 
-TASK [IBPS-deployment : Display ls -la result] *********************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:37
-ok: [ANT3CASAPPS01] => {
-    "ls_result.stdout_lines": [
-        "total 12",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .",
-        "drwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
-    ]
-}
-META: ran handlers
-META: ran handlers
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Iterate over each file in the release directory
+for file_path in "$Profile_home"/release/*; do
+    if [ -f "$file_path" ]; then
+        # Extract the file name
+        file_name=$(basename "$file_path")
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$file_name"
+        targeted_path="$Profile_home/installedApps/ANT2CASAPPS01Node01Cell"
+
+        # Check if the targeted location exists
+        if [ -d "$targeted_path" ]; then
+            # Copy new deployment files to targeted location, overwriting if necessary
+            cp -rf "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $file_name - $new_deployment_path -> $targeted_path"
+        else
+            echo "Skipping copy of $file_name. Targeted location $targeted_path does not exist."
+        fi
+    fi
+done
