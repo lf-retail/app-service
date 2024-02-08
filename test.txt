@@ -389,3 +389,13 @@ if [ -n "$release_content" ]; then
         fi
     done
 fi
+================
+
+ "start": "2024-02-08 16:32:23.889085",
+    "stderr": "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory\ncp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell’: No such file or directory",
+    "stderr_lines": [
+        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
+        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
+        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell\\r’: No such file or directory",
+        "cp: cannot create directory ‘{{ targeted_location }}//ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell’: No such file or directory"
+    ],
