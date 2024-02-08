@@ -588,12 +588,12 @@ ok: [ANT3CASAPPS01] => {
 }
 ===================
 
-- name: Run ls -la on the Target Server
+- name: List files in targeted_location
   become: true
   become_user: itdevtra
-  command: "ls -la {{ targeted_location }}"
-  register: ls_result    
+  command: "find {{ targeted_location }} -type f"
+  register: files_list
 
-- name: Display ls -la result
-  debug:
-    var: ls_result.stdout_lines   
+- debug:
+    msg: "File found: {{ item }}"
+  loop: "{{ files_list.stdout_lines }}"
