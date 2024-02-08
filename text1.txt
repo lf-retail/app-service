@@ -36,3 +36,53 @@ for file_path in "$Profile_home"/release/*; do
         fi
     fi
 done
+===========================
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+echo "Profile_home: $Profile_home"
+echo "zip_file_url: $zip_file_url"
+echo "zip_file_name: $zip_file_name"
+
+# Remove the existing release directory if it exists
+rm -rf "$Profile_home/release"
+
+# Use unzip to extract contents into the specified directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/"
+
+# Check if release.txt exists
+if [ ! -f "$Profile_home/release/release.txt" ]; then
+    echo "Error: release.txt file not found."
+    exit 1
+fi
+
+# Change directory to the release directory
+cd "$Profile_home/release" || exit
+
+# Read the content of release.txt and process each line
+while IFS=, read -r app_name app_targeted_location; do
+    if [ -n "$app_targeted_location" ]; then
+        # Define paths for application files and targeted location
+        app_file="$Profile_home/release/$app_name"
+        targeted_path="$app_targeted_location"
+
+        # Check if the file exists in the release directory
+        if [ -f "$app_file" ]; then
+            # Create directories if they don't exist
+            mkdir -p "$targeted_path"
+
+            # Move application file to targeted location
+            mv "$app_file" "$targeted_path/"
+
+            # Print information about the move
+            echo "Moved: $app_name to $targeted_path"
+        else
+            echo "Error: Application file $app_name not found in the release directory."
+        fi
+    fi
+done < "release.txt"
