@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Profile_home="$1"
+targeted_location="$1"
 backup_location="$2"
 
 # Find the latest backup directory with date and time
@@ -23,9 +23,9 @@ for file in "$latest_backup"/*; do
         filename=$(basename "$file")
         
         # Copy the file to the targeted location
-        cp -r "$file" "$Profile_home/$filename"
+        cp -r "$file" "$targeted_location/$filename"
         
         # Print information about the rollback
-        echo "Rollback: $file -> $Profile_home/$filename"
+        echo "Rollback: $file -> $targeted_location/$filename"
     fi
 done
