@@ -1,94 +1,38 @@
-#!/bin/bash
+Hi Team,
 
-chmod -R 755 "$targeted_location"
-chmod -R 755 "$backup_location"
+Appologies 
 
-targeted_location="$1"
-backup_location="$2"
-
-# Find the latest backup directory with date and time
-latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
-
-if [ -z "$latest_backup" ]; then
-    echo "No backup directories found."
-    exit 1
-fi
-
-echo "Latest backup directory: $latest_backup"
-
-# List the contents of the latest backup directory
-ls -la "$latest_backup"
-
-# Iterate through each file in the latest backup directory
-for file in "$latest_backup"/*; do
-    if [ -f "$file" ]; then
-        # Get the filename without the path
-        filename=$(basename "$file")
-        
-        # Copy the file to the targeted location
-        cp -r "$file" "$targeted_location/$filename"
-        
-        # Print information about the rollback
-        echo "Rollback: $file -> $targeted_location/$filename"
-    fi
-done
-
-=========================
-
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:9
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400 && echo ansible-tmp-1707486412.9396536-3703575-49254885972400="` echo /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707486412.9396536-3703575-49254885972400=/tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3703515hs0sazje/tmpk_fklfio TO /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3703515hs0sazje/tmpk_fklfio /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/ /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-09 17:48:11.880311", "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602\\ntotal 24\\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .\\ndrwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear\\ndrwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear\\ndrwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "rc": 0, "start": "2024-02-09 17:48:11.534970", "stderr": "chmod: cannot access \\u2018\\u2019: No such file or directory\\nchmod: cannot access \\u2018\\u2019: No such file or directory", "delta": "0:00:00.345341", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup",
-    "delta": "0:00:00.345341",
-    "end": "2024-02-09 17:48:11.880311",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-02-09 17:48:11.534970",
-    "stderr": "chmod: cannot access ‘’: No such file or directory\nchmod: cannot access ‘’: No such file or directory",
-    "stderr_lines": [
-        "chmod: cannot access ‘’: No such file or directory",
-        "chmod: cannot access ‘’: No such file or directory"
-    ],
-    "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602\ntotal 24\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .\ndrwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear\ndrwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear\ndrwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear",
-    "stdout_lines": [
-        "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602",
-        "total 24",
-        "drwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .",
-        "drwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear",
-        "drwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear",
-        "drwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear"
-    ]
-}
+        "drwxrwxrwx  4 root root 4096 Sep 21  2017 axis2.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 bam.ear",
+        "drwxr-xr-x  4 root root 4096 May 15  2019 brms.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 chat.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 classificator_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 Jul 12  2019 classificator_ejb_HF28.ear",
+        "drwxrwxrwx  5 root root 4096 Feb  9  2017 DefaultApplication.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 formviewer.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 iforms.ear",
+        "drwxrwxrwx  4 root root 4096 Feb  9  2017 ivtApp.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 mdm.ear",
+        "drwxr-xr-x  4 root root 4096 Jul 12  2019 mdm_HF28.ear",
+        "drwxrwxrwx  3 root root 4096 May 29  2017 newgenapp_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 ofme_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 ofservices.ear",
+        "drwxr-xr-x  4 root root 4096 May 16  2019 omniapp.ear",
+        "drwxr-xr-x  3 root root 4096 May 16  2019 omniapp_ejb.ear",
+        "drwxr-xr-x  3 root root 4096 May 14  2019 omnidocs_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 omnidocs_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 omniforms.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 omnirules_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 May 14  2019 OpAll_war.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 orm.ear",
+        "drwxr-xr-x  4 root root 4096 May 17  2019 otms.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 10  2019 pmweb.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 pmweb_ejb.ear",
+        "drwxrwxrwx  3 root root 4096 Feb  9  2017 query.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 reportingsolution_ejb.ear",
+        "drwxr-xr-x  4 root root 4096 Jun 27  2018 test_war.ear",
+        "drwxr-xr-x  3 root root 4096 May 17  2019 TimerServiceBean.ear",
+        "drwxr-xr-x  4 root root 4096 Dec 25  2019 webdesktop.ear",
+        "drwxr-xr-x  3 root root 4096 Feb 21  2019 wfcustom_ejb_jar1.ear",
+        "drwxr-xr-x  3 root root 4096 Dec 12  2019 wfcustom_ejb_jar.ear",
+        "drwxr-xr-x  3 root root 4096 May 29  2019 WFS.ear"
