@@ -59,3 +59,75 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+============================
+
+
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602/newgenapp_jar.ear",
+        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/newgenapp_jar.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602/ofme_ejb.ear",
+        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/ofme_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602/omniapp_ejb.ear",
+        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/omniapp_ejb.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+        "Backup: WFS.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell -> /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602/WFS.ear",
+        "Copy: WFS.ear - /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin/release/WFS.ear -> /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ]
+}
+
+TASK [IBPS-deployment : Run ls -la on the Target Server] ***********************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:31
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979 && echo ansible-tmp-1707464684.9936805-3574618-68005815581979="` echo /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1707464684.9936805-3574618-68005815581979=/tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3574537fauj02qg/tmpxfewg1mr TO /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3574537fauj02qg/tmpxfewg1mr /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/ /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-09 11:46:03.379754", "stdout": "total 1424\\ndrwxrwxr-x 4 itdevtra itdevtra    4096 Feb  9 11:46 .\\ndrwxrwxrwx 7 root     root        4096 Feb  9 11:01 ..\\ndrwxrwxr-x 2 itdevtra itdevtra    4096 Feb  9 11:01 META-INF\\ndrwxrwxr-x 3 itdevtra itdevtra    4096 Feb  9 11:46 WFS.ear\\n-rw-rw-r-- 1 itdevtra itdevtra 1434683 Feb  9 11:01 wfs_ejb.jar", "cmd": ["ls", "-la", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"], "rc": 0, "start": "2024-02-09 11:46:03.055944", "stderr": "", "delta": "0:00:00.323810", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707464684.9936805-3574618-68005815581979/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": [
+        "ls",
+        "-la",
+        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+    ],
+    "delta": "0:00:00.323810",
+    "end": "2024-02-09 11:46:03.379754",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
+            "_uses_shell": false,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-02-09 11:46:03.055944",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "total 1424\ndrwxrwxr-x 4 itdevtra itdevtra    4096 Feb  9 11:46 .\ndrwxrwxrwx 7 root     root        4096 Feb  9 11:01 ..\ndrwxrwxr-x 2 itdevtra itdevtra    4096 Feb  9 11:01 META-INF\ndrwxrwxr-x 3 itdevtra itdevtra    4096 Feb  9 11:46 WFS.ear\n-rw-rw-r-- 1 itdevtra itdevtra 1434683 Feb  9 11:01 wfs_ejb.jar",
+    "stdout_lines": [
+        "total 1424",
+        "drwxrwxr-x 4 itdevtra itdevtra    4096 Feb  9 11:46 .",
+        "drwxrwxrwx 7 root     root        4096 Feb  9 11:01 ..",
+        "drwxrwxr-x 2 itdevtra itdevtra    4096 Feb  9 11:01 META-INF",
+        "drwxrwxr-x 3 itdevtra itdevtra    4096 Feb  9 11:46 WFS.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra 1434683 Feb  9 11:01 wfs_ejb.jar"
+    ]
+}
