@@ -1,5 +1,8 @@
 #!/bin/bash
 
+chmod -R 755 "$targeted_location"
+chmod -R 755 "$backup_location"
+
 targeted_location="$1"
 backup_location="$2"
 
@@ -29,31 +32,32 @@ for file in "$latest_backup"/*; do
         echo "Rollback: $file -> $targeted_location/$filename"
     fi
 done
-==================
+
+=========================
 
 TASK [IBPS-deployment : Run deploy on Target Server] ***************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:9
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990 && echo ansible-tmp-1707485164.3879015-3696523-173619258865990="` echo /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707485164.3879015-3696523-173619258865990=/tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990\n', b'')
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400 && echo ansible-tmp-1707486412.9396536-3703575-49254885972400="` echo /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1707486412.9396536-3703575-49254885972400=/tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400\n', b'')
 Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-369641760gi7gsu/tmporjj5y01 TO /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/AnsiballZ_command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3703515hs0sazje/tmpk_fklfio TO /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py
 <10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-369641760gi7gsu/tmporjj5y01 /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/AnsiballZ_command.py\n', b'')
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3703515hs0sazje/tmpk_fklfio /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py\n', b'')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/ /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/ /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py && sleep 0'"'"''
 <10.15.13.148> (0, b'', b'')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-09 17:27:23.294630", "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602\\ntotal 24\\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .\\ndrwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear\\ndrwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear\\ndrwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "rc": 0, "start": "2024-02-09 17:27:22.977122", "stderr": "", "delta": "0:00:00.317508", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-09 17:48:11.880311", "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602\\ntotal 24\\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .\\ndrwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear\\ndrwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear\\ndrwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear", "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "rc": 0, "start": "2024-02-09 17:48:11.534970", "stderr": "chmod: cannot access \\u2018\\u2019: No such file or directory\\nchmod: cannot access \\u2018\\u2019: No such file or directory", "delta": "0:00:00.345341", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
 <10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707485164.3879015-3696523-173619258865990/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707486412.9396536-3703575-49254885972400/ > /dev/null 2>&1 && sleep 0'"'"''
 <10.15.13.148> (0, b'', b'')
 changed: [ANT3CASAPPS01] => {
     "changed": true,
     "cmd": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup",
-    "delta": "0:00:00.317508",
-    "end": "2024-02-09 17:27:23.294630",
+    "delta": "0:00:00.345341",
+    "end": "2024-02-09 17:48:11.880311",
     "invocation": {
         "module_args": {
             "_raw_params": "cd /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin && ./rollback.sh /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell /ibm/IBM-CAS/WebSphere/backup",
@@ -70,9 +74,12 @@ changed: [ANT3CASAPPS01] => {
         }
     },
     "rc": 0,
-    "start": "2024-02-09 17:27:22.977122",
-    "stderr": "",
-    "stderr_lines": [],
+    "start": "2024-02-09 17:48:11.534970",
+    "stderr": "chmod: cannot access ‘’: No such file or directory\nchmod: cannot access ‘’: No such file or directory",
+    "stderr_lines": [
+        "chmod: cannot access ‘’: No such file or directory",
+        "chmod: cannot access ‘’: No such file or directory"
+    ],
     "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602\ntotal 24\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb  9 11:46 .\ndrwxrwxr-x 8 itdevtra itdevtra 4096 Feb  9 11:46 ..\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 newgenapp_jar.ear\ndrwxrwxr-x 4 itdevtra itdevtra 4096 Feb  9 11:46 ofme_ejb.ear\ndrwxrwxr-x 5 itdevtra itdevtra 4096 Feb  9 11:46 omniapp_ejb.ear\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 11:46 WFS.ear",
     "stdout_lines": [
         "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240209114602",
