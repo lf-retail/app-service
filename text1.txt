@@ -1,61 +1,40 @@
 #!/bin/bash
 
 Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
+backup_location="$2"
 
-echo "Profile_home: $Profile_home"
-echo "zip_file_url: $zip_file_url"
-echo "zip_file_name: $zip_file_name"
+# Find the latest backup directory with date and time
+latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
 
-ls -la "$Profile_home/release"
+if [ -z "$latest_backup" ]; then
+    echo "No backup directories found."
+    exit 1
+fi
 
-rm -rf "$Profile_home/release"
+echo "Latest backup directory: $latest_backup"
 
-# Use unzip with -u option to update existing files
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
-
-ls -la "$Profile_home/release"
-
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+# Read the content of release.txt from the latest backup directory
+release_content=$(cat "$latest_backup/release/release.txt" 2>/dev/null)
 
 # Print the content of release_content
 echo "$release_content"
 
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
+# Iterate through each line in release_content
+while IFS=, read -r app_name app_targeted_location; do
+    # Check if both app_name and app_targeted_location are not empty
+    if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+        # Construct paths for old deployment files in the latest backup directory
+        backup_path="$latest_backup/$app_name"
 
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
+        # Check if the backup directory for the application exists
+        if [ -d "$backup_path" ]; then
+            # Copy backup files to targeted location
+            cp -r "$backup_path" "$app_targeted_location"
 
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            targeted_path="$app_targeted_location"
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$targeted_path"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+            # Print information about the rollback
+            echo "Rollback: $app_name - $backup_path -> $app_targeted_location"
+        else
+            echo "Backup directory not found for $app_name."
         fi
-    done <<< "$release_content"
-fi
+    fi
+done <<< "$release_content"
