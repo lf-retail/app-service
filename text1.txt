@@ -1,62 +1,64 @@
-#!/bin/bash
+- name: Download zip from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+ 
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/{{ zip_file_name }}"
+    mode: '0755'
 
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
+- name: give permisson to targeted location
+  ansible.builtin.file:
+    path: "{{ targeted_location }}"
+    mode: '0755'
 
-echo "Profile_home: $Profile_home"
-echo "zip_file_url: $zip_file_url"
-echo "zip_file_name: $zip_file_name"
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
 
-ls -la "$Profile_home/release"
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }} && ./deploy.sh {{ Profile_home }} {{ zip_file_url }} {{ zip_file_name }} {{ backup_location }}"
+  register: deploy_result
+  ignore_errors: yes
 
-rm -rf "$Profile_home/release"
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps"
+  register: ls_result    
 
-# Use unzip with -u option to update existing files
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+- name: Display ls -la result
+  debug:
+    var: ls_result.stdout_lines   
 
-ls -la "$Profile_home/release"
+- name: Run ls -la on the Target Server
+  become: true
+  become_user: itdevtra
+  command: "ls -la {{ backup_location }}"
+  register: ls_result1    
 
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+- name: Display ls -la result
+  debug:
+    var: ls_result1.stdout_lines     
 
-# Print the content of release_content
-echo "$release_content"
+#- name: List files in targeted_location
+ # become: true
+  #become_user: itdevtra
+  #command: "find {{ targeted_location }} -maxdepth 1 -type f"
+  #register: files_list
 
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    targeted_location="$targeted_location"
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if the app_targeted_location is not empty
-        if [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$targeted_location/$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Move old deployment files to backup location
-            mv "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            targeted_path="$targeted_location/$app_targeted_location"
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$targeted_path"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
-        fi
-    done <<< "$release_content"
-fi
+#- debug:
+ #   msg: "File found: {{ item }}"
+  #loop: "{{ files_list.stdout_lines }}"
