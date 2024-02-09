@@ -31,7 +31,7 @@ if [ -n "$release_content" ]; then
 
     # Create a backup directory with a timestamp
     backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/$backup_timestamp"
+    backup_directory="$backup_location/backup-$backup_timestamp"
     mkdir -p "$backup_directory"
 
     # Iterate through each line in release_content
@@ -60,82 +60,3 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
-=============================
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:24
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311 && echo ansible-tmp-1707411989.1839724-3276265-53755059080311="` echo /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707411989.1839724-3276265-53755059080311=/tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3276180s87pnaki/tmpsvw_tyyk TO /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3276180s87pnaki/tmpsvw_tyyk /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311/ /tmp/ansible-tmp-1707411989.1839724-3276265-53755059080311/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:31
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884 && echo ansible-tmp-1707411990.0900831-3276273-12329803572884="` echo /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884 `" ) && sleep 0'"'"''
-<10.15.13.148> (0, b'ansible-tmp-1707411990.0900831-3276273-12329803572884=/tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-3276180s87pnaki/tmpzidc36_7 TO /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/AnsiballZ_command.py
-<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
-<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-3276180s87pnaki/tmpzidc36_7 /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/AnsiballZ_command.py\n', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/ /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-08 21:07:47.573231", "stdout": "total 12\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .\\ndrwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear", "cmd": ["ls", "-la", "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"], "rc": 0, "start": "2024-02-08 21:07:47.227211", "stderr": "", "delta": "0:00:00.346020", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": false, "strip_empty_ends": true, "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
-<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1707411990.0900831-3276273-12329803572884/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.13.148> (0, b'', b'')
-changed: [ANT3CASAPPS01] => {
-    "changed": true,
-    "cmd": [
-        "ls",
-        "-la",
-        "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-    ],
-    "delta": "0:00:00.346020",
-    "end": "2024-02-08 21:07:47.573231",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "ls -la /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell",
-            "_uses_shell": false,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": null,
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "rc": 0,
-    "start": "2024-02-08 21:07:47.227211",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "total 12\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .\ndrwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear",
-    "stdout_lines": [
-        "total 12",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .",
-        "drwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
-    ]
-}
-
-TASK [IBPS-deployment : Display ls -la result] *********************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:37
-ok: [ANT3CASAPPS01] => {
-    "ls_result.stdout_lines": [
-        "total 12",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 17:42 .",
-        "drwxrwxrwx 7 root     root     4096 Feb  7 16:19 ..",
-        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  8 16:39 WFS.ear"
-    ]
-}
-==================================
