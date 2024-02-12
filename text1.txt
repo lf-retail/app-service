@@ -1,43 +1,90 @@
-Request for File Restoration: Replacement of Deleted Files
-An unfortunate incident occurred recently where several files were inadvertently deleted from the directory "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell." These files are essential components for our operations.
+#!/bin/bash
 
-Below is a list of the deleted files:
+chmod -R 755 "$targeted_location"
+chmod -R 755 "$backup_location"
 
-axis2.ear",
-bam.ear",
-brms.ear",
-chat.ear",
-classificator_ejb.ear",
-classificator_ejb_HF28.ear",
-DefaultApplication.ear",
-formviewer.ear",
-iforms.ear",
-ivtApp.ear",
-mdm.ear",
-mdm_HF28.ear",
-newgenapp_jar.ear",
-ofme_ejb.ear",
-ofservices.ear",
-omniapp.ear",
-omniapp_ejb.ear",
-omnidocs_ejb.ear",
-omnidocs_war.ear",
-omniforms.ear",
-omnirules_ejb.ear",
-OpAll_war.ear",
-orm.ear",
-otms.ear",
-pmweb.ear",
-pmweb_ejb.ear",
-query.ear",
-reportingsolution_ejb.ear",
-test_war.ear",
-TimerServiceBean.ear",
-webdesktop.ear",
-wfcustom_ejb_jar1.ear",
-wfcustom_ejb_jar.ear",
-WFS.ear"
+targeted_location="$1"
+backup_location="$2"
 
-I sincerely apologize for any inconvenience this may have caused. In order to rectify this situation, I kindly request that the aforementioned files be replaced in the same directory path mentioned above.
+# Find the latest backup directory with date and time
+latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
 
-Please let me know if you require any further information or assistance.
+if [ -z "$latest_backup" ]; then
+    echo "No backup directories found."
+    exit 1
+fi
+
+echo "Latest backup directory: $latest_backup"
+
+# List the contents of the latest backup directory
+ls -la "$latest_backup"
+
+# Iterate through each file in the latest backup directory
+for file in "$latest_backup"/*; do
+    if [ -f "$file" ]; then
+        # Get the filename without the path
+        filename=$(basename "$file")
+        
+        # Copy the file to the targeted location
+        cp -r "$file" "$targeted_location/$filename"
+        
+        # Print information about the rollback
+        echo "Rollback: $file -> $targeted_location/$filename"
+    fi
+done
+============================
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+rm -rf "$Profile_home/release"
+
+# Use unzip with -u option to update existing files
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+ls -la "$Profile_home/release"
+
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Create a backup directory with a timestamp
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$app_targeted_location"
+            backup_path="$backup_directory/$app_name"
+
+            # Copy old deployment files to backup location
+            cp -r "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
