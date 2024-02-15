@@ -7,3 +7,5 @@ backup_location="$4"
 Could you please confirm whether the deployment of the IBPS database falls within our scope of responsibility?
 
 Subject: Clarification Needed: Scope of Database Deployment for IBPS
+
+Could you please confirm if the deployment of the IBPS database is within our scope for Phase-1
