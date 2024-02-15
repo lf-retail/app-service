@@ -1,5 +1,4 @@
-Additionally, I have noticed that there are two directories with the same name 
-(ANT2CASAPPS01Node01Cell) in the targeted location:
-/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/
-
-Could you please remove one of them?
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
