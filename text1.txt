@@ -226,3 +226,33 @@ for file in "$latest_backup"/*; do
         echo "Rollback: $file -> $targeted_location/$filename"
     fi
 done
+===================
+
+#!/bin/bash
+
+targeted_location="$1"
+backup_location="$2"
+
+# Find the latest backup directory with date and time
+latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
+
+if [ -z "$latest_backup" ]; then
+    echo "No backup directories found."
+    exit 1
+fi
+
+echo "Latest backup directory: $latest_backup"
+
+# Iterate through each file in the latest backup directory
+for file in "$latest_backup"/*; do
+    if [ -f "$file" ]; then
+        # Get the filename without the path
+        filename=$(basename "$file")
+        
+        # Copy the file to the targeted location
+        cp -r "$file" "$targeted_location/$filename"
+        
+        # Print information about the copy
+        echo "Copied: $filename -> $targeted_location/$filename"
+    fi
+done
