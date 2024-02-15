@@ -50,3 +50,57 @@ for app_name in "$Profile_home"/release/*; do
         echo "Copy: $app_name - $new_deployment_path -> $targeted_location"
     fi
 done
+============================
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+targeted_location="$5"
+
+rm -rf "$Profile_home/release"
+
+# Use unzip with -u option to update existing files
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+ls -la "$Profile_home/release"
+
+# Backup old deployment files for each application with timestamp
+backup_location="$backup_location"  # Use the variable passed from Ansible
+
+# Create a backup directory with a timestamp
+backup_timestamp=$(date +'%Y%m%d%H%M%S')
+backup_directory="$backup_location/backup-$backup_timestamp"
+mkdir -p "$backup_directory"
+
+# Iterate through each application in the release directory
+for app_name in "$Profile_home"/release/*; do
+    if [ -d "$app_name" ]; then
+        # Extract the application name from the path
+        app_name=$(basename "$app_name")
+
+        # Log the targeted path
+        echo "Targeted location for $app_name: $targeted_location"
+
+        # Define paths for old deployment files and backup location
+        old_deployment_path="$targeted_location/$app_name"
+        backup_path="$backup_directory/$app_name"
+
+        # Backup old deployment files to backup location
+        if [ -d "$old_deployment_path" ]; then
+            cp -r "$old_deployment_path" "$backup_path"
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+        fi
+
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$app_name"
+
+        # Copy new deployment files to targeted location
+        cp -r "$new_deployment_path" "$targeted_location"
+
+        # Print information about the copy
+        echo "Copy: $app_name - $new_deployment_path -> $targeted_location"
+    fi
+done
