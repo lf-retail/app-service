@@ -137,3 +137,59 @@ for file in "$latest_backup"/*; do
         echo "Rollback: $file -> $targeted_location/$filename"
     fi
 done
+====================
+
+TASK [IBPS-deployment : Run deploy on Target Server] ***************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:9
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686 && echo ansible-tmp-1708013580.6220922-2513968-242059134973686="` echo /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1708013580.6220922-2513968-242059134973686=/tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-25139287b3whqrc/tmpg9hwqm3b TO /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-25139287b3whqrc/tmpg9hwqm3b /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/ /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-15 20:14:28.727366", "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240215194810\\ntotal 24\\ndrwxrwxr-x  6 itdevtra itdevtra 4096 Feb 15 19:48 .\\ndrwxrwxr-x 13 itdevtra itdevtra 4096 Feb 15 19:48 ..\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 newgenapp_jar.ear\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 ofme_ejb.ear\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 omniapp_ejb.ear\\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 WFS.ear", "cmd": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./rollback.sh /ibm/IBM-CAS/WebSphere/targeted_location2 /ibm/IBM-CAS/WebSphere/backup", "rc": 0, "start": "2024-02-15 20:14:28.388870", "stderr": "", "delta": "0:00:00.338496", "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./rollback.sh /ibm/IBM-CAS/WebSphere/targeted_location2 /ibm/IBM-CAS/WebSphere/backup", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}}\r\n', b'Shared connection to 10.15.13.148 closed.\r\n')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1708013580.6220922-2513968-242059134973686/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./rollback.sh /ibm/IBM-CAS/WebSphere/targeted_location2 /ibm/IBM-CAS/WebSphere/backup",
+    "delta": "0:00:00.338496",
+    "end": "2024-02-15 20:14:28.727366",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./rollback.sh /ibm/IBM-CAS/WebSphere/targeted_location2 /ibm/IBM-CAS/WebSphere/backup",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "rc": 0,
+    "start": "2024-02-15 20:14:28.388870",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240215194810\ntotal 24\ndrwxrwxr-x  6 itdevtra itdevtra 4096 Feb 15 19:48 .\ndrwxrwxr-x 13 itdevtra itdevtra 4096 Feb 15 19:48 ..\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 newgenapp_jar.ear\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 ofme_ejb.ear\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 omniapp_ejb.ear\ndrwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 WFS.ear",
+    "stdout_lines": [
+        "Latest backup directory: /ibm/IBM-CAS/WebSphere/backup/backup-20240215194810",
+        "total 24",
+        "drwxrwxr-x  6 itdevtra itdevtra 4096 Feb 15 19:48 .",
+        "drwxrwxr-x 13 itdevtra itdevtra 4096 Feb 15 19:48 ..",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 newgenapp_jar.ear",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 ofme_ejb.ear",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 omniapp_ejb.ear",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Feb 15 19:48 WFS.ear"
+    ]
+}
