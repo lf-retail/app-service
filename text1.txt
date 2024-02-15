@@ -2,3 +2,6 @@ Profile_home="$1"
 zip_file_url="$2"
 zip_file_name="$3"
 backup_location="$4"
+
+
+Could you please confirm whether the deployment of the IBPS database falls within our scope of responsibility?
