@@ -8,3 +8,6 @@ echo "zip_file_url: $zip_file_url"
 echo "zip_file_name: $zip_file_name"
 echo "backup_location: $backup_location"
 
+mkdir -p "$Profile_home"
+mkdir -p "$backup_location"
+mkdir -p "$targeted_location"
