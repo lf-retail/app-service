@@ -90,3 +90,36 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
+
+in release directory i can see the log
+
+        "drwxrwxr-x 6 itdevtra itdevtra 4096 Feb 15 15:02 .",
+        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb 15 15:02 ..",
+        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 09:22 newgenapp_jar.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 09:22 ofme_ejb.ear",
+        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 09:22 omniapp_ejb.ear",
+        "-rw-rw-r-- 1 itdevtra itdevtra  221 Feb 14 15:03 release.txt",
+        "drwxrwxr-x 3 itdevtra itdevtra 4096 Feb  9 09:22 WFS.ear",
+
+in release.txt i can see the log
+
+        "newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/targeted_location",
+        "ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location",
+        "omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location",
+        "WFS.ear,/ibm/IBM-CAS/WebSphere/targeted_location",
+
+also its taking backup and copy the new files into targeted location
+
+        "Backup: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/targeted_location",
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240215150208/newgenapp_jar.ear",
+        "Copy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/deploy_script/release/newgenapp_jar.ear -> /ibm/IBM-CAS/WebSphere/targeted_location",
+        "Backup: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/targeted_location",
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240215150208/ofme_ejb.ear",
+        "Copy: ofme_ejb.ear - /ibm/IBM-CAS/WebSphere/deploy_script/release/ofme_ejb.ear -> /ibm/IBM-CAS/WebSphere/targeted_location",
+        "Backup: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/targeted_location",
+        " -> /ibm/IBM-CAS/WebSphere/backup/backup-20240215150208/omniapp_ejb.ear",
+        "Copy: omniapp_ejb.ear - /ibm/IBM-CAS/WebSphere/deploy_script/release/omniapp_ejb.ear -> /ibm/IBM-CAS/WebSphere/targeted_location",
+        "Backup: WFS.ear - /ibm/IBM-CAS/WebSphere/targeted_location -> /ibm/IBM-CAS/WebSphere/backup/backup-20240215150208/WFS.ear",
+        "Copy: WFS.ear - /ibm/IBM-CAS/WebSphere/deploy_script/release/WFS.ear -> /ibm/IBM-CAS/WebSphere/targeted_location"
+
