@@ -104,3 +104,18 @@ for app_name in "$Profile_home"/release/*; do
         echo "Copy: $app_name - $new_deployment_path -> $targeted_location"
     fi
 done
+======================
+
+# Iterate through each file in the latest backup directory
+for file in "$latest_backup"/*; do
+    if [ -f "$file" ]; then
+        # Get the filename without the path
+        filename=$(basename "$file")
+        
+        # Copy the file to the targeted location
+        cp -r "$file" "$targeted_location/$filename"
+        
+        # Print information about the rollback
+        echo "Rollback: $file -> $targeted_location/$filename"
+    fi
+done
