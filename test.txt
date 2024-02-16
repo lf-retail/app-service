@@ -1,48 +1,55 @@
-name: IBPS-deployment
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true
-        #default: '1.0.0.9'  # Default release version
+#!/bin/bash
 
-jobs:
-  deploy:
-    runs-on: group: rakbank-self-hosted-runner
-    labels: dehitdevtra1
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+rm -rf "$Profile_home/release"
 
-      - name: Debug Working Directory
-        run: |
-          ls -al
-          pwd
+# Use unzip with -u option to update existing files
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
 
-      - name: Make deploy.sh and rollback.sh executable
-        run: |
-          chmod +x deploy.sh rollback.sh
+ls -la "$Profile_home/release"
 
-      - name: Run Ansible Playbook
-        env:
-          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-          RELEASE_VERSION: ${{ github.event.inputs.release_version }}
-        run: |
-          cd ${{ github.workspace }}
-          ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=false rollback_mode=true release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+# Read the content of release.txt
+release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
 
-====================================
+# Print the content of release_content
+echo "$release_content"
 
----
-ibps_server: 10.15.13.148:9043
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release-{{ lookup('env', 'RELEASE_VERSION') }}.zip"
-zip_file_name: "{{ zip_file_url | basename }}"
-ansible_user: "itdevtra"
-targeted_location: "/ibm/IBM-CAS/WebSphere/targeted_location2"
-backup_location: "/ibm/IBM-CAS/WebSphere/backup"
-Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
-...
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$backup_location"  # Use the variable passed from Ansible
 
+    # Create a backup directory with a timestamp
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$app_targeted_location"
+            backup_path="$backup_directory/$app_name"
+
+            # Copy old deployment files to backup location
+            cp -r "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
+            targeted_path="$app_targeted_location"
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$targeted_path"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+        fi
+    done <<< "$release_content"
+fi
