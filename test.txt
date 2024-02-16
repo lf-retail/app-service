@@ -105,13 +105,13 @@ if [ -n "$release_content" ]; then
 
             # Define paths for new deployment files and targeted location
             new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            targeted_path="$app_targeted_location"
+            #targeted_path="$app_targeted_location"
 
             # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$targeted_path"
+            cp -r "$new_deployment_path" "$app_targeted_location"
 
             # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $targeted_path"
+            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
         fi
     done <<< "$release_content"
 fi
