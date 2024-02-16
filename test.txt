@@ -1,7 +1,4 @@
-xmshanmu@ropvuat259 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git status
-On branch dev
-Your branch is ahead of 'origin/dev' by 3 commits.
-  (use "git push" to publish your local commits)
-
-nothing to commit, working tree clean
+git fsck --full --no-reflogs --unreachable --lost-found
+git log --oneline --graph --decorate --all
+git prune
+git push origin dev --force
