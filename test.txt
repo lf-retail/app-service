@@ -1,60 +1,9 @@
-TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:1
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Copy zip to Target Server] *****************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:10
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Copy deploy.sh to Target Server] ***********************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:16
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Run deploy on Target Server] ***************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:24
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Run ls -la on the Target Server] ***********************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:31
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Display ls -la result] *********************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:37
-skipping: [ANT3CASAPPS01] => {}
-TASK [IBPS-deployment : Clean up zip file from Runner] *************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:41
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Copy rollback.sh to Target Server] *********************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-rollback.yml:1
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Run rollback on Target Server] *************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-rollback.yml:9
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Run ls -la on the Target Server] ***********************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-rollback.yml:16
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Display ls -la result] *********************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-rollback.yml:22
-skipping: [ANT3CASAPPS01] => {}
+ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+=========
+- name: Include deploy playbook
+  import_tasks: main-deploy.yml
+  when: deploy_mode == true
+
+- name: Include rollback playbook
+  import_tasks: main-rollback.yml
+  when: rollback_mode == true
