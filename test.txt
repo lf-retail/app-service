@@ -334,3 +334,8 @@ fi
 
 ls -la "/ibm/IBM-CAS/WebSphere"
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location6"
+==================
+newgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/targeted_location6
+ofme_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location6
+omniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location6
+WFS.ear,/ibm/IBM-CAS/WebSphere/targeted_location6
