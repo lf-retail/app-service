@@ -175,3 +175,48 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
+================
+
+TASK [IBPS-deployment : Run deploy on Target Server] ***************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:24
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201 && echo ansible-tmp-1708094895.4559195-2980286-247230593676201="` echo /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201 `" ) && sleep 0'"'"''
+<10.15.13.148> (0, b'ansible-tmp-1708094895.4559195-2980286-247230593676201=/tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.13.148> PUT /home/itdevtra/.ansible/tmp/ansible-local-2979395szj3ss4c/tmp1qwfwro5 TO /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/AnsiballZ_command.py
+<10.15.13.148> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a '[10.15.13.148]'
+<10.15.13.148> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2979395szj3ss4c/tmp1qwfwro5 /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/AnsiballZ_command.py\n', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/ /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a -tt 10.15.13.148 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.13.148> (0, b'\r\n{"changed": true, "end": "2024-02-16 18:49:44.920235", "stdout": "total 28\\ndrwxrwxr-x 6 itdevtra itdevtra 4096 Feb 16 18:49 .\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb 16 18:49 ..\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb 16 15:53 newgenapp_jar.ear\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb 16 15:53 ofme_ejb.ear\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb 16 15:53 omniapp_ejb.ear\\n-rw-rw-r-- 1 itdevtra itdevtra  225 Feb 16 18:32 release.txt\\ndrwxrwxr-x 3 itdevtra itdevtra 4096 Feb 16 15:53 WFS.ear\\nnewgenapp_jar.ear,/ibm/IBM-CAS/WebSphere/targeted_location6\\r\\nofme_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location6\\r\\nomniapp_ejb.ear,/ibm/IBM-CAS/WebSphere/targeted_location6\\r\\nWFS.ear,/ibm/IBM-CAS/WebSphere/targeted_location6\\nBackup: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/targeted_location6\\r -> /ibm/IBM-CAS/WebSphere/backup/backup-20240216184944/newgenapp_jar.ear\\nCopy: newgenapp_jar.ear - /ibm/IBM-CAS/WebSphere/deploy_script/release/newgenapp_jar.ear -> /ibm/IBM-CAS/
+<10.15.13.148> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.13.148> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/2b6c10444a 10.15.13.148 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1708094895.4559195-2980286-247230593676201/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.13.148> (0, b'', b'')
+changed: [ANT3CASAPPS01] => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./deploy.sh /ibm/IBM-CAS/WebSphere/deploy_script https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.14/release-1.0.0.14.zip release-1.0.0.14.zip /ibm/IBM-CAS/WebSphere/backup",
+    "delta": "0:00:00.394720",
+    "end": "2024-02-16 18:49:44.920235",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM-CAS/WebSphere/deploy_script && ./deploy.sh /ibm/IBM-CAS/WebSphere/deploy_script https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.14/release-1.0.0.14.zip release-1.0.0.14.zip /ibm/IBM-CAS/WebSphere/backup",
+            "_uses_shell": true,
+        "drwxrwxr-x  6 itdevtra itdevtra 4096 Feb 16 16:28 targeted_location1",
+        "drwxrwxr-x  5 itdevtra itdevtra 4096 Feb 16 16:41 targeted_location2",
+        "drwxrwxr-x  5 itdevtra itdevtra 4096 Feb 16 17:10 targeted_location3",
+        "drwxrwxr-x  6 itdevtra itdevtra 4096 Feb 16 17:35 targeted_location4",
+        "drwxrwxrwx  3 itdevtra itdevtra 4096 Feb 16 18:07 targeted_location5",
+        "drwxrwxr-x  6 itdevtra itdevtra 4096 Feb 16 18:14 targeted_location5",
+        "drwxrwxrwx  3 itdevtra itdevtra 4096 Feb 16 18:49 targeted_location6",
+        "drwxrwxr-x  5 itdevtra itdevtra 4096 Feb 16 18:49 targeted_location6",
+        "drwxrwxrwx 11 root     root     4096 May  9  2022 Toolbox",
+        "total 12",
+        "drwxrwxrwx  3 itdevtra itdevtra 4096 Feb 16 18:49 .",
+        "drwxrwxrwx 16 root     root     4096 Feb 16 18:49 ..",
+        "drwxrwxr-x  3 itdevtra itdevtra 4096 Feb 16 18:49 WFS.ear"
+    ]
+}
