@@ -4,51 +4,8 @@ git prune
 git push origin dev --force
 ==============
 
-xmshanmu@ropvuat259 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git log --oneline --graph --decorate --all
-* 564d998 (HEAD -> dev) Remove release.zip
-* 1579693 release160220241
-* 7dc787b release-16022024
-* 9eb092c (origin/dev) Delete release.zip
-* 0df7e1f Update rollback.sh
-* bb5246f Update rollback.sh
-* e36827c Update rollback.sh
-* 36f9d75 Update rollback.sh
-* 33b9244 Update rollback.sh
-* ad0da15 Update rollback.sh
-* 5075af5 Update rollback.sh
-* 6bf9a93 Update rollback.sh
-* 9ad8798 Delete .github/workflows/IBPS-rollback.yml
-* 7f78b08 Update rollback.sh
-* 97962c1 Update main.yml
-* 0793173 Update main-deploy.yml
-* 1da21de Update deploy.sh
-* 02c2ed9 Update deploy.sh
-* e6047e8 Update deploy.sh
-* f2d8710 Update main.yml
-* a490199 Update deploy.sh
-* a2de4dd 150220241
-* a634f48 Delete release.zip
-* 4030de4 Update main.yml
-* 3eadc1c Update deploy.sh
-* f3db383 Update main.yml
-* 3fde6f6 Update deploy.sh
-* fc375a5 Update main.yml
-* 51ac685 Update deploy.sh
-* 7bc0bf2 Update main.yml
-* 1944883 Update deploy.sh
-* 23f8f4c Update main.yml
-* 1f46f8c Update main.yml
-* 10104fb Update main.yml
-* 439ee43 15022024
-* 46392b2 Update deploy.sh
-* c5bb6c1 Update main.yml
-* 67849cf Update main.yml
-* 25d1192 Delete release.zip
-* 5633475 Update deploy.sh
-* 1ae59bb Update deploy.sh
-* 1cd585d Update main.yml
-* 171c9f2 Update main.yml
-* f762109 Update deploy.sh
-* 1509cde Update main.yml
-:
+# Step 1: Reset your branch to the commit just before "Remove release.zip"
+git reset --hard 9eb092c
+
+# Step 2: Force push the changes to the remote repository
+git push origin dev --force
