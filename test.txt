@@ -1,1 +1,14 @@
-include_tasks
+ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+
+
+- name: IBPS-deployment
+  hosts: your_target_host
+  gather_facts: no
+  tasks:
+    - name: Include deploy playbook
+      include_tasks: main-deploy.yml
+      when: deploy_mode == true
+
+    - name: Include rollback playbook
+      include_tasks: main-rollback.yml
+      when: rollback_mode == true
