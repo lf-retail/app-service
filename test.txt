@@ -1,2 +1,26 @@
 git filter-repo --strip-blobs-bigger-than 50M
 git push origin --force --all
+
+
+xmshanmu@ropvuat259 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git filter-repo --strip-blobs-bigger-than 50M
+git: 'filter-repo' is not a git command. See 'git --help'.
+
+xmshanmu@ropvuat259 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git push origin --force --all
+Enumerating objects: 8, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (7/7), 248.31 MiB | 6.85 MiB/s, done.
+Total 7 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), completed with 1 local object.
+remote: warning: File release.zip is 56.07 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: error: Trace: 4e8483fb6e33b754239bed9b669511411d98a1374ec81ce56c24e58e0d545507
+remote: error: See https://gh.io/lfs for more information.
+remote: error: File release.zip is 257.94 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To https://github.com/rakbank-internal/IBPS-Deployment.git
+ ! [remote rejected] dev -> dev (pre-receive hook declined)
+ ! [remote rejected] develop -> develop (pre-receive hook declined)
+error: failed to push some refs to 'https://github.com/rakbank-internal/IBPS-Deployment.git'
