@@ -12,3 +12,19 @@ ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.w
     - name: Include rollback playbook
       include_tasks: main-rollback.yml
       when: rollback_mode == true
+=======
+
+TASK [IBPS-deployment : Include deploy playbook] *******************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+skipping: [ANT3CASAPPS01] => {
+    "changed": false,
+    "skip_reason": "Conditional result was False"
+}
+TASK [IBPS-deployment : Include rollback playbook] *****************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:5
+skipping: [ANT3CASAPPS01] => {
+    "changed": false,
+    "skip_reason": "Conditional result was False"
+}
+META: ran handlers
+META: ran handlers
