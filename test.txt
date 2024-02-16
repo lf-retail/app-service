@@ -9,3 +9,5 @@ git reset --hard 9eb092c
 
 # Step 2: Force push the changes to the remote repository
 git push origin dev --force
+
+git reset --hard 9eb092c && exit
