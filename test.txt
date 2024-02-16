@@ -20,3 +20,12 @@ Untracked files:
         et --hard 9eb092c
 
 nothing added to commit but untracked files present (use "git add" to track)
+
+
+===========
+git reset --hard 9eb092c
+
+git push origin dev --force
+====
+
+git clean -df
