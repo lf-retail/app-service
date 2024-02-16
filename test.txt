@@ -28,3 +28,16 @@ skipping: [ANT3CASAPPS01] => {
 }
 META: ran handlers
 META: ran handlers
+==============
+
+- name: Debug deploy_mode and rollback_mode
+  debug:
+    msg: "deploy_mode={{ deploy_mode }}, rollback_mode={{ rollback_mode }}"
+
+- name: Include deploy playbook
+  include_tasks: main-deploy.yml
+  when: deploy_mode
+
+- name: Include rollback playbook
+  include_tasks: main-rollback.yml
+  when: rollback_mode
