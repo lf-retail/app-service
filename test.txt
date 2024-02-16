@@ -62,135 +62,32 @@ fi
 ls -la "/ibm/IBM-CAS/WebSphere"
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location3"
 ========================
+# Iterate through each application in the release directory
+for app_name in "$Profile_home"/release/*; do
+    if [ -d "$app_name" ]; then
+        # Extract the application name from the path
+        app_name=$(basename "$app_name")
 
-#!/bin/bash
+        # Log the targeted path
+        echo "Targeted location for $app_name: $targeted_location"
 
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
+        # Define paths for old deployment files and backup location
+        old_deployment_path="$targeted_location/$app_name"
+        backup_path="$backup_directory/$app_name"
 
-# Remove existing release directory
-rm -rf "$Profile_home/release"
-
-# Extract the zip file to the release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
-
-# List the contents of the release directory
-ls -la "$Profile_home/release"
-
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$Profile_home/release/release.txt" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            #old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$app_targeted_location" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $app_targeted_location -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            #targeted_path="$app_targeted_location"
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
+        # Backup old deployment files to backup location
+        if [ -d "$old_deployment_path" ]; then
+            cp -r "$old_deployment_path" "$backup_path"
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
         fi
-    done <<< "$release_content"
-fi
 
-ls -la "/ibm/IBM-CAS/WebSphere"
-ls -la "/ibm/IBM-CAS/WebSphere/targeted_location3"
-=================
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$app_name"
 
-#!/bin/bash
+        # Copy new deployment files to targeted location
+        cp -r "$new_deployment_path" "$targeted_location"
 
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Remove existing release directory
-rm -rf "$Profile_home/release"
-
-# Extract the zip file to the release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
-
-# List the contents of the release directory
-ls -la "$Profile_home/release"
-
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$Profile_home/release/release.txt" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            #old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$app_targeted_location" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $app_targeted_location -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            #targeted_path="$app_targeted_location"
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-
-ls -la "/ibm/IBM-CAS/WebSphere"
-ls -la "/ibm/IBM-CAS/WebSphere/targeted_location4"
-
-#mkdir -p "/ibm/IBM-CAS/WebSphere/targeted_location4"
-#ls -la "/ibm/IBM-CAS/WebSphere"
+        # Print information about the copy
+        echo "Copy: $app_name - $new_deployment_path -> $targeted_location"
+    fi
+done
