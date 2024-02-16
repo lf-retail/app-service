@@ -1,43 +1,41 @@
-ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false" ./playbook/IBPS-deployment.yml
+name: IBPS-deployment
+on:
+  workflow_dispatch:
 
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
 
-- name: IBPS-deployment
-  hosts: your_target_host
-  gather_facts: no
-  tasks:
-    - name: Include deploy playbook
-      include_tasks: main-deploy.yml
-      when: deploy_mode == true
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    - name: Include rollback playbook
-      include_tasks: main-rollback.yml
-      when: rollback_mode == true
-=======
-
-TASK [IBPS-deployment : Include deploy playbook] *******************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-TASK [IBPS-deployment : Include rollback playbook] *****************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:5
-skipping: [ANT3CASAPPS01] => {
-    "changed": false,
-    "skip_reason": "Conditional result was False"
-}
-META: ran handlers
-META: ran handlers
-==============
-
-- name: Debug deploy_mode and rollback_mode
-  debug:
-    msg: "deploy_mode={{ deploy_mode }}, rollback_mode={{ rollback_mode }}"
-
-- name: Include deploy playbook
-  include_tasks: main-deploy.yml
-  when: deploy_mode
-
-- name: Include rollback playbook
-  include_tasks: main-rollback.yml
-  when: rollback_mode
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=false rollback_mode=true" ./playbook/IBPS-deployment.yml
+=============================
+---
+ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+#Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
+targeted_location: "/ibm/IBM-CAS/WebSphere/targeted_location2"
+backup_location: "/ibm/IBM-CAS/WebSphere/backup"
+Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
+#targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
+#backup_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
+...
