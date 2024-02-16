@@ -34,3 +34,12 @@ jobs:
 - name: Include rollback playbook
   import_tasks: main-rollback.yml
   when: rollback_mode | default(true)
+
+
+- name: Include deploy playbook
+  import_tasks: main-deploy.yml
+  when: deploy_mode == true
+
+- name: Include rollback playbook
+  import_tasks: main-rollback.yml
+  when: rollback_mode == true
