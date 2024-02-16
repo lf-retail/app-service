@@ -58,3 +58,6 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
+ls -la "/ibm/IBM-CAS/WebSphere"
+ls -la "/ibm/IBM-CAS/WebSphere/targeted_location3"
