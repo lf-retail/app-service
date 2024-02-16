@@ -1,41 +1,48 @@
 name: IBPS-deployment
 on:
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true
+        #default: '1.0.0.9'  # Default release version
 
 jobs:
   deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
+    runs-on: group: rakbank-self-hosted-runner
+    labels: dehitdevtra1
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Debug Working Directory
-      run: |
-        ls -al
-        pwd
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=false rollback_mode=true" ./playbook/IBPS-deployment.yml
-=============================
+      - name: Debug Working Directory
+        run: |
+          ls -al
+          pwd
+
+      - name: Make deploy.sh and rollback.sh executable
+        run: |
+          chmod +x deploy.sh rollback.sh
+
+      - name: Run Ansible Playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+          RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=false rollback_mode=true release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+
+====================================
+
 ---
 ibps_server: 10.15.13.148:9043
 github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release-{{ lookup('env', 'RELEASE_VERSION') }}.zip"
 zip_file_name: "{{ zip_file_url | basename }}"
 ansible_user: "itdevtra"
-#Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
 targeted_location: "/ibm/IBM-CAS/WebSphere/targeted_location2"
 backup_location: "/ibm/IBM-CAS/WebSphere/backup"
 Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
-#targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-#backup_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
 ...
+
