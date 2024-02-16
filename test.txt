@@ -288,8 +288,8 @@ unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
 # List the contents of the release directory
 ls -la "$Profile_home/release"
 
-# Read the content of release.txt
-release_content=$(cat "$Profile_home/release/release.txt" 2>/dev/null)
+# Read the content of release.txt and remove any leading/trailing whitespace characters
+release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$Profile_home/release/release.txt" 2>/dev/null)
 
 # Print the content of release_content
 echo "$release_content"
@@ -322,7 +322,7 @@ if [ -n "$release_content" ]; then
 
             # Define paths for new deployment files and targeted location
             new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-            
+
             # Copy new deployment files to targeted location
             cp -r "$new_deployment_path" "$app_targeted_location"
 
@@ -331,6 +331,7 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+
 
 ls -la "/ibm/IBM-CAS/WebSphere"
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location6"
