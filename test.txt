@@ -44,3 +44,62 @@ else
 fi
 
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
+==================================
+
+#!/bin/bash
+
+Profile_home="$1"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+
+# Extract the zip file to a new release directory
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
+
+# List the contents of the new release directory
+ls -la "$Profile_home/release_$zip_file_name"
+
+# Read the content of release.txt and remove any leading/trailing whitespace characters
+release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$Profile_home/release_$zip_file_name/release.txt" 2>/dev/null)
+
+# Print the content of release_content
+echo "$release_content"
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Create a backup directory with a timestamp
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+
+    # Copy release.txt file into backup directory
+    cp "$Profile_home/release_$zip_file_name/release.txt" "$backup_directory"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$app_targeted_location"
+            backup_path="$backup_directory/$app_name"
+
+            # Copy old deployment files to backup location
+            cp -r "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release_$zip_file_name/$app_name"  # Assuming the new files are in the release directory
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$app_targeted_location"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
+        fi
+    done <<< "$release_content"
+fi
+
