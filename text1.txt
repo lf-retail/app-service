@@ -4,6 +4,11 @@ Profile_home="$1/release-$2"
 zip_file_url="$3"
 zip_file_name="$4"
 
+echo "Profile_home: $1/release-$2"
+echo "zip_file_url: $3"
+echo "zip_file_name: $4"
+
+
 # Extract the zip file to a new release directory
 unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
 
