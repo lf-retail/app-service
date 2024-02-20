@@ -142,3 +142,20 @@ Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
 #targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
 #backup_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
 ...
+==================
+
+- name: Create directory for new release version
+  file:
+    path: "{{ Profile_home }}/release-{{ release_version }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/release-{{ release_version }}/{{ zip_file_name }}"
+    mode: '0755'
+
+=====
+
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
