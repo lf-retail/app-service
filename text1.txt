@@ -1,247 +1,10 @@
-#!/bin/bash
-
-Profile_home="$1/release-$2"
-zip_file_url="$3"
-zip_file_name="$4"
-
-echo "Profile_home: $1/release-$2"
-echo "zip_file_url: $3"
-echo "zip_file_name: $4"
-
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# Check if release.txt exists
-release_txt_path="$Profile_home/release_$zip_file_name/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-============
-
-- name: Download zip from GitHub packages on Runner
-  delegate_to: localhost
-  run_once: true
-  get_url:
-    url: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    headers:
-      Authorization: "token {{ github_token }}"
- 
-- name: Copy zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/{{ zip_file_name }}"
-    mode: '0755'
-
-- name: Copy deploy.sh to Target Server
-  copy:
-    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
-    dest: "{{ Profile_home }}/deploy.sh"
-    mode: '0755'
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Run deploy on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: "cd {{ Profile_home }} && ./deploy.sh {{ Profile_home }} {{ zip_file_url }} {{ zip_file_name }} {{ backup_location }}"
-  register: deploy_result
-  ignore_errors: yes
-====================
-
-name: IBPS-deployment
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true  
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Debug Working Directory
-      run: |
-        ls -al
-        pwd
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
-
-================
----
-ibps_server: 10.15.13.148:9043
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release-{{ lookup('env', 'RELEASE_VERSION') }}.zip"
-zip_file_name: "{{ zip_file_url | basename }}"
-ansible_user: "itdevtra"
-#Profile_home: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/bin"
-#targeted_location: "/ibm/IBM-CAS/WebSphere/targeted_location2"
-backup_location: "/ibm/IBM-CAS/WebSphere/backup"
-Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
-#targeted_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/ANT2CASAPPS01Node01Cell"
-#backup_location: "/ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/backup"
-...
-==================
-
-- name: Create directory for new release version
-  file:
-    path: "{{ Profile_home }}/release-{{ release_version }}"
-    state: directory
-    mode: '0755'
-
-- name: Copy zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/release-{{ release_version }}/{{ zip_file_name }}"
-    mode: '0755'
-
-=====
-
-release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
-===========================
-
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# Check if release.txt exists
-release_txt_path="$Profile_home/release_$zip_file_name/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-=====================
-
 Profile_home="$1"
 release_version="$2"
 zip_file_url="$3"
 zip_file_name="$4"
 
-echo "Profile_home: $1"
-echo "release_version: $2"
-echo "zip_file_url: $3"
-echo "zip_file_name: $4"
-
 # Extract the zip file to a new release directory
-#unzip -q "$Profile_home/release-$release_version/$zip_file_name" -d "$Profile_home/release-$release_version"
+unzip -q "$Profile_home/release-$release_version/$zip_file_name" -d "$Profile_home/release-$release_version"
 
 # Check if release.txt exists
 release_txt_path="$Profile_home/release-$release_version/release/release.txt"
@@ -262,6 +25,7 @@ if [ -n "$release_content" ]; then
     backup_timestamp=$(date +'%Y%m%d%H%M%S')
     backup_directory="$backup_location/backup-$backup_timestamp"
     mkdir -p "$backup_directory"
+    chmod 777 "$backup_directory"
 
     # Copy release.txt file into backup directory
     cp "$release_txt_path" "$backup_directory"
@@ -281,7 +45,7 @@ if [ -n "$release_content" ]; then
             echo "Backup: $app_name - $old_deployment_path -> $backup_path"
 
             # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
+            new_deployment_path="$Profile_home/release-$release_version/release/$app_name"  # Assuming the new files are in the release directory
 
             # Copy new deployment files to targeted location
             cp -r "$new_deployment_path" "$app_targeted_location"
@@ -292,4 +56,4 @@ if [ -n "$release_content" ]; then
     done <<< "$release_content"
 fi
 
-#ls -la "/ibm/IBM-CAS/WebSphere/deploy_script/release-1.0.0.16/release"
+ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
