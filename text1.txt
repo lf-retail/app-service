@@ -57,12 +57,14 @@ if [ -n "$release_content" ]; then
 fi
 
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
-==================
-
+===========================
 #!/bin/bash
-backup_location="$1"  # Taking backup location as an argument
 
-# Find the latest backup directory with date and time
+Profile_home="$1"
+release_version="$2"
+
+# Construct the path to the backup directory
+backup_location="$Profile_home/release-$release_version"
 latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
 
 if [ -z "$latest_backup" ]; then
@@ -104,18 +106,5 @@ else
     echo "No content found in release.txt."
 fi
 
-ls -la "/ibm/IBM-CAS/WebSphere"
+#ls -la "/ibm/IBM-CAS/WebSphere"
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
-====
-
-Profile_home="$1"
-release_version="$2"
-
-# Construct the path to the backup directory
-backup_location="$Profile_home/release-$release_version"
-latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
-
-if [ -z "$latest_backup" ]; then
-    echo "No backup directories found."
-    exit 1
-fi
