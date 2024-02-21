@@ -1,17 +1,24 @@
+deploy1.sh
+
+#!/bin/bash
+
 Profile_home="$1"
-release_version="$2"
-zip_file_url="$3"
-zip_file_name="$4"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
 
 # Extract the zip file to a new release directory
-unzip -q "$Profile_home/release-$release_version/$zip_file_name" -d "$Profile_home/release-$release_version"
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
 
 # Check if release.txt exists
-release_txt_path="$Profile_home/release-$release_version/release/release.txt"
+release_txt_path="$Profile_home/release_$zip_file_name/release/release.txt"
 if [ ! -f "$release_txt_path" ]; then
     echo "Error: release.txt not found at $release_txt_path"
     exit 1
 fi
+
+# List the contents of the new release directory
+ls -la "$Profile_home/release_$zip_file_name"
 
 # Read the content of release.txt and remove any leading/trailing whitespace characters
 release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
@@ -21,11 +28,12 @@ echo "$release_content"
 
 # Backup old deployment files for each application with timestamp
 if [ -n "$release_content" ]; then
-    backup_location="$Profile_home/release-$release_version"
+    backup_location="$backup_location"  # Use the variable passed from Ansible
+
+    # Create a backup directory with a timestamp
     backup_timestamp=$(date +'%Y%m%d%H%M%S')
     backup_directory="$backup_location/backup-$backup_timestamp"
     mkdir -p "$backup_directory"
-    chmod 777 "$backup_directory"
 
     # Copy release.txt file into backup directory
     cp "$release_txt_path" "$backup_directory"
@@ -45,7 +53,7 @@ if [ -n "$release_content" ]; then
             echo "Backup: $app_name - $old_deployment_path -> $backup_path"
 
             # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release-$release_version/release/$app_name"  # Assuming the new files are in the release directory
+            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
 
             # Copy new deployment files to targeted location
             cp -r "$new_deployment_path" "$app_targeted_location"
@@ -55,16 +63,110 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
-
-ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
-===========================
+============
+deploy2.sh
 #!/bin/bash
 
 Profile_home="$1"
-release_version="$2"
+zip_file_url="$2"
+zip_file_name="$3"
+backup_location="$4"
+targeted_location="$5"
 
-# Construct the path to the backup directory
-backup_location="$Profile_home/release-$release_version"
+rm -rf "$Profile_home/release"
+
+# Use unzip with -u option to update existing files
+unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
+
+ls -la "$Profile_home/release"
+
+# Backup old deployment files for each application with timestamp
+backup_location="$backup_location"  # Use the variable passed from Ansible
+
+# Create a backup directory with a timestamp
+backup_timestamp=$(date +'%Y%m%d%H%M%S')
+backup_directory="$backup_location/backup-$backup_timestamp"
+mkdir -p "$backup_directory"
+
+# Iterate through each application in the release directory
+for app_name in "$Profile_home"/release/*; do
+    if [ -d "$app_name" ]; then
+        # Extract the application name from the path
+        app_name=$(basename "$app_name")
+
+        # Log the targeted path
+        echo "Targeted location for $app_name: $targeted_location"
+
+        # Define paths for old deployment files and backup location
+        old_deployment_path="$targeted_location/$app_name"
+        backup_path="$backup_directory/$app_name"
+
+        # Backup old deployment files to backup location
+        if [ -d "$old_deployment_path" ]; then
+            cp -r "$old_deployment_path" "$backup_path"
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+        fi
+
+        # Define paths for new deployment files and targeted location
+        new_deployment_path="$Profile_home/release/$app_name"
+
+        # Copy new deployment files to targeted location
+        cp -r "$new_deployment_path" "$targeted_location"
+
+        # Print information about the copy
+        echo "Copy: $app_name - $new_deployment_path -> $targeted_location"
+    fi
+done
+
+#rm -rf "/ibm/IBM-CAS/WebSphere/targeted_location2/CPMS_war.ear"
+#rm -rf "/ibm/IBM-CAS/WebSphere/targeted_location2/DAO_war.ear"
+#rm -rf "/ibm/IBM-CAS/WebSphere/targeted_location2/DCC_war.ear"
+#rm -rf "/ibm/IBM-CAS/WebSphere/targeted_location2/ODArchival_war.ear"
+============
+rollback1.sh
+#!/bin/bash
+
+targeted_location="$1"
+backup_location="$2"
+
+# Find the latest backup directory with date and time
+latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
+
+if [ -z "$latest_backup" ]; then
+    echo "No backup directories found."
+    exit 1
+fi
+
+echo "Latest backup directory: $latest_backup"
+
+# List the contents of the latest backup directory
+ls -la "$latest_backup"
+
+# Iterate through each application in the latest backup directory
+for app_name in "$latest_backup"/*; do
+    if [ -d "$app_name" ]; then
+        # Extract the application name from the path
+        app_name=$(basename "$app_name")
+
+        # Log the targeted path
+        echo "Targeted location for $app_name: $targeted_location"
+
+        # Define paths for old deployment files and backup location
+        old_deployment_path="$latest_backup/$app_name"
+
+        # Copy files from backup to targeted location
+        cp -r "$old_deployment_path" "$targeted_location"
+
+        # Print information about the copy
+        echo "Copy: $app_name - $old_deployment_path -> $targeted_location"
+    fi
+done
+-------------
+rollback2.sh
+#!/bin/bash
+backup_location="$1"  # Taking backup location as an argument
+
+# Find the latest backup directory with date and time
 latest_backup=$(ls -td "$backup_location"/backup-* | head -n 1)
 
 if [ -z "$latest_backup" ]; then
@@ -106,5 +208,5 @@ else
     echo "No content found in release.txt."
 fi
 
-#ls -la "/ibm/IBM-CAS/WebSphere"
+ls -la "/ibm/IBM-CAS/WebSphere"
 ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
