@@ -1,345 +1,92 @@
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Remove existing release directory
-rm -rf "$Profile_home/release"
-
-# Extract the zip file to the release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home"
-
-# List the contents of the release directory
-ls -la "$Profile_home/release"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$Profile_home/release/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$Profile_home/release/release.txt" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-
-
-ls -la "/ibm/IBM-CAS/WebSphere"
-ls -la "/ibm/IBM-CAS/WebSphere/targeted_location7"
-==================================
-
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$Profile_home/release_$zip_file_name/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$Profile_home/release_$zip_file_name/release.txt" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-
-========================
-
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$Profile_home/release_$zip_file_name/release/release.txt" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$Profile_home/release_$zip_file_name/release/release.txt" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi    
-
-    
-================
-
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_name="$3"
-backup_location="$4"
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# Check if release.txt exists
-release_txt_path="$Profile_home/release_$zip_file_name/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-====================
-
-#!/bin/bash
-
-Profile_home="$1"
-zip_file_url="$2"
-zip_file_name="$3"
-backup_location="$4"
-
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/$zip_file_name" -d "$Profile_home/release_$zip_file_name"
-
-# Check if release.txt exists
-release_txt_path="$Profile_home/release_$zip_file_name/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
-
-# List the contents of the new release directory
-ls -la "$Profile_home/release_$zip_file_name"
-
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
-
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$backup_location"  # Use the variable passed from Ansible
-
-    # Create a backup directory with a timestamp
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release_$zip_file_name/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-======================
-
-name: IBPS-deployment
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true  
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
+  Create-Database-CI:
+    if: ${{ github.event.inputs.database =='true' }}
+    environment: DEV
+    name: Database-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
 
-    - name: Debug Working Directory
+        
+    - name: Display selected inputs
       run: |
-        ls -al
-        pwd
-    - name: Make deploy.sh and rollback.sh executable
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name : Create Application Release Branch 
       run: |
-        chmod +x deploy.sh rollback.sh
-    - name: Run Ansible Playbook
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
       env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=false rollback_mode=true release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        token: $GITHUB_TOKEN         
+      
+
+  Database-CI:
+    name: Database-CI
+    needs: Create-Database-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+
+  Database-Deploy-Dev:
+    needs: Database-CI
+    environment: DEV
+    name: Database Deployment DEV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  Database-Deploy-UAT:
+    needs: Database-Deploy-Dev
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/main.yml@main
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
+      token: $GITHUB_TOKEN 
+
+  Database-Deploy-PROD:
+    needs: Database-Deploy-UAT
+    environment: PROD
+    name: Database Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  Datbase-deploy-DR:
+    needs: Database-Deploy-PROD
+    environment: DR
+    name: Database Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
