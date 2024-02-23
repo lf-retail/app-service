@@ -99,3 +99,22 @@ zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd
 zip_file_name: "{{ zip_file_url | basename }}"
 ansible_user: "itdevtra"
 Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
+===========================
+
+Subject: Request for IBPS Database Deployment Information
+
+Dear [Recipient's Name],
+
+I hope this email finds you well.
+
+We are in the process of deploying the IBPS database and require some information from your end to proceed further. Below are the details we need:
+
+Database Script: Please provide the database script required for deployment.
+
+Server Details:
+
+IP Address:
+Destination Path:
+Your prompt assistance in providing the above information would be greatly appreciated. If you have any questions or need further clarification, please don't hesitate to reach out.
+
+Looking forward to your swift response.
