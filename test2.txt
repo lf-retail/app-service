@@ -1,6 +1,3 @@
-app-- appci--appdev
-
-
 name: Release Pipeline
 run-name: release - ${{github.event.inputs.releaseVersion}}
 
@@ -63,85 +60,70 @@ jobs:
       env:
         token: $GITHUB_TOKEN
 
-  App-Deploy-DEV:
-    name: App-CD-DEV 
+  #App-CI:
+   # name: App-CI
+    #needs: Create-App-CI
+    ##uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
+    #secrets: inherit
+    #with:
+     # repoName: ${{ github.event.inputs.choice }}
+      #branchName: $RELEASE_BRANCH_NAME
+
+  App-CI:
+    needs: Create-App-CI
+    environment: DEV
+    name: App-CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App CI now "      
+
+  App-Deploy-Dev:
     needs: App-CI
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@dev
+    environment: DEV
+    name: App Deployment DEV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  App-Deploy-UAT:
+    name: App-CD-UAT 
+    needs: App-Deploy-Dev
+    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
     secrets: inherit
     with:
       repoName: ${{ github.event.inputs.choice }}
       version: ${{ github.event.inputs.releaseVersion }}
-      
-  App-Deploy-UAT:
-    name: App-CD-UAT 
-    needs: App-Deploy-Dev
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@uat
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      version: ${{ github.event.inputs.releaseVersion }}   
-
+  
+  
   App-Deploy-PROD:
-    name: App-CD-PROD 
     needs: App-Deploy-UAT
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@prod
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      version: ${{ github.event.inputs.releaseVersion }}      
-  
-  
-==========================
-
-name: Deploy WAR to JBoss at dev
-
-on:
-  workflow_call:
-    inputs:
-      env_vaule:
-        required: true
-        type: string
-      repoName:
-        required: true
-        type: string
-        
-      version:
-        required: true
-        type: string
-
-jobs:
-  deploy:
-    runs-on:
-      group: rakbank-self-hosted-runner
-      labels: dehitdevtra1
-    environment: env_value  
-      
-    steps: 
-      - name: Checkout Ansible playbook
+    environment: PROD
+    name: App Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
         uses: actions/checkout@v2
-        
-================================
-
-name: Deploy WAR to JBoss at uat
-
-on:
-  workflow_call:
-    inputs:
-      repoName:
-        required: true
-        type: string
-        
-      version:
-        required: true
-        type: string
-
-jobs:
-  deploy:
-    runs-on:
-      group: rakbank-self-hosted-runner
-      labels: dehitdevtra1
-    environment: UAT  
-      
-    steps: 
-      - name: Checkout Ansible playbook
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  App-deploy-DR:
+    needs: App-Deploy-PROD
+    environment: DR
+    name: App Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
         uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo "running App deployment now"
