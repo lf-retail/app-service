@@ -337,3 +337,51 @@ jobs:
       - name: deploy App
         run: |
           echo " running App deployment now "
+====================
+
+  App-Deploy-DEV:
+    name: App-cd
+    needs: App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: DEV        
+      
+  App-Deploy-UAT:
+    name: App-cd
+    needs: App-Deploy-DEV
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: UAT 
+
+---------------------
+name: Deploy WAR to JBoss
+
+on:
+
+  workflow_call:
+    inputs:
+      env_vaule:
+        required: true
+        type: string
+        
+      repoName:
+        required: true
+        type: string
+      #Environments:
+       # required: true
+        #type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_value }}
+
+      #group: rakbank-self-hosted-runner
+      #labels: rakdeh3
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2 
