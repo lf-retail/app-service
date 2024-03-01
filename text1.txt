@@ -1,7 +1,1 @@
-Hi Suresh,
-
-I need separate directory for release because from here moving the files into targeted location and maintain the all releases here only so you can use it for your future reference.
-
-So kindly make separate release directory for this.
-
-Thanks,
+I need a separate directory for releases. This will facilitate moving files to their targeted locations and maintaining all releases in one place for your future reference. Kindly create a separate release directory for this purpose.
