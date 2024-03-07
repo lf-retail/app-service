@@ -1,1 +1,5 @@
-This request is to deploy the IBPS application from the Ansible server to the WAS server. However, we lack sudo permissions for these deployment activities. Therefore, we are requesting the creation of a new switch user permission for the application server and database server. The Unix team has already created a new user for the application on the Unix server, but the database server runs on a Windows server. Hence, we require a similar request for the database server. Kindly create a new switch user with the Database (Windows) server.
+We need release directory to deploy the IBPS application in UAT and Replica server
+Inside the release directory we need application files and release.txt file 
+Inside the release.txt file we need application files and its specific targeted location 
+
+I need your help to communicate with Angad/Nikhil to request this 
