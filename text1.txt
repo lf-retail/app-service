@@ -1,1 +1,1 @@
-If you have any trouble understanding my request, please feel free to reach out to me. We can discuss it further to ensure clarity.
+Could you please help on this request, we need a release.zip file to deploy the IBPS application with UAT and Replica server.
