@@ -1,1 +1,1 @@
-We need separate release directory to copy the release.zip, deployment script and rollback script its looks like temp directory. Here its from moving the application files into specific targeted location and you can check it for your future refrence
+We require a separate release directory to house the 'release.zip', deployment script, and rollback script. This directory should resemble a temporary directory. It's necessary for moving the application files to their specific target locations. You can refer to this setup for future reference
