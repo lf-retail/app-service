@@ -1,5 +1,3 @@
-We need release directory to deploy the IBPS application in UAT and Replica server
-Inside the release directory we need application files and release.txt file 
-Inside the release.txt file we need application files and its specific targeted location 
+We need a release directory for deploying the IBPS application on both the UAT and Replica servers. Inside this directory, we require the application files along with a 'release.txt' file. The 'release.txt' file should contain a list of the application files and their respective target locations.
 
-I need your help to communicate with Angad/Nikhil to request this 
+Could you please coordinate with Angad/Nikhil to set this up?
