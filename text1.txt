@@ -1,1 +1,1 @@
-We require a separate release directory to house the 'release.zip', deployment script, and rollback script. This directory should resemble a temporary directory. It's necessary for moving the application files to their specific target locations. You can refer to this setup for future reference
+If you have any trouble understanding my request, please feel free to reach out to me. We can discuss it further to ensure clarity.
