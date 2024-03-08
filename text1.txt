@@ -1,1 +1,139 @@
-Could you please help on this request, we need a release.zip file to deploy the IBPS application with UAT and Replica server.
+name: Release Pipeline
+run-name: releaseapp - ${{github.event.inputs.releaseVersion}}
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release Version'
+        required: true
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          #- Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+          - Rakbank-DEH-Onboarding/SMEDigitalBank
+          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database       
+        
+jobs:
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
+
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
+
+  #App-CI:
+   # name: App-CI
+    #needs: Create-App-CI
+    ##uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
+    #secrets: inherit
+    #with:
+     # repoName: ${{ github.event.inputs.choice }}
+      #branchName: $RELEASE_BRANCH_NAME
+
+  App-CI:
+    needs: Create-App-CI
+    environment: DEV
+    name: App-CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App CI now "      
+
+  #App-Deploy-Dev:
+   # needs: App-CI
+    #environment: DEV
+    #name: App Deployment DEV
+    #runs-on: ubuntu-latest
+    #steps:
+     # - name: Check out code
+      #  uses: actions/checkout@v2
+      #- name: deploy App
+       # run: |
+        #  echo " running App deployment now "
+
+  App-Deploy-DEV:
+    name: App-cd-dev
+    needs: App-CI
+    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: DEV
+      version: ${{ github.event.inputs.releaseVersion }}
+      
+  App-Deploy-UAT:
+    name: App-cd-uat
+    needs: App-Deploy-DEV
+    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      env_value: UAT
+      version: ${{ github.event.inputs.releaseVersion }}
+          
+  
+  App-Deploy-PROD:
+    needs: App-Deploy-UAT
+    environment: PROD
+    name: App Deployment PROD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo " running App deployment now "
+          
+  App-deploy-DR:
+    needs: App-Deploy-PROD
+    environment: DR
+    name: App Deployment DR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: deploy App
+        run: |
+          echo "running App deployment now"
