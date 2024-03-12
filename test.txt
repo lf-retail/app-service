@@ -1,1 +1,1 @@
-As we discussed, the format of the release.txt file and the application files is correct. However, there is one change required. You sent me the release file with the name 'DCC Release.zip', but before pushing it to the GitHub repository, it needs to be renamed to 'release.zip'. So, please ensure that this change is made.
+As per Devdutta request, I don’t have access the KYC release file can you please share it me through mail. Then I ll conform it the release format is correct or not also scheduled the meeting at 11.00am. In case if any doubts we can discuss over the call.
