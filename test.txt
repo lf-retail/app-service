@@ -1,1 +1,1 @@
-Please get approval from Shoaib to push this release artefact to github repository from your local then only l can able to do further.
+Please obtain approval from Shoaib to access the GitHub repository and push this release artifact from your local machine. Only then will I be able to proceed further.
