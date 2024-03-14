@@ -55,3 +55,77 @@ if [ -n "$release_content" ]; then
         fi
     done <<< "$release_content"
 fi
+===============
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ ll
+total 19657
+drwxr-xr-x 1 xmshanmu 1049089        0 Feb  5 12:50 IBPS_NEW_EAR/
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 10 18:17 IBPS_SAMPLE_EAR/
+-rw-r--r-- 1 xmshanmu 1049089       17 Jan 10 18:17 README.md
+-rw-r--r-- 1 xmshanmu 1049089      444 Jan 10 18:17 ansible.cfg
+-rw-r--r-- 1 xmshanmu 1049089     2409 Mar 12 12:49 deploy.sh
+-rw-r--r-- 1 xmshanmu 1049089      115 Mar 12 12:49 host-replica.cfg
+-rw-r--r-- 1 xmshanmu 1049089      163 Mar 12 12:49 host-uat.cfg
+-rw-r--r-- 1 xmshanmu 1049089      116 Jan 10 18:17 hosts.cfg
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 playbook/
+-rw-r--r-- 1 xmshanmu 1049089 20103772 Mar 14 09:43 release.zip
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 roles/
+-rwxr-xr-x 1 xmshanmu 1049089     1654 Mar 12 12:49 rollback.sh*
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git pull
+remote: Enumerating objects: 20, done.
+remote: Counting objects: 100% (20/20), done.
+remote: Compressing objects: 100% (12/12), done.
+remote: Total 14 (delta 6), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (14/14), 4.57 KiB | 5.00 KiB/s, done.
+From https://github.com/rakbank-internal/IBPS-Deployment
+   a99434d..629a531  dev        -> origin/dev
+error: Your local changes to the following files would be overwritten by merge:
+        release.zip
+Please commit your changes or stash them before you merge.
+Aborting
+Updating a99434d..629a531
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ ll
+total 19657
+drwxr-xr-x 1 xmshanmu 1049089        0 Feb  5 12:50 IBPS_NEW_EAR/
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 10 18:17 IBPS_SAMPLE_EAR/
+-rw-r--r-- 1 xmshanmu 1049089       17 Jan 10 18:17 README.md
+-rw-r--r-- 1 xmshanmu 1049089      444 Jan 10 18:17 ansible.cfg
+-rw-r--r-- 1 xmshanmu 1049089     2409 Mar 12 12:49 deploy.sh
+-rw-r--r-- 1 xmshanmu 1049089      115 Mar 12 12:49 host-replica.cfg
+-rw-r--r-- 1 xmshanmu 1049089      163 Mar 12 12:49 host-uat.cfg
+-rw-r--r-- 1 xmshanmu 1049089      116 Jan 10 18:17 hosts.cfg
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 playbook/
+-rw-r--r-- 1 xmshanmu 1049089 20103772 Mar 14 09:43 release.zip
+drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 roles/
+-rwxr-xr-x 1 xmshanmu 1049089     1654 Mar 12 12:49 rollback.sh*
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git add release.zip
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git commit -m "release-140324"
+[dev 06028a4] release-140324
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git push
+To https://github.com/rakbank-internal/IBPS-Deployment.git
+ ! [rejected]        dev -> dev (non-fast-forward)
+error: failed to push some refs to 'https://github.com/rakbank-internal/IBPS-Deployment.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git push --help
+
+xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
+$ git pull
+CONFLICT (modify/delete): release.zip deleted in 629a531d245b38dad26f5baad80719bde88f05d2 and modified in HEAD.  Version HEAD of release.zip left in tree.
+Automatic merge failed; fix conflicts and then commit the result.
