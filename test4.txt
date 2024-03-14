@@ -190,3 +190,37 @@ jboss_deployments_dir_jar: "{{ jboss_home_jar }}"
     - "{{ war_file_name }}"
     - "{{ jar_file_name }}"
   run_once: true
+============================================
+
+---
+- name: Stop JBoss
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Download WAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ war_file_url }}"
+    dest: "/tmp/{{ war_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy WAR to Target Server
+  copy:
+    src: "/tmp/{{ war_file_name }}"
+    dest: "{{ jboss_deployments_dir }}/{{ war_file_name }}"
+
+- name: Start JBoss 
+  become: true 
+  become_user: itdevtra
+  command: /apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/STARTJBOSSEAP7.2_DIGITAL_BANK.sh
+
+- name: Clean up WAR from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ war_file_name }}"
+    state: absent
+  run_once: true
