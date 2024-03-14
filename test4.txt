@@ -296,3 +296,12 @@ For JAR Deployment Server (10.15.24.32):
     state: absent
   run_once: true
 
+===============
+- name: war deployment with 33 server
+  include_tasks: war-dep-server-33.yml
+
+- name: war deployment with 32 server
+  include_tasks: war-dep-server-32.yml
+
+- name: jar deployment with 32 server
+  include_tasks: jar-dep-server-32.yml  
