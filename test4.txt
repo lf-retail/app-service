@@ -191,12 +191,12 @@ jboss_deployments_dir_jar: "{{ jboss_home_jar }}"
     - "{{ jar_file_name }}"
   run_once: true
 ============================================
-
+For WAR Deployment Server (10.15.24.33):
 ---
-- name: Stop JBoss
+- name: Stop JBoss (WAR)
   become: true 
   become_user: itdevtra
-  command: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller }} command=:shutdown"
+  command: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller_war_33 }} command=:shutdown"
   ignore_errors: yes
 
 - name: Download WAR
@@ -208,19 +208,91 @@ jboss_deployments_dir_jar: "{{ jboss_home_jar }}"
     headers:
       Authorization: "token {{ github_token }}"
 
-- name: Copy WAR to Target Server
+- name: Copy WAR to Target Server (WAR)
   copy:
     src: "/tmp/{{ war_file_name }}"
-    dest: "{{ jboss_deployments_dir }}/{{ war_file_name }}"
+    dest: "{{ jboss_deployments_dir_war_33 }}/{{ war_file_name }}"
 
-- name: Start JBoss 
+- name: Start JBoss (WAR)
   become: true 
   become_user: itdevtra
   command: /apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/STARTJBOSSEAP7.2_DIGITAL_BANK.sh
 
-- name: Clean up WAR from Runner
+- name: Clean up WAR from Runner (WAR)
   delegate_to: localhost
   file:
     path: "/tmp/{{ war_file_name }}"
     state: absent
   run_once: true
+
+===============
+
+For WAR Deployment Server (10.15.24.32):
+
+---
+- name: Stop JBoss (WAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller_war_32 }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Download WAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ war_file_url }}"
+    dest: "/tmp/{{ war_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy WAR to Target Server (WAR)
+  copy:
+    src: "/tmp/{{ war_file_name }}"
+    dest: "{{ jboss_deployments_dir_war_32 }}/{{ war_file_name }}"
+
+- name: Start JBoss (WAR)
+  become: true 
+  become_user: itdevtra
+  command: /apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STARTJBOSSEAP_RETAIL_ONBOARDING.sh
+
+- name: Clean up WAR from Runner (WAR)
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ war_file_name }}"
+    state: absent
+  run_once: true
+=================
+For JAR Deployment Server (10.15.24.32):
+---
+- name: Stop JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller_jar }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Download JAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ jar_file_url }}"
+    dest: "/tmp/{{ jar_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy JAR to Target Server (JAR)
+  copy:
+    src: "/tmp/{{ jar_file_name }}"
+    dest: "{{ jboss_deployments_dir_jar }}/{{ jar_file_name }}"
+
+- name: Start JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: /apps/FEBA_BATCH_11.11/STARTJBOSSEAP7.2_DIGITAL_BANK.sh
+
+- name: Clean up JAR from Runner (JAR)
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ jar_file_name }}"
+    state: absent
+  run_once: true
+
