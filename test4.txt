@@ -110,13 +110,15 @@ ansible_pipelining=True
 =====================================================
 ============================================
 ---
-jboss_controller: 10.15.24.33:16990
+jboss_controller_war: 10.15.24.33:16990
+jboss_controller_war: 10.15.24.32:16990
 github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
 war_file_url: "URL_NOT_SET"
 war_file_name: "{{ war_file_url | basename }}"
 jar_file_url: "URL_NOT_SET"
 jar_file_name: "{{ jar_file_url | basename }}"
 jboss_home_war: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0"
+jboss_home_war: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/standalone/deployments"
 jboss_home_jar: "/apps/FEBA_BATCH_11.11/"
 jboss_deployments_dir_war: "{{ jboss_home_war }}/standalone/deployments"
 jboss_deployments_dir_jar: "{{ jboss_home_jar }}"
