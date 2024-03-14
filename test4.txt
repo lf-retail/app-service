@@ -1,131 +1,109 @@
-Profile_home="$1"
-release_version="$2"
-zip_file_url="$3"
-zip_file_name="$4"
+name: Deploy WAR and JAR to JBoss
 
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/release-$release_version/$zip_file_name" -d "$Profile_home/release-$release_version"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'WAR and JAR Version to Deploy'
+        required: true
+        default: '1111'
 
-# Check if release.txt exists
-release_txt_path="$Profile_home/release-$release_version/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: dehitdevtra1
+    steps: 
+      - name: Checkout Ansible playbook
+        uses: actions/checkout@v2
 
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
+      - name: Run playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -b --extra-vars "target=target_jbwar war_file_url=https://maven.pkg.github.com/Rakbank-DEH-Onboarding/SMEDigitalBank/com/rakbank/infosys/lib/smedigitalbank/${{ github.event.inputs.version }}/smedigitalbank-${{ github.event.inputs.version }}.war" ./playbook/smedeployment.yml
+          ansible-playbook -b --extra-vars "target=target_jbjar jar_file_url=https://maven.pkg.github.com/Rakbank-DEH-Onboarding/SMEDigitalBank/com/rakbank/infosys/lib/smedigitalbank/${{ github.event.inputs.version }}/smedigitalbank-${{ github.event.inputs.version }}.jar" ./playbook/smedeployment.yml
 
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$Profile_home/release-$release_version"
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-    chmod 777 "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release-$release_version/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
 ===============
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ ll
-total 19657
-drwxr-xr-x 1 xmshanmu 1049089        0 Feb  5 12:50 IBPS_NEW_EAR/
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 10 18:17 IBPS_SAMPLE_EAR/
--rw-r--r-- 1 xmshanmu 1049089       17 Jan 10 18:17 README.md
--rw-r--r-- 1 xmshanmu 1049089      444 Jan 10 18:17 ansible.cfg
--rw-r--r-- 1 xmshanmu 1049089     2409 Mar 12 12:49 deploy.sh
--rw-r--r-- 1 xmshanmu 1049089      115 Mar 12 12:49 host-replica.cfg
--rw-r--r-- 1 xmshanmu 1049089      163 Mar 12 12:49 host-uat.cfg
--rw-r--r-- 1 xmshanmu 1049089      116 Jan 10 18:17 hosts.cfg
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 playbook/
--rw-r--r-- 1 xmshanmu 1049089 20103772 Mar 14 09:43 release.zip
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 roles/
--rwxr-xr-x 1 xmshanmu 1049089     1654 Mar 12 12:49 rollback.sh*
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git pull
-remote: Enumerating objects: 20, done.
-remote: Counting objects: 100% (20/20), done.
-remote: Compressing objects: 100% (12/12), done.
-remote: Total 14 (delta 6), reused 0 (delta 0), pack-reused 0
-Unpacking objects: 100% (14/14), 4.57 KiB | 5.00 KiB/s, done.
-From https://github.com/rakbank-internal/IBPS-Deployment
-   a99434d..629a531  dev        -> origin/dev
-error: Your local changes to the following files would be overwritten by merge:
-        release.zip
-Please commit your changes or stash them before you merge.
-Aborting
-Updating a99434d..629a531
+---
+#jboss_controller: 10.15.24.33:16990
+#github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+##war_file_url: "https://maven.pkg.github.com/Rakbank-DEH-Onboarding/SMEDigitalBank/com/rakbank/infosys/lib/smedigitalbank/1111/smedigitalbank-1111.war"
+#war_file_url: "URL_NOT_SET"
+#war_file_name: "{{ war_file_url | basename }}"
+#jboss_home: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0"
+#jboss_deployments_dir: "{{ jboss_home }}/standalone/deployments"
+jboss_controller: 10.15.24.33:16990
+#jboss_controller: 10.15.24.32:16990
+#jboss_controller: 10.15.24.32:16990
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+Jar_file_url: "URL_NOT_SET"
+Jar_file_name: "{{ jar_file_url | basename }}"
+jboss_home: "/apps/FEBA_BATCH_11.11/"
+jboss_deployments_dir: "{{ jboss_home }}"
+...
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ ll
-total 19657
-drwxr-xr-x 1 xmshanmu 1049089        0 Feb  5 12:50 IBPS_NEW_EAR/
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 10 18:17 IBPS_SAMPLE_EAR/
--rw-r--r-- 1 xmshanmu 1049089       17 Jan 10 18:17 README.md
--rw-r--r-- 1 xmshanmu 1049089      444 Jan 10 18:17 ansible.cfg
--rw-r--r-- 1 xmshanmu 1049089     2409 Mar 12 12:49 deploy.sh
--rw-r--r-- 1 xmshanmu 1049089      115 Mar 12 12:49 host-replica.cfg
--rw-r--r-- 1 xmshanmu 1049089      163 Mar 12 12:49 host-uat.cfg
--rw-r--r-- 1 xmshanmu 1049089      116 Jan 10 18:17 hosts.cfg
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 playbook/
--rw-r--r-- 1 xmshanmu 1049089 20103772 Mar 14 09:43 release.zip
-drwxr-xr-x 1 xmshanmu 1049089        0 Jan 29 17:10 roles/
--rwxr-xr-x 1 xmshanmu 1049089     1654 Mar 12 12:49 rollback.sh*
+=============
+---
+- name: Stop JBoss
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller }} command=:shutdown"
+  ignore_errors: yes
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git add release.zip
+- name: Download JAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ jar_file_url }}"
+    dest: "/tmp/{{ jar_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git commit -m "release-140324"
-[dev 06028a4] release-140324
- 1 file changed, 0 insertions(+), 0 deletions(-)
+- name: Copy JAR to Target Server
+  copy:
+    src: "/tmp/{{ jar_file_name }}"
+    dest: "{{ jboss_deployments_dir }}/{{ jar_file_name }}"
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git push
-To https://github.com/rakbank-internal/IBPS-Deployment.git
- ! [rejected]        dev -> dev (non-fast-forward)
-error: failed to push some refs to 'https://github.com/rakbank-internal/IBPS-Deployment.git'
-hint: Updates were rejected because the tip of your current branch is behind
-hint: its remote counterpart. Integrate the remote changes (e.g.
-hint: 'git pull ...') before pushing again.
-hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+- name: Start JBoss 
+  become: true 
+  become_user: itdevtra
+  command: /apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/STARTJBOSSEAP7.2_DIGITAL_BANK.sh
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git push --help
+- name: Clean up WAR from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ jar_file_name }}"
+    state: absent
+  run_once: true
+=================
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
 
-xmshanmu@ropvuat235 MINGW64 ~/Downloads/IBPS/IBPS-Deployment (dev)
-$ git pull
-CONFLICT (modify/delete): release.zip deleted in 629a531d245b38dad26f5baad80719bde88f05d2 and modified in HEAD.  Version HEAD of release.zip left in tree.
-Automatic merge failed; fix conflicts and then commit the result.
+[target_jbwar]
+ANT1DEHAPPS02 ansible_ssh_host=10.15.24.33
+ANT1DEHAPPS02 ansible_ssh_host=10.15.24.32
+
+[target_jbjar]
+ANT1DEHAPPS02 ansible_ssh_host=10.15.24.32
+================
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+inventory=hosts.cfg
+roles_path=roles/
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+timeout=30
+ansible_pipelining=True
