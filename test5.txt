@@ -138,3 +138,13 @@
     path: "/tmp/{{ jar_file_name }}"
     state: absent
   run_once: true
+====================
+
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/SMEDigitalBank/SMEDigitalBank
+  
+PLAY [target_jbwar] ************************************************************
+TASK [Gathering Facts] *********************************************************
+fatal: [ANT1DEHAPPS02]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '10.15.24.32' (ECDSA) to the list of known hosts.\r\nDo not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.\nitdevtra@10.15.24.32: Permission denied (publickey,password).", "unreachable": true}
+PLAY RECAP *********************************************************************
+ANT1DEHAPPS02              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+Error: Process completed with exit code 4.
