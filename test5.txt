@@ -1,1 +1,34 @@
-Please share the path location where you will be taking backups of the WAR and JAR files.
+- name: Stop JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STOPJBOSS_RETAILONBORADING.sh --connect controller={{ jboss_controller_jar }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Download JAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ jar_file_url }}"
+    dest: "/tmp/{{ jar_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy JAR to Target Server (JAR)
+  copy:
+    src: "/tmp/{{ jar_file_name }}"
+    dest: "{{ jboss_deployments_dir_jar }}/{{ jar_file_name }}"
+
+- name: Start JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STARTJBOSS_RETAILONBORADING.sh"
+
+- name: Clean up JAR from Runner (JAR)
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ jar_file_name }}"
+    state: absent
+  run_once: true
+
+===========================
+
