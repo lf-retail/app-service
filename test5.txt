@@ -25,3 +25,10 @@ PLAY RECAP *********************************************************************
 ANT1DEHAPPS01              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
 ANT1DEHAPPS02              : ok=5    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 Error: Process completed with exit code 4.
+==================
+
+We are getting error while doing deploying the application in below server. Please help on this issues.
+
+User : ITDEVTRA
+Ip: 10.15.24.32
+ANT1DEHAPPS01
