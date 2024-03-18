@@ -32,3 +32,55 @@
 
 ===========================
 
+- name: Stop JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STOPJBOSS_RETAILONBORADING.sh --connect controller={{ jboss_controller_jar }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Get current timestamp
+  set_fact:
+    timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}"
+
+- name: Create backup directory with timestamp
+  become: true
+  become_user: itdevtra
+  file:
+    path: "{{ jboss_deployments_dir_jar }}/backup_{{ timestamp }}"
+    state: directory
+
+- name: Backup existing JAR files
+  become: true
+  become_user: itdevtra
+  command: mv "{{ jboss_deployments_dir_jar }}"/*.jar "{{ jboss_deployments_dir_jar }}/backup_{{ timestamp }}/"
+
+- name: List contents of the backup directory
+  become: true
+  become_user: itdevtra
+  command: ls -l "{{ jboss_deployments_dir_jar }}/backup_{{ timestamp }}"
+
+- name: Download JAR
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ jar_file_url }}"
+    dest: "/tmp/{{ jar_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy JAR to Target Server (JAR)
+  copy:
+    src: "/tmp/{{ jar_file_name }}"
+    dest: "{{ jboss_deployments_dir_jar }}/{{ jar_file_name }}"
+
+- name: Start JBoss (JAR)
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STARTJBOSS_RETAILONBORADING.sh"
+
+- name: Clean up JAR from Runner (JAR)
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ jar_file_name }}"
+    state: absent
+  run_once: true
