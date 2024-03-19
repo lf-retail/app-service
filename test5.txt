@@ -5,31 +5,36 @@ Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/SMEDigitalBank/SMEDigitalBa
   shell: /usr/bin/bash -e {0}
   env:
     TOKEN_GITHUB: ***
-  
+
 PLAY [target_jbwar] ************************************************************
+
 TASK [Gathering Facts] *********************************************************
-fatal: [ANT1DEHAPPS01]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Do not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.\nitdevtra@10.15.24.32: Permission denied (publickey,password).", "unreachable": true}
 ok: [ANT1DEHAPPS02]
+ok: [ANT1DEHAPPS01]
+
 TASK [smedeployment : war deployment with 33 server] ***************************
-included: /ansible/GITHUB_RUNNER/actions-runner10/_work/SMEDigitalBank/SMEDigitalBank/roles/smedeployment/tasks/war-dep-server-33.yml for ANT1DEHAPPS02
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/SMEDigitalBank/SMEDigitalBank/roles/smedeployment/tasks/war-dep-server-33.yml for ANT1DEHAPPS02, ANT1DEHAPPS01
+
 TASK [smedeployment : Stop JBoss (WAR)] ****************************************
-fatal: [ANT1DEHAPPS02]: FAILED! => {"changed": true, "cmd": ["/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh", "--connect", "controller=10.15.24.33:16990", "command=:shutdown"], "delta": "0:00:01.562518", "end": "2024-03-18 19:36:51.950280", "msg": "non-zero return code", "rc": 1, "start": "2024-03-18 19:36:50.387762", "stderr": "", "stderr_lines": [], "stdout": "Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection refused", "stdout_lines": ["Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection r
+fatal: [ANT1DEHAPPS02]: FAILED! => {"changed": true, "cmd": ["/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh", "--connect", "controller=10.15.24.33:16990", "command=:shutdown"], "delta": "0:00:01.047356", "end": "2024-03-19 20:05:58.736347", "msg": "non-zero return code", "rc": 1, "start": "2024-03-19 20:05:57.688991", "stderr": "", "stderr_lines": [], "stdout": "Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection refused", "stdout_lines": ["Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection refused"]}
 ...ignoring
+fatal: [ANT1DEHAPPS01]: FAILED! => {"changed": true, "cmd": ["/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/bin/jboss-cli.sh", "--connect", "controller=10.15.24.33:16990", "command=:shutdown"], "delta": "0:00:01.210929", "end": "2024-03-19 20:05:58.913548", "msg": "non-zero return code", "rc": 1, "start": "2024-03-19 20:05:57.702619", "stderr": "", "stderr_lines": [], "stdout": "Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection refused", "stdout_lines": ["Failed to connect to the controller: The controller is not available at 10.15.24.33:16990: java.net.ConnectException: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: WFLYPRT0053: Could not connect to remote+http://10.15.24.33:16990. The connection failed: Connection refused"]}
+...ignoring
+
 TASK [smedeployment : Get current timestamp] ***********************************
 ok: [ANT1DEHAPPS02]
+ok: [ANT1DEHAPPS01]
+
 TASK [smedeployment : Create backup directory with timestamp] ******************
 changed: [ANT1DEHAPPS02]
+changed: [ANT1DEHAPPS01]
+
 TASK [smedeployment : Copy existing WAR files to backup directory] *************
-fatal: [ANT1DEHAPPS02]: FAILED! => {"changed": true, "cmd": ["cp", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/backup_2024-03-18_193649/"], "delta": "0:00:00.006901", "end": "2024-03-18 19:36:53.239699", "msg": "non-zero return code", "rc": 1, "start": "2024-03-18 19:36:53.232798", "stderr": "cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory", "stderr_lines": ["cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory"], "stdout": "", "stdout_lines": []}
+fatal: [ANT1DEHAPPS02]: FAILED! => {"changed": true, "cmd": ["cp", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/backup_2024-03-19_200556/"], "delta": "0:00:00.006658", "end": "2024-03-19 20:06:00.248508", "msg": "non-zero return code", "rc": 1, "start": "2024-03-19 20:06:00.241850", "stderr": "cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory", "stderr_lines": ["cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory"], "stdout": "", "stdout_lines": []}
+fatal: [ANT1DEHAPPS01]: FAILED! => {"changed": true, "cmd": ["cp", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar", "/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/backup_2024-03-19_200556/"], "delta": "0:00:00.007171", "end": "2024-03-19 20:06:00.303350", "msg": "non-zero return code", "rc": 1, "start": "2024-03-19 20:06:00.296179", "stderr": "cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory", "stderr_lines": ["cp: cannot stat ‘/apps/JBOSSEAP7.2_DIGITAL_BANK/EAP-7.2.0/standalone/deployments/*.jar’: No such file or directory"], "stdout": "", "stdout_lines": []}
+
 PLAY RECAP *********************************************************************
-ANT1DEHAPPS01              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+ANT1DEHAPPS01              : ok=5    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
 ANT1DEHAPPS02              : ok=5    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=1   
-Error: Process completed with exit code 4.
-==================
 
-We are getting error while doing deploying the application in below server. Please help on this issues.
-
-User : ITDEVTRA
-Ip: 10.15.24.32
-ANT1DEHAPPS01
-Deployment Error on Server ANT1DEHAPPS01 - Assistance Needed
+Error: Process completed with exit code 2.
