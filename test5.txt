@@ -1,1 +1,117 @@
-I received the details of this replica server from Gaurav's email. If there's no need to deploy to this server, I can ignore it.
+Run cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  cd /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+  #ansible-playbook -vvv -b --extra-vars "target=target_wasuat148 destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+  ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+  ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+  #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+  shell: /usr/bin/bash -e {0}
+  env:
+    TOKEN_GITHUB: ***
+    RELEASE_VERSION: 3.46.45.PM
+  
+ansible-playbook 2.8.18
+  config file = /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg
+  configured module search path = ['/home/itdevtra/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.6/site-packages/ansible
+  executable location = /usr/bin/ansible-playbook
+  python version = 3.6.8 (default, Jan 14 2022, 11:04:20) [GCC 8.5.0 20210514 (Red Hat 8.5.0-7)]
+Using /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible.cfg as config file
+host_list declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+script declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+auto declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+yaml declined parsing /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg as it did not pass it's verify_file() method
+Parsed /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/hosts.cfg inventory source with ini plugin
+PLAYBOOK: IBPS-deployment.yml **************************************************
+1 plays in ./playbook/IBPS-deployment.yml
+PLAY [target_wasuat209] ********************************************************
+TASK [Gathering Facts] *********************************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/IBPS-deployment.yml:1
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343 && echo ansible-tmp-1711006889.4720123-2847699-169926356455343="` echo /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343 `" ) && sleep 0'"'"''
+<10.15.11.210> (0, b'ansible-tmp-1711006889.4720123-2847699-169926356455343=/tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343\n', b'Do not attempt to logon unless you are an authorised user of RAKBANK. Any logon to the RAKBANK network is subject to the provisions of the Banks Information Security Policy. Your actions may be audited. In the course of monitoring individuals improperly using this system, or in the course of system maintenance, the activities of authorized users may also be monitored. Anyone using this system expressly consents to such monitoring and is advised that if such monitoring reveals possible evidence of criminal activity, system personnel may provide the evidence of such monitoring to law enforcement officials. For IT technical assistance you may contact IT Help Desk @ 00971-7-2061111.\n')
+<ANTIBPSAPP1/02> Attempting python interpreter discovery
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'echo PLATFORM; uname; echo FOUND; command -v '"'"'"'"'"'"'"'"'/usr/bin/python'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python3.7'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python3.6'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python3.5'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python2.7'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python2.6'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'/usr/libexec/platform-python'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'/usr/bin/python3'"'"'"'"'"'"'"'"'; command -v '"'"'"'"'"'"'"'"'python'"'"'"'"'"'"'"'"'; echo ENDFOUND && sleep 0'"'"''
+<10.15.11.210> (0, b'PLATFORM\nLinux\nFOUND\n/usr/bin/python\n/usr/bin/python2.7\n/usr/libexec/platform-python\n/usr/bin/python\nENDFOUND\n', b'')
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'/usr/bin/python && sleep 0'"'"''
+<10.15.11.210> (0, b'{"osrelease_content": "NAME=\\"Red Hat Enterprise Linux Server\\"\\nVERSION=\\"7.9 (Maipo)\\"\\nID=\\"rhel\\"\\nID_LIKE=\\"fedora\\"\\nVARIANT=\\"Server\\"\\nVARIANT_ID=\\"server\\"\\nVERSION_ID=\\"7.9\\"\\nPRETTY_NAME=\\"Red Hat Enterprise Linux\\"\\nANSI_COLOR=\\"0;31\\"\\nCPE_NAME=\\"cpe:/o:redhat:enterprise_linux:7.9:GA:server\\"\\nHOME_URL=\\"https://www.redhat.com/\\"\\nBUG_REPORT_URL=\\"https://bugzilla.redhat.com/\\"\\n\\nREDHAT_BUGZILLA_PRODUCT=\\"Red Hat Enterprise Linux 7\\"\\nREDHAT_BUGZILLA_PRODUCT_VERSION=7.9\\nREDHAT_SUPPORT_PRODUCT=\\"Red Hat Enterprise Linux\\"\\nREDHAT_SUPPORT_PRODUCT_VERSION=\\"7.9\\"\\n", "platform_dist_result": ["redhat", "7.9", "Maipo"]}\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/system/setup.py
+<10.15.11.210> PUT /home/itdevtra/.ansible/tmp/ansible-local-2847691lvmbp_5i/tmpai2z9jk8 TO /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/AnsiballZ_setup.py
+<10.15.11.210> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 '[10.15.11.210]'
+<10.15.11.210> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2847691lvmbp_5i/tmpai2z9jk8 /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/AnsiballZ_setup.py\n', b'')
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/ /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/AnsiballZ_setup.py && sleep 0'"'"''
+<10.15.11.210> (0, b'', b'')
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 -tt 10.15.11.210 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/AnsiballZ_setup.py && sleep 0'"'"''
+<10.15.11.210> (0, b'\r\n{"invocation": {"module_args": {"filter": "*", "gather_subset": ["all"], "fact_path": "/etc/ansible/facts.d", "gather_timeout": 10}}, "ansible_facts": {"ansible_fibre_channel_wwn": [], "module_setup": true, "ansible_distribution_version": "7.9", "ansible_distribution_file_variety": "RedHat", "ansible_env": {"LANG": "en_US.UTF-8", "TERM": "xterm", "SHELL": "/bin/bash", "XDG_RUNTIME_DIR": "/run/user/1004", "SHLVL": "2", "SSH_TTY": "/dev/pts/0", "PWD": "/home/itdevtra", "LESSOPEN": "||/usr/bin/lesspipe.sh %s", "XDG_SESSION_ID": "10159", "SSH_CLIENT": "10.15.14.105 52486 22", "LOGNAME": "itdevtra", "USER": "itdevtra", "MAIL": "/var/mail/itdevtra", "PATH": "/usr/local/bin:/usr/bin", "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;05;37;41:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=0
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1711006889.4720123-2847699-169926356455343/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.210> (0, b'', b'')
+ok: [ANTIBPSAPP1/02]
+META: ran handlers
+TASK [IBPS-deployment : Include deploy playbook] *******************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml for ANTIBPSAPP1/02
+TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:1
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736 && echo ansible-tmp-1711006892.2464488-2847714-183017552832736="` echo /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/net_tools/basics/get_url.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2847691lvmbp_5i/tmp2tbd27kk TO /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736/AnsiballZ_get_url.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736/ /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1711006892.2464488-2847714-183017552832736/ > /dev/null 2>&1 && sleep 0'
+fatal: [ANTIBPSAPP1/02 -> localhost]: FAILED! => {
+    "changed": false,
+    "dest": "/tmp/release.3.46.45.PM.zip",
+    "elapsed": 1,
+    "invocation": {
+        "module_args": {
+            "attributes": null,
+            "backup": null,
+            "checksum": "",
+            "client_cert": null,
+            "client_key": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp/release.3.46.45.PM.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": false,
+            "force_basic_auth": false,
+            "group": null,
+            "headers": {
+                "Authorization": "token ***"
+            },
+            "http_agent": "ansible-httpget",
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "sha256sum": "",
+            "src": null,
+            "timeout": 10,
+            "tmp_dest": null,
+            "unsafe_writes": null,
+            "url": "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/tag/20032024_IBPS-Patch/release.3.46.45.PM.zip",
+            "url_password": null,
+            "url_username": null,
+            "use_proxy": true,
+            "validate_certs": true
+        }
+    },
+    "msg": "Request failed",
+    "response": "HTTP Error 404: Not Found",
+    "status_code": 404,
+    "url": "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/tag/20032024_IBPS-Patch/release.3.46.45.PM.zip"
+}
+NO MORE HOSTS LEFT *************************************************************
+PLAY RECAP *********************************************************************
+ANTIBPSAPP1/02             : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+Error: Process completed with exit code 2.
