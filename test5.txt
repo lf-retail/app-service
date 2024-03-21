@@ -318,3 +318,21 @@ Profile_home: "/ibm/IBM/Application/release"
 #Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
 #zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
 ...
+=============
+
+- name: Download release file from GitHub Releases
+  get_url:
+    url: "https://github.com/owner/repository/releases/download/{{ github_release_tag }}/file_name.zip"
+    dest: "/path/to/save/file_name.zip"
+    headers:
+      Authorization: "token {{ github_token }}"
+--------
+- name: Download release file from GitHub Releases
+  hosts: localhost
+  tasks:
+    - name: Download release file from GitHub Releases
+      get_url:
+        url: "https://github.com/owner/repository/releases/download/{{ github_release_tag }}/file_name.zip"
+        dest: "/path/to/save/file_name.zip"
+        headers:
+          Authorization: "token {{ github_token }}"
