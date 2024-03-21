@@ -299,3 +299,6 @@ Error: Process completed with exit code 2.
   shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
   register: deploy_result
   ignore_errors: yes
+===============
+
+zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ lookup('env', 'RELEASE_VERSION') }}.zip"
