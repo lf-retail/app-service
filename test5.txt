@@ -115,3 +115,16 @@ NO MORE HOSTS LEFT *************************************************************
 PLAY RECAP *********************************************************************
 ANTIBPSAPP1/02             : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 Error: Process completed with exit code 2.
+================
+
+Completed the IBPS deployment dry run with the old application files and discussed it with the Rakbank support team and Newgen team on 02/21/2024. Subsequently, I requested the latest application files and server details following our discussion. I received the server details for the IBPS UAT2 Cluster environment on February 26th from the Rakbank support team. However, the release artifact files needed to be pushed to GitHub by the Newgen team. They encountered an issue with GitHub access, and only yesterday did I receive the release artifact from them.
+
+Therefore, I initiated the IBPS deployment today using the latest release artifact for the IBPS UAT2 Cluster environment:
+
+Application: ANTIBPSAPP1
+IP: 10.15.11.209
+
+Application: ANTIBPSAPP2
+IP: 10.15.11.210
+
+Most likely, I will complete the deployment today."
