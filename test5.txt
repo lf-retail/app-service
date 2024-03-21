@@ -1,1 +1,1 @@
-I got this replica server details from Gaurav email. If you don’t need to deploy for this server then I can ignore it. 
+I received the details of this replica server from Gaurav's email. If there's no need to deploy to this server, I can ignore it.
