@@ -336,3 +336,5 @@ Profile_home: "/ibm/IBM/Application/release"
         dest: "/path/to/save/file_name.zip"
         headers:
           Authorization: "token {{ github_token }}"
+
+"https://api.github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
