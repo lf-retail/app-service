@@ -1,15 +1,12 @@
-Hi Hritik,
+I've retrieved the release artifact from GitHub and I'm preparing to deploy the IBPS application on the following servers:
 
-I got your release artefact from github and I am going to deploy IBPS application on below server
+ANTIBPSAPP1/02
+IP: 10.15.11.209
 
+ANTIBPSAPP1/02
+IP: 10.15.11.210
 
-ANTIBPSAPP1/02 
-ip=10.15.11.209
+ANT3CASAPPS02
+IP: 10.15.24.86
 
-ANTIBPSAPP1/02 
-ip=10.15.11.210
-
-ANT3CASAPPS02 
-ip=10.15.24.86
-
-So please take backup old files from particular path from your side and please conform at what time can I start CD pipeline.
+Please take backup of the old files from the specified path on your end. Kindly confirm when I can initiate the Continuous Deployment (CD) pipeline."
