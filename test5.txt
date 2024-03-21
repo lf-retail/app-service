@@ -196,3 +196,69 @@ vars:
 vars:
   zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ release_version }}.zip"
 # Your other playbook configuration
+==================
+
+TASK [IBPS-deployment : Include deploy playbook] *******************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml for ANTIBPSAPP1
+TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:1
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363 && echo ansible-tmp-1711012645.1251378-2891128-102152369385363="` echo /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/net_tools/basics/get_url.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-2891105smc7u9v2/tmp7ir802jp TO /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363/AnsiballZ_get_url.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363/ /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1711012645.1251378-2891128-102152369385363/ > /dev/null 2>&1 && sleep 0'
+fatal: [ANTIBPSAPP1 -> localhost]: FAILED! => {
+    "changed": false,
+    "dest": "/tmp/release.3.46.45.PM.zip",
+    "elapsed": 1,
+    "invocation": {
+        "module_args": {
+            "attributes": null,
+            "backup": null,
+            "checksum": "",
+            "client_cert": null,
+            "client_key": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp/release.3.46.45.PM.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": false,
+            "force_basic_auth": false,
+            "group": null,
+            "headers": {
+                "Authorization": "token ***"
+            },
+            "http_agent": "ansible-httpget",
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "sha256sum": "",
+            "src": null,
+            "timeout": 10,
+            "tmp_dest": null,
+            "unsafe_writes": null,
+            "url": "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.3.46.45.PM.zip",
+            "url_password": null,
+            "url_username": null,
+            "use_proxy": true,
+            "validate_certs": true
+        }
+    },
+    "msg": "Request failed",
+    "response": "HTTP Error 404: Not Found",
+    "status_code": 404,
+    "url": "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.3.46.45.PM.zip"
+}
+NO MORE HOSTS LEFT *************************************************************
+PLAY RECAP *********************************************************************
+ANTIBPSAPP1                : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+Error: Process completed with exit code 2.
