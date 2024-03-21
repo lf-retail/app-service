@@ -302,3 +302,19 @@ Error: Process completed with exit code 2.
 ===============
 
 zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ lookup('env', 'RELEASE_VERSION') }}.zip"
+========
+
+---
+#ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release-{{ lookup('env', 'RELEASE_VERSION') }}.zip"
+zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+Profile_home: "/ibm/IBM/Application/release"
+#deployment_script: "/ibm/IBM/Application/deployment_script
+#rollback_script: "/ibm/IBM/Application/rollback_script
+#Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
+#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
+...
