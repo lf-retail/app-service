@@ -144,3 +144,41 @@ Profile_home: "/ibm/IBM/Application/release"
 #Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
 #zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
 ...
+===============
+
+name: IBPS-deployment
+run-name: IBPS-deployment-${{ github.event.inputs.release_version }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true  
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat148 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
