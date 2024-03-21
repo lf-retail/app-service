@@ -182,3 +182,10 @@ jobs:
         ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
         ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
         #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+==========
+
+---
+# Your other playbook configuration
+vars:
+  zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ release_version }}.zip"
+# Your other playbook configuration
