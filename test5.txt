@@ -189,3 +189,10 @@ jobs:
 vars:
   zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ release_version }}.zip"
 # Your other playbook configuration
+========
+
+---
+# Your other playbook configuration
+vars:
+  zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/20032024_IBPS-Patch/release.{{ release_version }}.zip"
+# Your other playbook configuration
