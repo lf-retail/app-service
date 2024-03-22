@@ -339,3 +339,19 @@ jobs:
 ===================
 
 zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+===========
+
+[Yesterday 3:45 PM] Pradip Kanasani
+    - name: get mcf_core release
+
+      uses: robinraju/release-downloader@v1.9
+
+      with:
+
+        repository: "rakbank-internal/mcf_core"
+
+        tag: ${{ github.event.inputs.mcf-tag }}
+
+        fileName: ${{ github.event.inputs.mcf-fileName }}
+
+        token: ${{ secrets.TOKEN_GITHUB }} 
