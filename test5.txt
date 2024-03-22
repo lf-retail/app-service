@@ -402,3 +402,24 @@ Error: Config error: Please input a valid tag or release ID, or specify `latest`
        fileName: release.zip  # Adjust the file name if needed
       env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+===============
+
+Run robinraju/release-downloader@v1.9
+  with:
+    repository: rakbank-internal/ibps-was-ansible-cd
+    tag: KYC-test_21032024
+    fileName: release.zip
+    latest: false
+    preRelease: false
+    tarBall: false
+    zipBall: false
+    out-file-path: .
+    extract: false
+    token: ***
+    github-api-url: https://api.github.com
+  env:
+    GITHUB_TOKEN: ***
+Fetching release KYC-test_21032024 from repo rakbank-internal/ibps-was-ansible-cd
+Found release tag: KYC-test_21032024
+Downloading file: release.zip to: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd
+Done: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/release.zip
