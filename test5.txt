@@ -1100,3 +1100,89 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
     "msg": "There was an issue creating /ibm/IBM/Application/release/release.3.0.0.25 as requested: [Errno 13] Permission denied: '/ibm/IBM/Application/release/release.3.0.0.25'",
     "path": "/ibm/IBM/Application/release/release.3.0.0.25"
 }
+=======================
+
+name: IBPS-deployment
+run-name: IBPS-deployment-${{ github.event.inputs.release_version }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+  
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      id: download_release
+      with:
+       repository: rakbank-internal/ibps-was-ansible-cd
+       tag: ${{ github.event.inputs.tag }}
+       fileName: ${{ github.event.inputs.fileName }}
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
+    - name: Set downloaded file URL as an environment variable
+      run: |
+        echo "ZIP_FILE_URL=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV 
+    
+    - name: Display ZIP_FILE_URL
+      run: |
+        echo $ZIP_FILE_URL        
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat148 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+
+-------------------
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+#[target_wasuat148]
+#ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+
+[target_wasuat209]
+ANTIBPSAPP1 ansible_ssh_host=10.15.11.209
+
+[target_wasuat210]
+ANTIBPSAPP1 ansible_ssh_host=10.15.11.210
+
+#[target_wasreplica86]
+#ANT3CASAPPS02 ansible_ssh_host=10.15.24.86
