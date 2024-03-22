@@ -992,3 +992,11 @@ echo "ZIP_FILE_URL=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansibl
 /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/release.zip
 
 zip_file_name: "{{ zip_file_url | basename }}"
+
+
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+Profile_home: "/ibm/IBM/Application/release"
