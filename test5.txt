@@ -269,3 +269,34 @@ fatal: [ANTIBPSAPP1 -> localhost]: FAILED! => {
 }
 
 NO MORE HOSTS LEFT *************************************************************
+===============
+
+---
+- name: Complete Workflow Including URL Accessibility Test
+  hosts: localhost
+  gather_facts: no
+  vars:
+    github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"  # Ensure this environment variable is set
+    download_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+
+  tasks:
+    - name: Test URL Accessibility via Curl
+      ansible.builtin.shell: |
+        curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token {{ github_token }}" "{{ download_url }}"
+      register: curl_result
+      ignore_errors: yes
+
+    - name: Check if the URL is accessible
+      fail:
+        msg: "The URL is not accessible. HTTP Status Code: {{ curl_result.stdout }}"
+      when: curl_result.stdout != "200"
+
+    - name: Download the file using the URL (if accessible)
+      ansible.builtin.get_url:
+        url: "{{ download_url }}"
+        dest: "/path/to/your/destination/release.zip"
+        headers: "Authorization:token {{ github_token }}"
+      when: curl_result.stdout == "200"
+
+    # Add additional tasks here based on your requirements
+
