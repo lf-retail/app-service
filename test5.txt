@@ -392,3 +392,13 @@ Error: Config error: Please input a valid tag or release ID, or specify `latest`
     fileName: release.zip  # Adjust the file name if needed
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+====================
+
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      with:
+       repository: rakbank-internal/ibps-was-ansible-cd
+       tag: KYC-test_21032024
+       fileName: release.zip  # Adjust the file name if needed
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
