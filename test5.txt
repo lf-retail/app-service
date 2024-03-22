@@ -776,3 +776,62 @@ Profile_home: "/ibm/IBM/Application/release"
   run: echo "FILE_NAME=${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
 
 zip_file_name: "{{ lookup('env', 'FILE_NAME') }}"
+=======
+
+- name: Copy release.zip to Target Server
+  delegate_to: localhost
+  copy:
+    src: "{{ zip_file_name }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"    
+
+TASK [IBPS-deployment : Copy release.zip to Target Server] *********************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:10
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164 && echo ansible-tmp-1711108416.669398-3458043-132152916095164="` echo /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/stat.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-3458021sel8try9/tmp89li59h2 TO /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_stat.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/ /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_stat.py && sleep 0'
+<localhost> PUT /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/release.zip TO /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/source
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/ /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/source && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/files/copy.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-3458021sel8try9/tmpptcue2bv TO /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_copy.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/ /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_copy.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/AnsiballZ_copy.py && sleep 0'
+fatal: [ANTIBPSAPP1 -> localhost]: FAILED! => {
+    "changed": false,
+    "checksum": "99f453da75be7171d015c39a5c4c7682622204d9",
+    "diff": [],
+    "invocation": {
+        "module_args": {
+            "_original_basename": "release.zip",
+            "attributes": null,
+            "backup": false,
+            "checksum": "99f453da75be7171d015c39a5c4c7682622204d9",
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp//ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/release.zip",
+            "directory_mode": null,
+            "follow": false,
+            "force": true,
+            "group": null,
+            "local_follow": null,
+            "mode": "0755",
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": "/tmp/ansible-tmp-1711108416.669398-3458043-132152916095164/source",
+            "unsafe_writes": null,
+            "validate": null
+        }
+    },
+    "msg": "Destination directory /tmp//ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd does not exist"
+}
+PLAY RECAP *********************************************************************
