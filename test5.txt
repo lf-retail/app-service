@@ -440,3 +440,82 @@ Done: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was
 
 -----------------
 zip_file_url: ${{ env.ZIP_FILE_URL }}
+=========
+
+TASK [IBPS-deployment : Include deploy playbook] *******************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:1
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml for ANTIBPSAPP1
+
+TASK [IBPS-deployment : Download zip from GitHub packages on Runner] ***********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-deploy.yml:1
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: itdevtra
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997 && echo ansible-tmp-1711092837.0172343-3365922-82411218375997="` echo /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997 `" ) && sleep 0'
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/net_tools/basics/get_url.py
+<localhost> PUT /home/itdevtra/.ansible/tmp/ansible-local-3365901rlbd974k/tmpzlk6tt4h TO /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997/AnsiballZ_get_url.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997/ /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/libexec/platform-python /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997/AnsiballZ_get_url.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /tmp/ansible-tmp-1711092837.0172343-3365922-82411218375997/ > /dev/null 2>&1 && sleep 0'
+The full traceback is:
+  File "/tmp/ansible_get_url_payload_1v0qjry1/ansible_get_url_payload.zip/ansible/module_utils/urls.py", line 1360, in fetch_url
+    unix_socket=unix_socket)
+  File "/tmp/ansible_get_url_payload_1v0qjry1/ansible_get_url_payload.zip/ansible/module_utils/urls.py", line 1257, in open_url
+    use_gssapi=use_gssapi, unix_socket=unix_socket)
+  File "/tmp/ansible_get_url_payload_1v0qjry1/ansible_get_url_payload.zip/ansible/module_utils/urls.py", line 1137, in open
+    request = RequestWithMethod(url, method, data)
+  File "/tmp/ansible_get_url_payload_1v0qjry1/ansible_get_url_payload.zip/ansible/module_utils/urls.py", line 548, in __init__
+    urllib_request.Request.__init__(self, url, data, headers, origin_req_host, unverifiable)
+  File "/usr/lib64/python3.6/urllib/request.py", line 329, in __init__
+    self.full_url = url
+  File "/usr/lib64/python3.6/urllib/request.py", line 355, in full_url
+    self._parse()
+  File "/usr/lib64/python3.6/urllib/request.py", line 384, in _parse
+    raise ValueError("unknown url type: %r" % self.full_url)
+fatal: [ANTIBPSAPP1 -> localhost]: FAILED! => {
+    "changed": false,
+    "invocation": {
+        "module_args": {
+            "attributes": null,
+            "backup": null,
+            "checksum": "",
+            "client_cert": null,
+            "client_key": null,
+            "content": null,
+            "delimiter": null,
+            "dest": "/tmp/",
+            "directory_mode": null,
+            "follow": false,
+            "force": false,
+            "force_basic_auth": false,
+            "group": null,
+            "headers": {
+                "Authorization": "token ***"
+            },
+            "http_agent": "ansible-httpget",
+            "mode": null,
+            "owner": null,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "sha256sum": "",
+            "src": null,
+            "timeout": 10,
+            "tmp_dest": null,
+            "unsafe_writes": null,
+            "url": "",
+            "url_password": null,
+            "url_username": null,
+            "use_proxy": true,
+            "validate_certs": true
+        }
+    },
+    "msg": "unknown url type: ''",
+    "status": -1,
+    "url": ""
+}
+
+NO MORE HOSTS LEFT *************************************************************
+
+PLAY RECAP *********************************************************************
