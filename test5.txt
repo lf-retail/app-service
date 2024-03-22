@@ -727,3 +727,33 @@ jobs:
   shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
   register: deploy_result
   ignore_errors: yes
+
+
+========
+
+- name: Create directory for new release version
+  file:
+    path: "{{ Profile_home }}/release.{{ release_version }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy zip to Target Server
+  copy:
+    src: "{{ zip_file_url }}"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/{{ zip_file_name }}"
+    mode: '0755'      
+ 
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
+  register: deploy_result
+  ignore_errors: yes
