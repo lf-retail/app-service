@@ -300,3 +300,42 @@ NO MORE HOSTS LEFT *************************************************************
 
     # Add additional tasks here based on your requirements
 
+====================
+
+name: IBPS-deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: dehitdevtra1
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Debug Working Directory
+        run: |
+          ls -al
+          pwd
+
+      - name: Set environment variable
+        env:
+          ZIP_FILE_URL: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+
+      - name: Run Ansible Playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}  # assuming a secret named TOKEN_GITHUB is defined
+          RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
+===================
+
+zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
