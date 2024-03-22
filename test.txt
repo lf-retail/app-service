@@ -1,7 +1,6 @@
-Hi Shyam,
+I have completed the IBPS deployment on below UAT2 cluster servers. This involved downloading the release artifact from Github Releases and copying it onto the targeted servers from the Runner machine. Additionally, I ensured that the application files within the release artifact were copied to their respective locations as specified in the release.txt file.
 
-I have done the IBPS deployment that means downloaded the release artefact from Github Releases and copy into targeted server from Runner machine and we have some application files inside the release artifact that files copied into specific targeted location based on the release.txt file.
-I have done the above activities for the below two server
+Here are the details for the two servers:
 
 Application: ANTIBPSAPP1
 IP: 10.15.11.209
@@ -9,6 +8,6 @@ IP: 10.15.11.209
 Application: ANTIBPSAPP2
 IP: 10.15.11.210
 
+Additionally, Today had a discussion with Devdutta Singh, Anisur Rahman Abdul Kalam Shaikh, and Hritik Kounsal regarding the installation of WAR files in WAS,. We discussed the necessary steps to follow if there are any WAR files within the release artifact. I'm scheduled to commence this work on Monday.
 
-Today I had a discussion with Devdutta Singh, Anisur Rahman Abdul Kalam Shaikh and Hritik Kounsal regarding war file installation in WAS.
-In the release artifact having war file it has to following the installation process
+Please feel free to reach out if there are any additional requirements or if I've overlooked anything.
