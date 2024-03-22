@@ -985,3 +985,10 @@ ansible_user: "itdevtra"
 Profile_home: "/ibm/IBM/Application/release"
 #Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
 ...
+====
+
+echo "ZIP_FILE_URL=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
+
+/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/release.zip
+
+zip_file_name: "{{ zip_file_url | basename }}"
