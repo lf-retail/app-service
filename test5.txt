@@ -770,3 +770,9 @@ ansible_user: "itdevtra"
 Profile_home: "/ibm/IBM/Application/release"
 #Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
 ...
+
+
+- name: Set fileName as an environment variable
+  run: echo "FILE_NAME=${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
+
+zip_file_name: "{{ lookup('env', 'FILE_NAME') }}"
