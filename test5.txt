@@ -355,3 +355,11 @@ zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
         fileName: ${{ github.event.inputs.mcf-fileName }}
 
         token: ${{ secrets.TOKEN_GITHUB }} 
+=========================
+
+      - name: Download MCF Core Release
+        uses: robinraju/release-downloader@v1.9
+        with:
+          zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
