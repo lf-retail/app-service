@@ -1,76 +1,14 @@
-name: IBPS-deployment
-run-name: IBPS-deployment-${{ github.event.inputs.release_version }}
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true  
+Hi Shyam,
 
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
+I have done the IBPS deployment that means downloaded the release artefact from Github Releases and copy into targeted server from Runner machine and we have some application files inside the release artifact that files copied into specific targeted location based on the release.txt file.
+I have done the above activities for the below two server
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+Application: ANTIBPSAPP1
+IP: 10.15.11.209
 
-    - name: Debug Working Directory
-      run: |
-        ls -al
-        pwd
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_jb destination=${{ github.workspace }} deploy_mode=true rollback_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml
-====================
-- hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-  gather_facts: yes
-  roles:
-    - IBPS-deployment
-=========================
----
-ibps_server: 10.15.13.148:9043
-github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
-zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release-{{ lookup('env', 'RELEASE_VERSION') }}.zip"
-zip_file_name: "{{ zip_file_url | basename }}"
-ansible_user: "itdevtra"
-Profile_home: "/ibm/IBM/Application/release"
-#Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
-#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/1.0.0.9/release-1.0.0.9.zip"
-...
-=============================
-[defaults]
-host_key_checking=False
-deprecation_warnings=False
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-remote_tmp=/tmp
-inventory=hosts.cfg
-roles_path=roles/
-comment_warnings=False
-command_warnings=False
-interpreter_python=auto
-ANSIBLE_DEPRECATION_WARNINGS=False
-ANSIBLE_COMMAND_WARNINGS=False
-allow_world_readable_tmpfiles=yes
-timeout=30
-ansible_pipelining=True
-===========================
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
+Application: ANTIBPSAPP2
+IP: 10.15.11.210
 
-[target_jb]
-ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+
+Today I had a discussion with Devdutta Singh, Anisur Rahman Abdul Kalam Shaikh and Hritik Kounsal regarding war file installation in WAS.
+In the release artifact having war file it has to following the installation process
