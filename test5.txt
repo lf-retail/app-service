@@ -363,3 +363,22 @@ zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
           zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+================
+
+Warning: Unexpected input(s) 'zip_file_url', valid inputs are ['repository', 'latest', 'preRelease', 'tag', 'fileName', 'tarBall', 'zipBall', 'out-file-path', 'extract', 'token', 'github-api-url', 'releaseId']
+Run robinraju/release-downloader@v1.9
+  with:
+    zip_file_url: https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip
+    repository: rakbank-internal/ibps-was-ansible-cd
+    latest: false
+    preRelease: false
+    fileName: *
+    tarBall: false
+    zipBall: false
+    out-file-path: .
+    extract: false
+    token: ***
+    github-api-url: https://api.github.com
+  env:
+    GITHUB_TOKEN: ***
+Error: Config error: Please input a valid tag or release ID, or specify `latest`
