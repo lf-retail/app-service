@@ -527,3 +527,20 @@ Run echo "ZIP_FILE_URL=" >> $GITHUB_ENV
   shell: /usr/bin/bash -e {0}
 ls: cannot access 'ZIP_FILE_URL': No such file or directory
 Error: Process completed with exit code 2.
+===============
+
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      id: download_release
+      with:
+       repository: rakbank-internal/ibps-was-ansible-cd
+       tag: ${{ github.event.inputs.tag }} #KYC-test_21032024
+       fileName: ${{ github.event.inputs.fileName }}  # Adjust the file name if needed
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
+    - name: Set downloaded file URL as an environment variable
+      run: |
+        #echo "ZIP_FILE_URL=${{ steps.download_release.outputs.file_url }}" >> $GITHUB_ENV 
+        #ZIP_FILE_URL= "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/${{ github.event.inputs.fileName }}"
+        ls -la "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/"
