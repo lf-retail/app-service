@@ -757,3 +757,16 @@ jobs:
   shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
   register: deploy_result
   ignore_errors: yes
+=================
+---
+#ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release.{{ lookup('env', 'RELEASE_VERSION') }}.zip"
+#zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+Profile_home: "/ibm/IBM/Application/release"
+#Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
+...
