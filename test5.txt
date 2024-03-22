@@ -1058,3 +1058,45 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
     "path": "/ibm/IBM/Application/release/release.3.0.0.25"
 }
 PLAY RECAP *********************************************************************
+========
+
+<10.15.11.210> Failed to connect to the host via ssh: Shared connection to 10.15.11.210 closed.
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1711111863.4216774-3479229-201019633813661/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.210> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": false,
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": null,
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "backup": null,
+            "content": null,
+            "delimiter": null,
+            "directory_mode": null,
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": "0755",
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/ibm/IBM/Application/release/release.3.0.0.25",
+            "recurse": false,
+            "regexp": null,
+            "remote_src": null,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "directory",
+            "unsafe_writes": null
+        }
+    },
+    "msg": "There was an issue creating /ibm/IBM/Application/release/release.3.0.0.25 as requested: [Errno 13] Permission denied: '/ibm/IBM/Application/release/release.3.0.0.25'",
+    "path": "/ibm/IBM/Application/release/release.3.0.0.25"
+}
