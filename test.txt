@@ -13,4 +13,4 @@ Additionally, Today had a discussion with Devdutta Singh, Anisur Rahman Abdul Ka
 Please feel free to reach out if there are any additional requirements or if I've overlooked anything.
 ======================
 
-Can you please share test env details to test the script for installation WAR files in WAS
+Could you please share the test environment details needed to test the script for installing WAR files in WAS?
