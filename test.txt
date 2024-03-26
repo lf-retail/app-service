@@ -14,3 +14,47 @@ Please feel free to reach out if there are any additional requirements or if I'v
 ======================
 
 Could you please share the test environment details needed to test the script for installing WAR files in WAS?
+============
+
+#!/bin/bash
+
+# Server details (replace with your actual values)
+WAS_HOST="localhost"
+WAS_PORT="8080"
+WAS_ADMIN_USER="admin"
+WAS_ADMIN_PASSWORD="password"
+
+# WAR file path (replace with your actual path)
+WAR_FILE_PATH="/path/to/your/war.war"
+
+# Application name (replace with your desired name)
+APP_NAME="your_application_name"
+
+# Context Root (replace with your desired context root)
+CONTEXT_ROOT="your_app_context_root"
+
+# Connect to WebSphere administration console
+AdminConfig.connect("$WAS_HOST:$WAS_PORT", "-user $WAS_ADMIN_USER", "-password $WAS_ADMIN_PASSWORD")
+
+# Check if application already exists
+if [ $(AdminConfig.isAppAvailable "$APP_NAME") = "true" ]
+then
+  echo "Application $APP_NAME already exists. Skipping installation."
+else
+  # Install the application with detailed options
+  AdminApp.installApplication("$WAR_FILE_PATH", "$APP_NAME", "-detailed")
+
+  # Map shared libraries (replace 'your_shared_library' with actual library name)
+  AdminConfig.assignSharedLibraryToApp("$APP_NAME", "your_shared_library")
+
+  # Set context root
+  AdminConfig.setContextRootForWebModule("[$APP_NAME 0]", "$CONTEXT_ROOT")
+
+  # Save configuration changes
+  AdminConfig.save()
+fi
+
+# Disconnect from WebSphere administration console
+AdminConfig.disconnect()
+
+echo "WAR deployment script complete."
