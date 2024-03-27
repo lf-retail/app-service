@@ -107,3 +107,20 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+=============
+
+WAS_HOST: The hostname or IP address of your WebSphere Application Server. This is where you want to deploy the WAR file. If you're running the script on the same machine as the WAS, this can be localhost. Otherwise, it should be the actual network address of the server.
+
+WAS_PORT: The administrative port number used by your WebSphere Application Server for management purposes. This is often set to 9043 for HTTPS connections in default installations, but it may differ based on your server's configuration.
+
+WAS_ADMIN_USER: The username for an administrative account on your WebSphere Application Server. This account will be used to execute the deployment and other administrative commands.
+
+WAS_ADMIN_PASSWORD: The password for the administrative account specified by WAS_ADMIN_USER.
+
+WAR_FILE_PATH: The full filesystem path to the WAR file you want to deploy. This path must be accessible from the machine where you run the script.
+
+APP_NAME: The name you want to assign to the application once it's deployed on WebSphere. This should be a unique name that does not clash with existing applications on the server.
+
+CONTEXT_ROOT: The context root for the deployed application. This is the path segment in the URL used to access the application.
+
+SHARED_LIB: The name of any shared library that the application should be associated with. If your application doesn't use a shared library or if this is not relevant, you may need to adjust the script accordingly.
