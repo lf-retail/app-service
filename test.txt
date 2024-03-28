@@ -111,3 +111,4 @@ fi
 
 Jython Language: The script within WSADMIN_SCRIPT uses Jython syntax. Ensure that your wsadmin tool is configured to use Jython (-lang jython). Most modern WebSphere versions support this by default, but it's good to confirm.
 
+Could you please confirm if the wsadmin tool is configured to use Jython (-lang jython)?
