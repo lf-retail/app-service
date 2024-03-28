@@ -279,3 +279,62 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+==============
+
+#!/bin/bash
+
+# Server details (adapt these variables to your environment)
+WAS_HOST="10.15.11.209"
+WAS_PORT="9043" # Change to your WAS administrative port, often 9043 for HTTPS
+WAS_ADMIN_USER="deployer"
+WAS_ADMIN_PASSWORD="deployer@123"
+
+# WAR file and application details
+WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME="KYC_Remediation"
+CONTEXT_ROOT="KYC_Remediation"
+SHARED_LIB="$1" # Accept shared libraries as arguments
+
+# Path to wsadmin.sh (adjust for your WAS installation)
+WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+
+# wsadmin script content
+WSADMIN_SCRIPT="
+# Connect to WebSphere Application Server
+AdminConfig.connect('$WAS_ADMIN_USER', '$WAS_ADMIN_PASSWORD')
+
+# Check if the application already exists
+if AdminApp.list().find('$APP_NAME') != -1:
+    print('Application $APP_NAME already exists. Skipping installation.')
+else:
+    # Install the application
+    AdminApp.install('$WAR_FILE_PATH', '[ -appname $APP_NAME -contextroot $CONTEXT_ROOT -MapWebModToVH [[ .* .* default_host ]] ]')
+    # Map shared libraries
+    for lib in $SHARED_LIB; do
+        AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $lib]]')
+    done
+    # Save configuration changes
+    AdminConfig.save()
+
+# Disconnect from the server
+AdminConfig.disconnect()
+"
+
+# Check if shared libraries were provided
+if [ -z "$SHARED_LIB" ]; then
+    echo "No shared libraries provided. Deployment failed."
+    exit 1
+fi
+
+# Execute the script with wsadmin
+echo "Deploying $APP_NAME from WAR file: $WAR_FILE_PATH"
+echo "$WSADMIN_SCRIPT" | $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD
+
+if [ $? -eq 0 ]; then
+    echo "Deployment of $APP_NAME completed successfully."
+else
+    echo "Deployment failed. Check the output for errors."
+    exit 1
+fi
+
+./your_script.sh ibps_library omnidocs_library wfs_library od_library
