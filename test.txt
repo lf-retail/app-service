@@ -114,3 +114,5 @@ Jython Language: The script within WSADMIN_SCRIPT uses Jython syntax. Ensure tha
 Could you please confirm if the wsadmin tool is configured to use Jython (-lang jython)?
 
 As we discussed please share the steps for what you are required then I can take it further steps
+
+As we discussed, please share the steps you require so that I can proceed with further actions.
