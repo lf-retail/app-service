@@ -197,3 +197,36 @@ fi
   command: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh
   command: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
   
+==============
+---
+- name: Stop WAS
+  become: true
+  become_user: itdevtra
+  ignore_errors: yes
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 --connect controller=0.15.11.209 command=:shutdown &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh --connect controller=0.15.11.209 command=:shutdown
+
+- name: Copy war-install-in-was1.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was1.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was1.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was1.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was1.sh {{ Profile_home }} {{ release_version }}"
+  register: deploy_result
+
+- name: Start WAS
+  become: true
+  become_user: itdevtra
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
