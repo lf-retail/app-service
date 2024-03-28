@@ -429,3 +429,6 @@ fi
     cmd: |
       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
+=================
+
+I am going to deploy the war file installation in was can you please take backup for that and please conform at what time can I start do this activity.
