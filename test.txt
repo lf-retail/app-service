@@ -435,3 +435,5 @@ We have a scheduled meeting for this at 11:00 AM Dubai time. We can discuss it o
 
 
 I am going to run the script on target machine from source server but I want to conform any permission required for the below path if there is no permission could you please give access for that
+
+I am planning to execute the script on the target machine from the source server. However, I need to confirm whether any permissions are required for the following path. If there are no permissions granted, could you please provide access?
