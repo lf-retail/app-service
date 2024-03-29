@@ -431,17 +431,4 @@ fi
       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
 =================
 
-I am going to deploy the war file installation in was can you please take backup for that and please conform at what time can I start do this activity.
-
-
-I am about to deploy the WAR file installation in WebSphere Application Server. Could you please take a backup for that, and kindly confirm the suitable time for me to start this activity?
-
-I am about to deploy the WAR file installation in WAS. Can you please take a backup for that and confirm at what time I can start this activity?
-
-I am waiting for your response could you please conform downtime of WAS after that I have to start installation of war file in WAS .
-
-I am awaiting your response, and I tried calling you but couldn't reach you. Could you please confirm the downtime of WAS? After that, I need to start the installation of the WAR file in WAS.
-
-At what time can I start the WAR installation in the UAT environment WAS? This is the first time I'm installing a WAR file in WAS for automation, so I want to ensure everything is scheduled properly.
-
-Scheduled meeting for this at 11:00am dubai time we can discuss over the call.
+We have a scheduled meeting for this at 11:00 AM Dubai time. We can discuss it over the call
