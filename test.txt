@@ -503,3 +503,94 @@ fi
 2.	Map the Lib
 3.	Make the WAR as Parent Last
 4.	Start the WAR File .
+==============
+
+TASK [IBPS-deployment : Include rollback playbook] *****************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:9
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml for ANTIBPSAPP1
+TASK [IBPS-deployment : Stop WAS] **********************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml:2
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318 && echo ansible-tmp-1711718581.0367749-2813593-88567109022318="` echo /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1711718581.0367749-2813593-88567109022318=/tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-28135698gmit7ao/tmpu9su7axr TO /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-28135698gmit7ao/tmpu9su7axr /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/ /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-03-29 17:25:33.597067", "stdout": "", "cmd": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh --connect controller=10.15.11.209 command=:shutdown\\n", "failed": true, "delta": "0:00:00.691620", "stderr": "!SESSION 2024-03-29 17:25:33.147 -----------------------------------------------\\neclipse.buildId=M20060921-0945\\njava.fullversion=8.0.8.15 - pxa6480sr8fp15-20231030_01(SR8 FP15)\\nJRE 1.8.0 Linux amd64-64-Bit Compressed References 20230908_57744 (JIT enabled, AOT enabled)\\nOpenJ9   - ec90c19\\nOMR      - 8b64d40\\nIBM      - 696e9df\\nBootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US\\nFramework arguments:  -application com.ibm.ws.bootstrap.WSLauncher\\nCommand-line arguments:  -application com.ibm.ws.bootstrap.WSLauncher\\n\\n!ENTRY org.eclipse.osgi 4 0 2024-03-29 17:25:33.585\\n!MESSAGE Error
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1711718581.0367749-2813593-88567109022318/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh --connect controller=10.15.11.209 command=:shutdown\n",
+    "delta": "0:00:00.691620",
+    "end": "2024-03-29 17:25:33.597067",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh --connect controller=10.15.11.209 command=:shutdown\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 15,
+    "start": "2024-03-29 17:25:32.905447",
+    "stderr": "!SESSION 2024-03-29 17:25:33.147 -----------------------------------------------\neclipse.buildId=M20060921-0945\njava.fullversion=8.0.8.15 - pxa6480sr8fp15-20231030_01(SR8 FP15)\nJRE 1.8.0 Linux amd64-64-Bit Compressed References 20230908_57744 (JIT enabled, AOT enabled)\nOpenJ9   - ec90c19\nOMR      - 8b64d40\nIBM      - 696e9df\nBootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US\nFramework arguments:  -application com.ibm.ws.bootstrap.WSLauncher\nCommand-line arguments:  -application com.ibm.ws.bootstrap.WSLauncher\n\n!ENTRY org.eclipse.osgi 4 0 2024-03-29 17:25:33.585\n!MESSAGE Error reading configuration: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock (Permission denied)\n!STACK 0\njava.io.FileNotFoundException: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock (Permission denied)\n\tat java.io.RandomAccessFile.open0(Native Method)\n\tat java.io.RandomAccessFile.open(Random
+    "stderr_lines": [
+        "!SESSION 2024-03-29 17:25:33.147 -----------------------------------------------",
+        "eclipse.buildId=M20060921-0945",
+        "java.fullversion=8.0.8.15 - pxa6480sr8fp15-20231030_01(SR8 FP15)",
+        "JRE 1.8.0 Linux amd64-64-Bit Compressed References 20230908_57744 (JIT enabled, AOT enabled)",
+        "OpenJ9   - ec90c19",
+        "OMR      - 8b64d40",
+        "IBM      - 696e9df",
+        "BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US",
+        "Framework arguments:  -application com.ibm.ws.bootstrap.WSLauncher",
+        "Command-line arguments:  -application com.ibm.ws.bootstrap.WSLauncher",
+        "",
+        "!ENTRY org.eclipse.osgi 4 0 2024-03-29 17:25:33.585",
+        "!MESSAGE Error reading configuration: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock (Permission denied)",
+        "!STACK 0",
+        "java.io.FileNotFoundException: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock (Permission denied)",
+        "\tat java.io.RandomAccessFile.open0(Native Method)",
+        "\tat java.io.RandomAccessFile.open(RandomAccessFile.java:333)",
+        "\tat java.io.RandomAccessFile.<init>(RandomAccessFile.java:257)",
+        "\tat org.eclipse.core.runtime.internal.adaptor.Locker_JavaNio.lock(Locker_JavaNio.java:33)",
+        "\tat org.eclipse.osgi.storagemanager.StorageManager.lock(StorageManager.java:388)",
+        "\tat org.eclipse.osgi.storagemanager.StorageManager.open(StorageManager.java:701)",
+        "\tat org.eclipse.osgi.internal.baseadaptor.BaseStorage.initFileManager(BaseStorage.java:213)",
+        "\tat org.eclipse.osgi.internal.baseadaptor.BaseStorage.initialize(BaseStorage.java:147)",
+        "\tat org.eclipse.osgi.baseadaptor.BaseAdaptor.initializeStorage(BaseAdaptor.java:114)",
+        "\tat org.eclipse.osgi.framework.internal.core.Framework.initialize(Framework.java:186)",
+        "\tat org.eclipse.osgi.framework.internal.core.Framework.<init>(Framework.java:158)",
+        "\tat org.eclipse.core.runtime.adaptor.EclipseStarter.startup(EclipseStarter.java:286)",
+        "\tat org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:175)",
+        "\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)",
+        "\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)",
+        "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)",
+        "\tat java.lang.reflect.Method.invoke(Method.java:508)",
+        "\tat org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)",
+        "\tat org.eclipse.core.launcher.Main.basicRun(Main.java:282)",
+        "\tat org.eclipse.core.launcher.Main.run(Main.java:981)",
+        "\tat com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)",
+        "\tat com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)"
+    ],
+    "stdout": "",
+    "stdout_lines": []
+}
+...ignoring
