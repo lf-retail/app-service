@@ -497,3 +497,9 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+============
+
+1.	Install the WAR
+2.	Map the Lib
+3.	Make the WAR as Parent Last
+4.	Start the WAR File .
