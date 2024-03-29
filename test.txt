@@ -432,3 +432,6 @@ fi
 =================
 
 We have a scheduled meeting for this at 11:00 AM Dubai time. We can discuss it over the call
+
+
+I am going to run the script on target machine from source server but I want to conform any permission required for the below path if there is no permission could you please give access for that
