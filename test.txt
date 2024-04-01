@@ -714,3 +714,71 @@ fi
     cmd: |
       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh -username your_username -password your_password &&
       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh -username your_username -password your_password BPMMBR01
+===========================
+
+TASK [IBPS-deployment : Include war instalation playbook] **********************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main.yml:9
+included: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml for ANTIBPSAPP1
+TASK [IBPS-deployment : Stop WAS] **********************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml:2
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175 && echo ansible-tmp-1711978316.5905082-117152-32116782287175="` echo /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1711978316.5905082-117152-32116782287175=/tmp/ansible-tmp-1711978316.5905082-117152-32116782287175\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-1171275alcik1y/tmp3p4vw0q4 TO /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1171275alcik1y/tmp3p4vw0q4 /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/ /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-04-01 17:34:35.079662", "stdout": "Usage: stopServer <server> [options]\\n\\toptions: -nowait\\n\\t         -quiet\\n\\t         -logfile <filename>\\n\\t         -replacelog\\n\\t         -trace\\n\\t         -timeout <seconds>\\n\\t         -statusport <portnumber>\\n\\t         -conntype <connector type>\\n\\t         -port <portnumber>\\n\\t         -username <username>\\n\\t***         -profileName <profile>\\n\\t         -help", "cmd": "#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&\\n#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh\\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer*** BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer*** --connect controller=10.15.11.209 command=:shutdown\\n", "failed": true, "delta": "0:00:02.048878", "stderr": "", "rc": 255, "invocation"
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1711978316.5905082-117152-32116782287175/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&\n#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer*** BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer*** --connect controller=10.15.11.209 command=:shutdown\n",
+    "delta": "0:00:02.048878",
+    "end": "2024-04-01 17:34:35.079662",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&\n#/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer*** BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer*** --connect controller=10.15.11.209 command=:shutdown\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 255,
+    "start": "2024-04-01 17:34:33.030784",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Usage: stopServer <server> [options]\n\toptions: -nowait\n\t         -quiet\n\t         -logfile <filename>\n\t         -replacelog\n\t         -trace\n\t         -timeout <seconds>\n\t         -statusport <portnumber>\n\t         -conntype <connector type>\n\t         -port <portnumber>\n\t         -username <username>\n\t***         -profileName <profile>\n\t         -help",
+    "stdout_lines": [
+        "Usage: stopServer <server> [options]",
+        "\toptions: -nowait",
+        "\t         -quiet",
+        "\t         -logfile <filename>",
+        "\t         -replacelog",
+        "\t         -trace",
+        "\t         -timeout <seconds>",
+        "\t         -statusport <portnumber>",
+        "\t         -conntype <connector type>",
+        "\t         -port <portnumber>",
+        "\t         -username <username>",
+        "\t***",
+        "\t         -profileName <profile>",
+        "\t         -help"
+    ]
+}
+...ignoring
