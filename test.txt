@@ -771,3 +771,76 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
     ]
 }
 ...ignoring
+==================
+- name: Start WAS
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
+
+TASK [IBPS-deployment : Start WAS] *********************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml:32
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943 && echo ansible-tmp-1711952221.546816-4154657-145704456043943="` echo /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1711952221.546816-4154657-145704456043943=/tmp/ansible-tmp-1711952221.546816-4154657-145704456043943\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-415458704q39hiv/tmpzicbxieq TO /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-415458704q39hiv/tmpzicbxieq /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/ /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-04-01 10:19:45.164321", "stdout": "ADMU0116I: Tool information is being logged in file\\n           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log\\nADMU0128I: Starting tool with the AppSrv01 profile\\nADMU3100I: Reading configuration for server: nodeagent\\nADMU3028I: Conflict detected on port 2809.  Likely causes: a) An instance of\\n           the server nodeagent is already running  b) some other process is\\n           using port 2809\\nADMU3029I: Conflict detected on port 2809 for endpoint BOOTSTRAP_ADDRESS of the\\n           server nodeagent \\nADMU3027E: An instance of the server may already be running: nodeagent\\nADMU0111E: Program exiting with error:\\n           com.ibm.websphere.management.exception.AdminException: ADMU3027E: An\\n           instance of the server may already be running: nodeagent\\nADMU1211I: To obtain a full trace of the failure, use the -trace option.\\nADMU0211I: Error details may be seen in the file:\\n           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log", "cmd": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&\\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01\\n", "failed": true, "delta": "0:00:07.733598", "stderr": "", "rc": 255, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&\\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01\\n", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-04-01 10:19:37.430723", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.11.209 closed.\r\n')
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1711952221.546816-4154657-145704456043943/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01\n",
+    "delta": "0:00:07.733598",
+    "end": "2024-04-01 10:19:45.164321",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&\n/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 255,
+    "start": "2024-04-01 10:19:37.430723",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "ADMU0116I: Tool information is being logged in file\n           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log\nADMU0128I: Starting tool with the AppSrv01 profile\nADMU3100I: Reading configuration for server: nodeagent\nADMU3028I: Conflict detected on port 2809.  Likely causes: a) An instance of\n           the server nodeagent is already running  b) some other process is\n           using port 2809\nADMU3029I: Conflict detected on port 2809 for endpoint BOOTSTRAP_ADDRESS of the\n           server nodeagent \nADMU3027E: An instance of the server may already be running: nodeagent\nADMU0111E: Program exiting with error:\n           com.ibm.websphere.management.exception.AdminException: ADMU3027E: An\n           instance of the server may already be running: nodeagent\nADMU1211I: To obtain a full trace of the failure, use the -trace option.\nADMU0211I: Error details may be seen in the file:\n           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log",
+    "stdout_lines": [
+        "ADMU0116I: Tool information is being logged in file",
+        "           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log",
+        "ADMU0128I: Starting tool with the AppSrv01 profile",
+        "ADMU3100I: Reading configuration for server: nodeagent",
+        "ADMU3028I: Conflict detected on port 2809.  Likely causes: a) An instance of",
+        "           the server nodeagent is already running  b) some other process is",
+        "           using port 2809",
+        "ADMU3029I: Conflict detected on port 2809 for endpoint BOOTSTRAP_ADDRESS of the",
+        "           server nodeagent ",
+        "ADMU3027E: An instance of the server may already be running: nodeagent",
+        "ADMU0111E: Program exiting with error:",
+        "           com.ibm.websphere.management.exception.AdminException: ADMU3027E: An",
+        "           instance of the server may already be running: nodeagent",
+        "ADMU1211I: To obtain a full trace of the failure, use the -trace option.",
+        "ADMU0211I: Error details may be seen in the file:",
+        "           /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/nodeagent/startServer.log"
+    ]
+}
