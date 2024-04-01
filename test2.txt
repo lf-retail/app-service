@@ -1,387 +1,101 @@
-name: Release Pipeline
-run-name: release - ${{github.event.inputs.releaseVersion}}
+---
+- name: Stop WAS
+  become: true
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh
+      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer -password deployer@123 BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&
+      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer -password deployer@123 --connect controller=10.15.11.209 command=:shutdown
 
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          #- Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/SMEDigitalBank
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database       
-        
-jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+#- name: Create directory for new release version
+ # file:
+  #  path: "{{ Profile_home }}/release.{{ release_version }}"
+   # state: directory
+    #mode: '0755'
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
+- name: Copy war-install-in-was1.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was1.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was1.sh"
+    mode: '0755'
 
-  #App-CI:
-   # name: App-CI
-    #needs: Create-App-CI
-    ##uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
-    #secrets: inherit
-    #with:
-     # repoName: ${{ github.event.inputs.choice }}
-      #branchName: $RELEASE_BRANCH_NAME
+- name: Run war-install-in-was1.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was1.sh ibps_library omnidocs_library wfs_library od_library"
+  register: deploy_result
 
-  App-CI:
-    needs: Create-App-CI
-    environment: DEV
-    name: App-CI
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App CI now "      
+- name: Start WAS
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
 
-  App-Deploy-Dev:
-    needs: App-CI
-    environment: DEV
-    name: App Deployment DEV
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  App-Deploy-UAT:
-    name: App-CD-UAT 
-    needs: App-Deploy-Dev
-    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      version: ${{ github.event.inputs.releaseVersion }}
-  
-  
-  App-Deploy-PROD:
-    needs: App-Deploy-UAT
-    environment: PROD
-    name: App Deployment PROD
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  App-deploy-DR:
-    needs: App-Deploy-PROD
-    environment: DR
-    name: App Deployment DR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo "running App deployment now"
-========================
+=============
 
-name: Release Pipeline
-run-name: release - ${{github.event.inputs.releaseVersion}}
+#!/bin/bash
 
-on:
-  workflow_dispatch:
-    inputs:
-      releaseVersion:
-        description: 'Release Version'
-        required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database       
-        
-jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+# Server details (adapt these variables to your environment)
+WAS_HOST="10.15.11.209"
+WAS_PORT="9043" # Change to your WAS administrative port, often 9043 for HTTPS
+WAS_ADMIN_USER="deployer"
+WAS_ADMIN_PASSWORD="deployer@123"
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN
+# WAR file and application details
+WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME="KYC_Remediation"
+CONTEXT_ROOT="KYC_Remediation"
 
-  App-CI:
-    name: App-CI
-    needs: Create-App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
+# Combine all shared libraries into a single string
+SHARED_LIB=$(printf ",%s" "$@")
+SHARED_LIB=${SHARED_LIB:1} # Remove the leading comma
 
-  App-Deploy-Dev:
-    needs: App-CI
-    environment: DEV
-    name: App Deployment DEV
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  App-Deploy-UAT:
-    needs: App-Deploy-Dev
-    environment: UAT
-    name: App Deployment UAT
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-           echo " running App deployment now "
-  App-Deploy-PROD:
-    needs: App-Deploy-UAT
-    environment: PROD
-    name: App Deployment PROD
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  App-deploy-DR:
-    needs: App-Deploy-PROD
-    environment: DR
-    name: App Deployment DR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-  Create-Database-CI:
-    if: ${{ github.event.inputs.database =='true' }}
-    environment: DEV
-    name: Database-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+# Path to wsadmin.sh (adjust for your WAS installation)
+WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 
-        
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+# wsadmin script content
+WSADMIN_SCRIPT="
+# Connect to WebSphere Application Server
+AdminConfig.connect('$WAS_ADMIN_USER', '$WAS_ADMIN_PASSWORD')
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
-      env:
-        token: $GITHUB_TOKEN         
-      
+# Check if the application already exists
+if AdminApp.list().find('$APP_NAME') != -1:
+    print('Application $APP_NAME already exists. Skipping installation.')
+else:
+    # Install the application with Parent Last class loader policy
+    AdminApp.install('$WAR_FILE_PATH', '[ -appname $APP_NAME -contextroot $CONTEXT_ROOT -MapModulesToServers [[ .* .* WebSphere:cell=YourCellName,node=YourNodeName,server=YourServerName ]] -MapWebModToVH [[ .* .* default_host ]] -classloaderMode PARENT_LAST ]')
+    # Install the application
+    #AdminApp.install('$WAR_FILE_PATH', '[ -appname $APP_NAME -contextroot $CONTEXT_ROOT -MapWebModToVH [[ .* .* default_host ]] ]')
+    # Map shared libraries (Optional: Adjust or remove according to your requirements)
+    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $SHARED_LIB]]')
+    # Save configuration changes
+    AdminConfig.save()
 
-  Database-CI:
-    name: Database-CI
-    needs: Create-Database-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/database-ci.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
+# Disconnect from the server
+AdminConfig.disconnect()
+"
 
-  Database-Deploy-Dev:
-    needs: Database-CI
-    environment: DEV
-    name: Database Deployment DEV
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  Database-Deploy-UAT:
-    needs: Database-Deploy-Dev
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-DB/.github/workflows/main.yml@main
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      branchName: $RELEASE_BRANCH_NAME
-      token: $GITHUB_TOKEN 
+# Check if shared libraries were provided
+if [ -z "$SHARED_LIB" ]; then
+    echo "No shared libraries provided. Deployment failed."
+    exit 1
+fi
 
-  Database-Deploy-PROD:
-    needs: Database-Deploy-UAT
-    environment: PROD
-    name: Database Deployment PROD
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  Datbase-deploy-DR:
-    needs: Database-Deploy-PROD
-    environment: DR
-    name: Database Deployment DR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-====================
+# Execute the script with wsadmin
+echo "Deploying $APP_NAME from WAR file: $WAR_FILE_PATH"
+echo "$WSADMIN_SCRIPT" | $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD
 
-  App-Deploy-DEV:
-    name: App-cd
-    needs: App-CI
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      env_value: DEV        
-      
-  App-Deploy-UAT:
-    name: App-cd
-    needs: App-Deploy-DEV
-    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy.yml@dev
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      env_value: UAT 
-
----------------------
-name: Deploy WAR to JBoss
-
-on:
-
-  workflow_call:
-    inputs:
-      env_vaule:
-        required: true
-        type: string
-        
-      repoName:
-        required: true
-        type: string
-      #Environments:
-       # required: true
-        #type: string
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.env_value }}
-
-      #group: rakbank-self-hosted-runner
-      #labels: rakdeh3
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2 
+if [ $? -eq 0 ]; then
+    echo "Deployment of $APP_NAME completed successfully."
+else
+    echo "Deployment failed. Check the output for errors."
+    exit 1
+fi
