@@ -1052,3 +1052,45 @@ changed: [ANTIBPSAPP1] => {
 }
 META: ran handlers
 META: ran handlers
+================
+
+---
+- name: Stop WAS
+  become: true
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh
+      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer -password deployer@123 BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&
+      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer -password deployer@123 --connect controller=10.15.11.209 command=:shutdown
+
+#- name: Create directory for new release version
+ # file:
+  #  path: "{{ Profile_home }}/release.{{ release_version }}"
+   # state: directory
+    #mode: '0755'
+
+- name: Copy war-install-in-was1.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was1.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was1.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was1.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was1.sh ibps_library omnidocs_library wfs_library od_library"
+  register: deploy_result
+
+- name: Start WAS
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell:
+    cmd: |
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
+      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
