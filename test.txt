@@ -131,3 +131,16 @@ else
     exit 1
 
 fi
+
+==============
+
+I wanted to confirm that the deployment of the IBPS lose file on the UAT cluster servers, 10.15.11.209 and 10.15.11.210, has been completed successfully.
+
+Currently, we're in the process of implementing another script for the installation of the WAR file on the WAS console. However, we've encountered some issues along the way.
+
+Could you please confirm the port number for the WAS server?
+
+WAS_HOST="10.15.11.209"
+WAS_PORT="9043" 
+
+
