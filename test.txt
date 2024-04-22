@@ -144,3 +144,9 @@ WAS_HOST="10.15.11.209"
 WAS_PORT="9043" 
 
 
+===============
+
+I wanted to inform you that the deployment of the IBPS loose files on the UAT cluster servers, 10.15.11.209 and 10.15.11.210, has been successfully completed.
+Currently, we are in the process of implementing another script for the installation of the WAR file on the WAS console. Unfortunately, we've encountered some issues along the way.
+During our discussion with Anisur Rahman from the IBPS team, he suggested changing the SOAP port and implementing the script in case the WAR application is already installed.
+I'm actively working on this and will provide you with an update once it's done.
