@@ -146,6 +146,44 @@ WAS_PORT="9043"
 
 ===============
 
+Dear Shanmuganathan,
+
+As per the below error script is try to find below SOAP port.
+
+SOAP_CONNECTOR_ADDRESS=8879
+
+Also below highlighted part below application (KYC_Remediation) is already installed in server. 
+
+Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war
+WASX7023E: Error creating "SOAP" connection to host "10.15.11.209"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Protocol; msg=Unsupported response content type &quot;text/html&quot;, must be: &quot;text/xml&quot;. Response was:
+&lt;H1&gt;SRVE0255E: A WebGroup/Virtual Host to handle / has not been defined.&lt;/H1&gt;&lt;BR&gt;&lt;H3&gt;SRVE0255E: A WebGroup/Virtual Host to handle 10.15.11.209:9043 has not been defined.&lt;/H3&gt;&lt;BR&gt;
+]
+WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.
+WASX8011W: AdminTask object is not available.
+WASX7031I: For help, enter: "print Help.help()"
+wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>Traceback (innermost last):
+  (no code object) at line 0
+  File "<input>", line 2
+SyntaxError: invalid syntax
+wsadmin>Application KYC_Remediation already exists. Skipping installation.
+wsadmin>wsadmin>Traceback (innermost last):
+  (no code object) at line 0
+  File "<input>", line 1
+        else:
+        ^
+SyntaxError: invalid syntax
+wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: "    AdminApp.install('/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war', '-appname KYC_Remediation -contextroot KYC_Remediation -MapWebModToVH [[ .* .* default_host ]]')"; exception information:
+com.ibm.ws.scripting.ScriptingException: WASX7206W: The application management service is not running. Application management commands will not run.
+ 
+wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: "    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:KYC_Remediation/'), '[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]')"; exception information:
+com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
+ 
+wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: "    AdminConfig.save()"; exception information:
+com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
+ 
+wsadmin>wsadmin>wsadmin>Deployment failed. Check the output for errors.
+
+
 I wanted to inform you that the deployment of the IBPS loose files on the UAT cluster servers, 10.15.11.209 and 10.15.11.210, has been successfully completed.
 Currently, we are in the process of implementing another script for the installation of the WAR file on the WAS console. Unfortunately, we've encountered some issues along the way.
 During our discussion with Anisur Rahman from the IBPS team, he suggested changing the SOAP port and implementing the script in case the WAR application is already installed.
