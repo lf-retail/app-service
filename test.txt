@@ -615,3 +615,64 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+=====================
+
+TASK [IBPS-deployment : Run war-install-in-was.sh on Target Server] ************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml:27
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684 && echo ansible-tmp-1713860016.2175527-2567739-5376503727684="` echo /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1713860016.2175527-2567739-5376503727684=/tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-2567694yhjza82r/tmprkxgy8fu TO /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2567694yhjza82r/tmprkxgy8fu /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/ /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-04-23 12:16:58.290027", "stdout": "Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\\nWASX7246E: Cannot establish \\"SOAP\\" connection to host \\"10.15.11.209\\" because of an authentication failure. Ensure that user and password are correct on the command line or in a properties file.\\nException message (if any): \\"Unable to authenticate user of the incoming SOAP request\\"\\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\\nWASX8011W: AdminTask object is not available.\\nWASX7031I: For help, enter: \\"print Help.help()\\"\\nwsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \\"\\"; exception information:\\ncom.ibm.ws.scripting.ScriptingException: WASX7206W: The application management service is not running. Application management commands will not run.\\n\\nwsadmin>Deployment failed. Check the output for errors.", "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh", "failed": true, "delta": "0:00:12.609001", "stderr": "", "rc": 1, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-04-23 12:16:45.681026", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.11.209 closed.\r\n')
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1713860016.2175527-2567739-5376503727684/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh",
+    "delta": "0:00:12.609001",
+    "end": "2024-04-23 12:16:58.290027",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 1,
+    "start": "2024-04-23 12:16:45.681026",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\nWASX7246E: Cannot establish \"SOAP\" connection to host \"10.15.11.209\" because of an authentication failure. Ensure that user and password are correct on the command line or in a properties file.\nException message (if any): \"Unable to authenticate user of the incoming SOAP request\"\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\nWASX8011W: AdminTask object is not available.\nWASX7031I: For help, enter: \"print Help.help()\"\nwsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"\"; exception information:\ncom.ibm.ws.scripting.ScriptingException: WASX7206W: The application management service is not running. Application management commands will not run.\n\nwsadmin>Deployment failed. Check the output for errors.",
+    "stdout_lines": [
+        "Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war",
+        "WASX7246E: Cannot establish \"SOAP\" connection to host \"10.15.11.209\" because of an authentication failure. Ensure that user and password are correct on the command line or in a properties file.",
+        "Exception message (if any): \"Unable to authenticate user of the incoming SOAP request\"",
+        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
+        "WASX8011W: AdminTask object is not available.",
+        "WASX7031I: For help, enter: \"print Help.help()\"",
+        "wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"\"; exception information:",
+        "com.ibm.ws.scripting.ScriptingException: WASX7206W: The application management service is not running. Application management commands will not run.",
+        "",
+        "wsadmin>Deployment failed. Check the output for errors."
+    ]
+}
+...ignoring
