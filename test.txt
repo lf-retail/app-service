@@ -906,3 +906,127 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+=============
+
+TASK [IBPS-deployment : Run war-install-in-was.sh on Target Server] ************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-deployment/tasks/main-war-installation.yml:27
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136 && echo ansible-tmp-1713884139.1796818-2722607-250256108452136="` echo /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1713884139.1796818-2722607-250256108452136=/tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-2722516dxxkjr8y/tmpsb1urfc0 TO /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-2722516dxxkjr8y/tmpsb1urfc0 /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/ /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-04-23 18:59:12.888743", "stdout": "WASX7209I: Connected to process \\"dmgr\\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager\\nWASX7031I: For help, enter: \\"print Help.help()\\"\\nwsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \\"    AdminApp.update(\'KYC_Remediation\', \'app\', [\'-operation\', \'update\', \'-contents\', \'/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\', \'-contextroot\', \'KYC_Remediation\', \'-MapWebModToVH\', \'[[ .* .* default_host ]]\', \'-MapModulesToServers\', \'[[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]\'])\\"; exception information:\\ncom.ibm.ws.scripting.ScriptingException: WASX7280E: An application with name \\"KYC_Remediation\\" does not exist.\\n\\nwsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \\"    AdminConfig.create(\'LibraryRef\', AdminConfig.getid(\'/Deployment:KYC_Remediation/\'), \'[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]\')\\"; exception information:\\ncom.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \\"\\" for parameter \\"parent config id\\" on command \\"create\\"\\n\\nwsadmin>wsadmin>wsadmin>\'\'\\nwsadmin>wsadmin>wsadmin>wsadmin>WASX7327I: Contents of was.policy file:\\n //\\n// Template policy file for enterprise application.\\n// Extra permissions can be added if required by the enterprise application.\\n//\\n// NOTE: Syntax errors in the policy files will cause the enterprise application FAIL to start.\\n//       Extreme care should be taken when editing these policy files. It is advised to use\\n//       the policytool provided by the JDK for editing the policy files\\n//       (WAS_HOME/java/jre/bin/policytool). \\n//\\n\\ngrant codeBase \\"file:${application}\\" {\\n};\\n\\ngrant codeBase \\"file:${jars}\\" {\\n};\\n\\ngrant codeBase \\"file:${connectorComponent}\\" {\\n};\\n\\ngrant codeBase \\"file:${webComponent}\\" {\\n};\\n\\ngrant codeBase \\"file:${ejbComponent}\\" {\\n};\\n\\n\\nADMA5016I: Installation of KYC_Remediation started.\\nADMA5026E: No valid target is specified in ObjectName WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 for module KYC_Remediation.war+WEB-INF/web.xml.\\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation is complete.\\nADMA5014E: The installation of application KYC_Remediation failed.\\nWASX7015E: Exception running command: \\"    AdminApp.install(\'/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\', \'-appname KYC_Remediation -contextroot KYC_Remediation -MapWebModToVH [[ .* .* default_host ]] -MapModulesToServers [[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]\')\\"; exception information:\\ncom.ibm.ws.scripting.ScriptingException: WASX7132E: Application install for /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war failed: see previous messages for details.\\n\\nwsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \\"    AdminConfig.create(\'LibraryRef\', AdminConfig.getid(\'/Deployment:KYC_Remediation/\'), \'[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]\')\\"; exception information:\\ncom.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \\"\\" for parameter \\"parent config id\\" on command \\"create\\"\\n\\nwsadmin>wsadmin>wsadmin>\'\'\\nwsadmin>WASX7015E: Exception running command: \\"fi\\"; exception information:\\ncom.ibm.bsf.BSFException: exception from Jython:\\nTraceback (innermost last):\\n  File \\"<input>\\", line 1, in ?\\nNameError: fi\\n\\nwsadmin>wsadmin>Deployment failed. Check the output for errors.", "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh", "failed": true, "delta": "0:00:23.877537", "stderr": "Traceback (innermost last):\\n  (no code object) at line 0\\n  File \\"<input>\\", line 2\\n\\t    echo \'Application KYC_Remediation already exists. Updating...\'\\n\\t         ^\\nSyntaxError: invalid syntax\\nTraceback (innermost last):\\n  (no code object) at line 0\\n  File \\"<input>\\", line 1\\n\\telse:\\n\\t^\\nSyntaxError: invalid syntax\\nTraceback (innermost last):\\n  (no code object) at line 0\\n  File \\"<input>\\", line 1\\n\\t    echo \'Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\'\\n\\t         ^\\nSyntaxError: invalid syntax", "rc": 1, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-04-23 18:58:49.011206", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.11.209 closed.\r\n')
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1713884139.1796818-2722607-250256108452136/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh",
+    "delta": "0:00:23.877537",
+    "end": "2024-04-23 18:59:12.888743",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.41 && ./war-install-in-was.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 1,
+    "start": "2024-04-23 18:58:49.011206",
+    "stderr": "Traceback (innermost last):\n  (no code object) at line 0\n  File \"<input>\", line 2\n\t    echo 'Application KYC_Remediation already exists. Updating...'\n\t         ^\nSyntaxError: invalid syntax\nTraceback (innermost last):\n  (no code object) at line 0\n  File \"<input>\", line 1\n\telse:\n\t^\nSyntaxError: invalid syntax\nTraceback (innermost last):\n  (no code object) at line 0\n  File \"<input>\", line 1\n\t    echo 'Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'\n\t         ^\nSyntaxError: invalid syntax",
+    "stderr_lines": [
+        "Traceback (innermost last):",
+        "  (no code object) at line 0",
+        "  File \"<input>\", line 2",
+        "\t    echo 'Application KYC_Remediation already exists. Updating...'",
+        "\t         ^",
+        "SyntaxError: invalid syntax",
+        "Traceback (innermost last):",
+        "  (no code object) at line 0",
+        "  File \"<input>\", line 1",
+        "\telse:",
+        "\t^",
+        "SyntaxError: invalid syntax",
+        "Traceback (innermost last):",
+        "  (no code object) at line 0",
+        "  File \"<input>\", line 1",
+        "\t    echo 'Deploying KYC_Remediation from WAR file: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'",
+        "\t         ^",
+        "SyntaxError: invalid syntax"
+    ],
+    "stdout": "WASX7209I: Connected to process \"dmgr\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager\nWASX7031I: For help, enter: \"print Help.help()\"\nwsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminApp.update('KYC_Remediation', 'app', ['-operation', 'update', '-contents', '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war', '-contextroot', 'KYC_Remediation', '-MapWebModToVH', '[[ .* .* default_host ]]', '-MapModulesToServers', '[[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]'])\"; exception information:\ncom.ibm.ws.scripting.ScriptingException: WASX7280E: An application with name \"KYC_Remediation\" does not exist.\n\nwsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:KYC_Remediation/'), '[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]')\"; exception information:\ncom.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \"\" for parameter \"parent config id\" on command \"create\"\n\nwsadmin>wsadmin>wsadmin>''\nwsadmin>wsadmin>wsadmin>wsadmin>WASX7327I: Contents of was.policy file:\n //\n// Template policy file for enterprise application.\n// Extra permissions can be added if required by the enterprise application.\n//\n// NOTE: Syntax errors in the policy files will cause the enterprise application FAIL to start.\n//       Extreme care should be taken when editing these policy files. It is advised to use\n//       the policytool provided by the JDK for editing the policy files\n//       (WAS_HOME/java/jre/bin/policytool). \n//\n\ngrant codeBase \"file:${application}\" {\n};\n\ngrant codeBase \"file:${jars}\" {\n};\n\ngrant codeBase \"file:${connectorComponent}\" {\n};\n\ngrant codeBase \"file:${webComponent}\" {\n};\n\ngrant codeBase \"file:${ejbComponent}\" {\n};\n\n\nADMA5016I: Installation of KYC_Remediation started.\nADMA5026E: No valid target is specified in ObjectName WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 for module KYC_Remediation.war+WEB-INF/web.xml.\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation is complete.\nADMA5014E: The installation of application KYC_Remediation failed.\nWASX7015E: Exception running command: \"    AdminApp.install('/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war', '-appname KYC_Remediation -contextroot KYC_Remediation -MapWebModToVH [[ .* .* default_host ]] -MapModulesToServers [[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]')\"; exception information:\ncom.ibm.ws.scripting.ScriptingException: WASX7132E: Application install for /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war failed: see previous messages for details.\n\nwsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:KYC_Remediation/'), '[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]')\"; exception information:\ncom.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \"\" for parameter \"parent config id\" on command \"create\"\n\nwsadmin>wsadmin>wsadmin>''\nwsadmin>WASX7015E: Exception running command: \"fi\"; exception information:\ncom.ibm.bsf.BSFException: exception from Jython:\nTraceback (innermost last):\n  File \"<input>\", line 1, in ?\nNameError: fi\n\nwsadmin>wsadmin>Deployment failed. Check the output for errors.",
+    "stdout_lines": [
+        "WASX7209I: Connected to process \"dmgr\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager",
+        "WASX7031I: For help, enter: \"print Help.help()\"",
+        "wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminApp.update('KYC_Remediation', 'app', ['-operation', 'update', '-contents', '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war', '-contextroot', 'KYC_Remediation', '-MapWebModToVH', '[[ .* .* default_host ]]', '-MapModulesToServers', '[[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]'])\"; exception information:",
+        "com.ibm.ws.scripting.ScriptingException: WASX7280E: An application with name \"KYC_Remediation\" does not exist.",
+        "",
+        "wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:KYC_Remediation/'), '[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]')\"; exception information:",
+        "com.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \"\" for parameter \"parent config id\" on command \"create\"",
+        "",
+        "wsadmin>wsadmin>wsadmin>''",
+        "wsadmin>wsadmin>wsadmin>wsadmin>WASX7327I: Contents of was.policy file:",
+        " //",
+        "// Template policy file for enterprise application.",
+        "// Extra permissions can be added if required by the enterprise application.",
+        "//",
+        "// NOTE: Syntax errors in the policy files will cause the enterprise application FAIL to start.",
+        "//       Extreme care should be taken when editing these policy files. It is advised to use",
+        "//       the policytool provided by the JDK for editing the policy files",
+        "//       (WAS_HOME/java/jre/bin/policytool). ",
+        "//",
+        "",
+        "grant codeBase \"file:${application}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${jars}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${connectorComponent}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${webComponent}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${ejbComponent}\" {",
+        "};",
+        "",
+        "",
+        "ADMA5016I: Installation of KYC_Remediation started.",
+        "ADMA5026E: No valid target is specified in ObjectName WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 for module KYC_Remediation.war+WEB-INF/web.xml.",
+        "ADMA5011I: The cleanup of the temp directory for application KYC_Remediation is complete.",
+        "ADMA5014E: The installation of application KYC_Remediation failed.",
+        "WASX7015E: Exception running command: \"    AdminApp.install('/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war', '-appname KYC_Remediation -contextroot KYC_Remediation -MapWebModToVH [[ .* .* default_host ]] -MapModulesToServers [[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]')\"; exception information:",
+        "com.ibm.ws.scripting.ScriptingException: WASX7132E: Application install for /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war failed: see previous messages for details.",
+        "",
+        "wsadmin>wsadmin>wsadmin>WASX7015E: Exception running command: \"    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:KYC_Remediation/'), '[[libraryName ibps_library,omnidocs_library,wfs_library,od_library]]')\"; exception information:",
+        "com.ibm.ws.scripting.ScriptingException: WASX7444E: Invalid parameter value \"\" for parameter \"parent config id\" on command \"create\"",
+        "",
+        "wsadmin>wsadmin>wsadmin>''",
+        "wsadmin>WASX7015E: Exception running command: \"fi\"; exception information:",
+        "com.ibm.bsf.BSFException: exception from Jython:",
+        "Traceback (innermost last):",
+        "  File \"<input>\", line 1, in ?",
+        "NameError: fi",
+        "",
+        "wsadmin>wsadmin>Deployment failed. Check the output for errors."
+    ]
+}
+...ignoring
