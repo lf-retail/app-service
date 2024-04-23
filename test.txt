@@ -676,3 +676,12 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
     ]
 }
 ...ignoring
+==========================
+
+[2:54 PM] Pradip Kanasani
+ask Anisure to run this command from the IBM WAS server manually 
+[2:54 PM] Pradip Kanasani
+./wsadmin.sh -lang jython -user admin_user -password admin_password
+
+[2:54 PM] Pradip Kanasani
+by proving those user name and password 
