@@ -418,6 +418,7 @@ changed: [ANTIBPSAPP1] => {
 
 Sreedevi.Unnikrishnana@rakbank.ae
 Anisur.Shaikh@rakbank.ae
+Muhammad.Waqas@rakbank.ae
 ===============
 
 #!/bin/bash
