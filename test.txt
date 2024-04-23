@@ -818,7 +818,7 @@ else:
     # Install the application
 
     AdminApp.install('$WAR_FILE_PATH', '-appname $APP_NAME -contextroot $CONTEXT_ROOT -MapWebModToVH [[ .* .* default_host ]]')
-
+    AdminApp.install('$WAR_FILE_PATH', '-appname $APP_NAME -contextroot $CONTEXT_ROOT -MapWebModToVH [[ .* .* default_host ]] -MapModulesToServers [[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]') 
     # Map shared libraries
 
     AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $SHARED_LIB]]')
