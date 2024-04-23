@@ -685,3 +685,78 @@ ask Anisure to run this command from the IBM WAS server manually
 
 [2:54 PM] Pradip Kanasani
 by proving those user name and password 
+=================
+
+[4/23/24 13:49:04:396 GST] 00000001 ManagerAdmin  I   TRAS0017I: The startup trace state is *=info.
+[4/23/24 13:49:04:661 GST] 00000001 AbstractShell A   WASX7326I: Loaded properties file "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/properties/wsadmin.properties"
+[4/23/24 13:49:04:990 GST] 00000001 ProviderTrack I com.ibm.ffdc.osgi.ProviderTracker AddingService FFDC1007I: FFDC Provider Installed: com.ibm.ffdc.util.provider.FfdcOnDirProvider@b6a03636
+[4/23/24 13:49:05:107 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.certpath.disabledAlgorithms set to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, include jdk.disabled.namedCurves, SHA1 usage SignedJAR & denyAfter 2019-01-01].  The WebSphere Application server is setting the java security property jdk.certpath.disabledAlgorithms to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224]. 
+[4/23/24 13:49:05:110 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.tls.disabledAlgorithms set to [SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC, include jdk.disabled.namedCurves].  The WebSphere Application server is setting the java security property jdk.tls.disabledAlgorithms to [SSLv3, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC]. 
+[4/23/24 13:49:05:112 GST] 00000001 SSLConfigMana I   CWPKI0027I: Disabling default hostname verification for HTTPS URL connections.
+[4/23/24 13:49:05:116 GST] 00000001 SecurityObjec I   CWSCF0002I: The client code is attempting to load the security configuration the server and this operation is not allowed.
+[4/23/24 13:49:10:886 GST] 00000001 AbstractShell A   WASX7092I: Command not logged; contains a password.
+[4/23/24 13:49:10:889 GST] 00000001 AbstractShell E   WASX7120E: Diagnostic information from exception with text "javax.management.JMRuntimeException: Unable to authenticate user of the incoming SOAP request
+" follows:
+
+javax.management.JMRuntimeException: Unable to authenticate user of the incoming SOAP request
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.handleAdminFault(SOAPConnectorClient.java:968)
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.invokeTemplateOnce(SOAPConnectorClient.java:933)
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.invokeTemplate(SOAPConnectorClient.java:697)
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.invokeTemplate(SOAPConnectorClient.java:687)
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.getAttribute(SOAPConnectorClient.java:642)
+        at com.ibm.ws.management.connector.soap.SOAPConnectorClient.invoke(SOAPConnectorClient.java:498)
+        at com.sun.proxy.$Proxy3.getAttribute(Unknown Source)
+        at com.ibm.ws.management.AdminClientImpl.getAttribute(AdminClientImpl.java:153)
+        at com.ibm.ws.scripting.CommonScriptingObject.connectToAdminService(CommonScriptingObject.java:130)
+        at com.ibm.ws.scripting.CommonScriptingObject.<init>(CommonScriptingObject.java:104)
+        at com.ibm.ws.scripting.AdminControlClient.<init>(AdminControlClient.java:170)
+        at com.ibm.ws.scripting.AbstractShell.createControlClient(AbstractShell.java:1290)
+        at com.ibm.ws.scripting.AbstractShell.run(AbstractShell.java:2253)
+        at com.ibm.ws.scripting.WasxShell.main(WasxShell.java:1172)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+        at java.lang.reflect.Method.invoke(Method.java:508)
+        at com.ibm.wsspi.bootstrap.WSLauncher.launchMain(WSLauncher.java:234)
+        at com.ibm.wsspi.bootstrap.WSLauncher.main(WSLauncher.java:96)
+        at com.ibm.wsspi.bootstrap.WSLauncher.run(WSLauncher.java:77)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+        at java.lang.reflect.Method.invoke(Method.java:508)
+        at org.eclipse.equinox.internal.app.EclipseAppContainer.callMethodWithException(EclipseAppContainer.java:587)
+        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:198)
+        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+        at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:369)
+        at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+        at java.lang.reflect.Method.invoke(Method.java:508)
+        at org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)
+        at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
+        at org.eclipse.core.launcher.Main.run(Main.java:981)
+        at com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)
+        at com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)
+
+[4/23/24 13:49:10:889 GST] 00000001 AdminControlC W   WASX7072E: The control service is not available.
+[4/23/24 13:49:10:902 GST] 00000001 AdminConfigCl W   WASX7198W: The configuration service is not running. Configuration commands will not run.
+[4/23/24 13:49:10:912 GST] 00000001 AdminConfigCl A   WASX7208I: Validation settings in effect now: Level=HIGHEST, Cross-validation=true, Output file=/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.valout
+[4/23/24 13:49:10:927 GST] 00000001 AdminAppClien W   WASX7072E: The control service is not available.
+[4/23/24 13:49:11:200 GST] 00000001 ModelMgr      I   WSVR0801I: Initializing all server configuration models
+[4/23/24 13:49:11:895 GST] 00000001 WorkSpaceMana A   WKSP0500I: Workspace configuration consistency check is disabled.
+[4/23/24 13:49:12:199 GST] 00000001 AdminAppClien W   WASX7206W: The application management service is not running. Application management commands will not run.
+[4/23/24 13:49:12:200 GST] 00000001 AdminCmdClien W   WASX7198W: The configuration service is not running. Configuration commands will not run.
+[4/23/24 13:49:12:200 GST] 00000001 AdminCmdClien W   WASX8011W: AdminTask object is not available.
+[4/23/24 13:49:39:281 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:49:39:568 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:49:39:854 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:29:306 GST] 00000001 AbstractShell A   WASX7090I: Executing command: "cd /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/"
+[4/23/24 13:51:29:511 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:29:652 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:29:782 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:45:927 GST] 00000001 AbstractShell A   WASX7090I: Execuexit"command: "ls -la
+[4/23/24 13:51:46:706 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:46:927 GST] 00000001 AbstractShell A   WASX7090I: Executing command: """"
+[4/23/24 13:51:49:623 GST] 00000001 WasxShell     A   WASX7331I: Unexpected exception received when querying for changes in this session:       com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
