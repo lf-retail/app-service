@@ -1202,3 +1202,61 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
 ...ignoring
 META: ran handlers
 META: ran handlers
+======================
+
+#!/bin/bash
+
+# Server details
+WAS_HOST="10.15.11.209"
+WAS_PORT="8879"
+WAS_ADMIN_USER="deployer"
+WAS_ADMIN_PASSWORD="deployer@123"
+
+# WAR file and application details
+WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME="KYC_Remediation_war"
+CONTEXT_ROOT="/KYC_Remediation"
+
+# Combine shared libraries into a single string
+SHARED_LIB="ibps_library,omnidocs_library,wfs_library,od_library"
+
+# Path to wsadmin.sh
+WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+
+# wsadmin script content
+WSADMIN_SCRIPT="
+# Check if the application already exists
+if '$APP_NAME' in AdminApp.list().splitlines():
+    print 'Application $APP_NAME already exists. Updating...'
+
+    # Update the application
+    AdminApp.update('$APP_NAME', 'app', ['-operation', 'update', '-contents', '$WAR_FILE_PATH', '-contextroot', '$CONTEXT_ROOT', '-MapWebModToVH', '[[ .* .* default_host ]]', '-MapModulesToServers', '[[ .* .* WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01,server=server1 ]]'])
+
+    # Map shared libraries
+    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $SHARED_LIB]]')
+
+    # Save configuration changes
+    AdminConfig.save()
+else:
+    print 'Deploying $APP_NAME from WAR file: $WAR_FILE_PATH'
+    # Install the application
+    AdminApp.install('$WAR_FILE_PATH', '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname $APP_NAME -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot $CONTEXT_ROOT -MapModulesToServers [[ KYC_Remediation.war KYC_Remediation.war,WEB-INF/web.xml WebSphere:cell=antibpsapp1Cell01,cluster=BPMCLUSTER ]]]' )
+
+    # Map shared libraries
+    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $SHARED_LIB]]')
+
+    # Save configuration changes
+    AdminConfig.save()
+fi
+"
+
+# Execute the script with wsadmin
+echo "$WSADMIN_SCRIPT" | $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD
+
+# Check deployment status
+if [ $? -eq 0 ]; then
+    echo "Deployment of $APP_NAME completed successfully."
+else
+    echo "Deployment failed. Check the output for errors."
+    exit 1
+fi
