@@ -1463,3 +1463,6 @@ SHARED_LIB       >  Please check with App Support Team
 
 Thanks,
 Shanmuganathan M.
+==========
+
+shared libs , context root, what are the class loaders 
