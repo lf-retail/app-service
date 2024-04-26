@@ -1476,3 +1476,6 @@ wfs_library
 Class Loader: PARENT LAST
 CONTEXT_ROOT: "/KYC_Remediation"
 
+===============
+
+Whenever we started the deployment the war file have to be moved to targeted location with user itdevtra but the war file having only read only access but we need full access for this. So can you please help on this
