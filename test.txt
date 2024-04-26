@@ -1385,3 +1385,81 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
 ...ignoring
 META: ran handlers
 META: ran handlers
+==============
+Anisur
+
+Dear Shanmuganathan,
+
+
+IP- 10.15.11.209 
+
+Script to stop server
+
+cd /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/
+
+./stopServer.sh BPMMBR01
+./stopNode.sh
+
+Script to start server
+
+cd /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/
+
+./startNode.sh
+./startServer.sh BPMMBR01
+
+
+IP-10.15.11.210
+
+Script to stop server
+
+cd /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/
+
+./stopServer.sh BPMMBR02
+./stopNode.sh
+
+Script to start server
+
+cd /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/
+
+./startNode.sh
+./startServer.sh BPMMBR02
+
+===========
+
+hritik
+
+Classification: RAKBANK-Internal
+
+Dear Shanmuganathan,
+
+PFB the details:
+
+APP_NAME: Kindly check with Devdutta.
+
+CONTEXT_ROOT: The war name itself will be the context root (e.g. - KYC_Remediation)
+
+SHARED_LIB :
+
+·         ibps_library
+
+·         omnidocs_library
+
+·         wfs_library
+
+·         od_library
+
+=====================
+Classification: RAKBANK-Internal
+
+Hi Dev/Nikhil,
+
+Can you please share the below details for WAR file installation in WAS
+
+APP_NAME        >Please check with App Support Team
+
+CONTEXT_ROOT               >  Please check with App Support Team
+
+SHARED_LIB       >  Please check with App Support Team
+
+Thanks,
+Shanmuganathan M.
