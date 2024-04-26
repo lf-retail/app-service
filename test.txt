@@ -1459,3 +1459,20 @@ class loader : PARENT LAST
 via console right?
 [3:45 PM] Pradip Kanasani
 CONTEXT_ROOT="/KYC_Remediation"
+============
+
+Hi Anisur,
+
+We are getting some issue while running from pipeline and able to install the WAR file into WAS but webapp its not loading. So can you please do deploy the WAR file installation manually into WAS and share it to us whatever you getting, if the deployment is getting successful please it or if it failing please share the log files to verify.
+
+Server ip: 10.15.11.209
+War file name: KYC_Remediation.war
+Path: /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war
+shared libraries : ibps_library
+                                  omnidocs_library
+  wfs_library
+class loader : PARENT LAST
+CONTEXT_ROOT="/KYC_Remediation"
+
+Thanks,
+Shanmuganathan M.
