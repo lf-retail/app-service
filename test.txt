@@ -1449,20 +1449,13 @@ SHARED_LIB :
 ·         od_library
 
 =====================
-Classification: RAKBANK-Internal
-
-Hi Dev/Nikhil,
-
-Can you please share the below details for WAR file installation in WAS
-
-APP_NAME        >Please check with App Support Team
-
-CONTEXT_ROOT               >  Please check with App Support Team
-
-SHARED_LIB       >  Please check with App Support Team
-
-Thanks,
-Shanmuganathan M.
-==========
-
-shared libs , context root, what are the class loaders 
+[3:44 PM] Pradip Kanasani
+shared libraries : ibps_library
+omnidocs_library
+wfs_library
+[3:44 PM] Pradip Kanasani
+class loader : PARENT LAST
+[3:45 PM] Shanmuganathan Murugesan
+via console right?
+[3:45 PM] Pradip Kanasani
+CONTEXT_ROOT="/KYC_Remediation"
