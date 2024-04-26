@@ -1479,3 +1479,11 @@ CONTEXT_ROOT: "/KYC_Remediation"
 ===============
 
 Whenever we started the deployment the war file have to be moved to targeted location with user itdevtra but the war file having only read only access but we need full access for this. So can you please help on this
+
+"Whenever we start the deployment, the WAR file needs to be moved to the targeted location with the user 'itdevtra.' However, the WAR file currently only has read-only access, and we require full access for this operation. Could you please assist with granting the necessary permissions?"
+
+
+
+
+
+
