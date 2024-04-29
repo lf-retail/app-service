@@ -1,101 +1,140 @@
----
-- name: Stop WAS
-  become: true
-  become_user: "{{ ansible_user }}"
-  ignore_errors: yes
-  shell:
-    cmd: |
-      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh BPMMBR01 &&
-      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh
-      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopServer.sh -username deployer -password deployer@123 BPMMBR01 --connect controller=10.15.11.209 command=:shutdown &&
-      #/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/stopNode.sh -username deployer -password deployer@123 --connect controller=10.15.11.209 command=:shutdown
+Profile_home="$1"
+release_version="$2"
+zip_file_url="$3"
+zip_file_name="$4"
 
-#- name: Create directory for new release version
- # file:
-  #  path: "{{ Profile_home }}/release.{{ release_version }}"
-   # state: directory
-    #mode: '0755'
+# Extract the zip file to a new release directory
+unzip -q "$Profile_home/release.$release_version/$zip_file_name" -d "$Profile_home/release.$release_version"
 
-- name: Copy war-install-in-was1.sh to Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  copy:
-    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was1.sh"
-    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was1.sh"
-    mode: '0755'
+# Check if release.txt exists
+release_txt_path="$Profile_home/release.$release_version/release/release.txt"
+if [ ! -f "$release_txt_path" ]; then
+    echo "Error: release.txt not found at $release_txt_path"
+    exit 1
+fi
 
-- name: Run war-install-in-was1.sh on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  ignore_errors: yes
-  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was1.sh ibps_library omnidocs_library wfs_library od_library"
-  register: deploy_result
+# Read the content of release.txt and remove any leading/trailing whitespace characters
+release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
 
-- name: Start WAS
-  become: true
-  become_user: "{{ ansible_user }}"
-  shell:
-    cmd: |
-      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startNode.sh &&
-      /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/startServer.sh BPMMBR01
+# Print the content of release_content
+echo "$release_content"
 
-=============
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$Profile_home/release.$release_version"
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+    chmod 777 "$backup_directory"
+
+    # Copy release.txt file into backup directory
+    cp "$release_txt_path" "$backup_directory"
+
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$app_targeted_location"
+            backup_path="$backup_directory/$app_name"
+
+            # Copy old deployment files to backup location
+            cp -r "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release.$release_version/release/$app_name"  # Assuming the new files are in the release directory
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$app_targeted_location"
+
+            # Set permissions to 755 on new deployment files
+            chmod -R 755 "$app_targeted_location/$app_name"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
+        fi
+    done <<< "$release_content"
+fi
+
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig"
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig/KYC_Remediation"
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01"
+
+==========================
 
 #!/bin/bash
 
-# Server details (adapt these variables to your environment)
+# Server details
 WAS_HOST="10.15.11.209"
-WAS_PORT="9043" # Change to your WAS administrative port, often 9043 for HTTPS
+WAS_PORT="8879"
 WAS_ADMIN_USER="deployer"
 WAS_ADMIN_PASSWORD="deployer@123"
 
 # WAR file and application details
 WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
-APP_NAME="KYC_Remediation"
-CONTEXT_ROOT="KYC_Remediation"
+APP_NAME="KYC_Remediation_war"
+CONTEXT_ROOT="/KYC_Remediation"
 
-# Combine all shared libraries into a single string
-SHARED_LIB=$(printf ",%s" "$@")
-SHARED_LIB=${SHARED_LIB:1} # Remove the leading comma
+# Define shared libraries as an array
+SHARED_LIBS=("ibps_library" "omnidocs_library" "wfs_library")
 
-# Path to wsadmin.sh (adjust for your WAS installation)
+# Path to wsadmin.sh
 WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 
 # wsadmin script content
 WSADMIN_SCRIPT="
-# Connect to WebSphere Application Server
-AdminConfig.connect('$WAS_ADMIN_USER', '$WAS_ADMIN_PASSWORD')
+# if  application already exists
+if '${APP_NAME}' in AdminApp.list().splitlines():
+    print 'Application %s already exists. Removing...' % '${APP_NAME}'
+    AdminApp.uninstall('${APP_NAME}')
+    print 'Application %s removed.' % '${APP_NAME}'
 
-# Check if the application already exists
-if AdminApp.list().find('$APP_NAME') != -1:
-    print('Application $APP_NAME already exists. Skipping installation.')
-else:
-    # Install the application with Parent Last class loader policy
-    AdminApp.install('$WAR_FILE_PATH', '[ -appname $APP_NAME -contextroot $CONTEXT_ROOT -MapModulesToServers [[ .* .* WebSphere:cell=YourCellName,node=YourNodeName,server=YourServerName ]] -MapWebModToVH [[ .* .* default_host ]] -classloaderMode PARENT_LAST ]')
-    # Install the application
-    #AdminApp.install('$WAR_FILE_PATH', '[ -appname $APP_NAME -contextroot $CONTEXT_ROOT -MapWebModToVH [[ .* .* default_host ]] ]')
-    # Map shared libraries (Optional: Adjust or remove according to your requirements)
-    AdminConfig.create('LibraryRef', AdminConfig.getid('/Deployment:$APP_NAME/'), '[[libraryName $SHARED_LIB]]')
-    # Save configuration changes
-    AdminConfig.save()
+print 'Deploying %s from WAR file: %s' % ('${APP_NAME}', '${WAR_FILE_PATH}')
 
-# Disconnect from the server
-AdminConfig.disconnect()
+# Install the application
+result = AdminApp.install('${WAR_FILE_PATH}', '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ KYC_Remediation.war KYC_Remediation.war,WEB-INF/web.xml WebSphere:cell=antibpsapp1Cell01,cluster=BPMCLUSTER ]]]' )
+if result != '':
+    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
+    raise Exception('Failed to install application ' + '${APP_NAME}')
+
+# Map shared libraries
+shared_libs = ['ibps_library', 'wfs_library', 'omnidocs_library']
+for lib in shared_libs:
+    print 'Mapping shared library: ' + lib
+    AdminApp.edit('${APP_NAME}', '[-MapSharedLibForMod [[ \"${APP_NAME}\" \"META-INF/application.xml\" ' + lib + ' ]]]')
+    print 'Shared library ' + lib + ' mapped.'
+
+# Save configuration
+AdminConfig.save()
+
+# Add a delay before starting the application
+import time
+time.sleep(10)
+
+# Start the application
+print 'Starting application ' + '${APP_NAME}'
+app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
+for app_manager in app_managers:
+    result = AdminControl.invoke(app_manager, 'startApplication', '${APP_NAME}')
+    if result != '':  # If the result is not an empty string, an error occurred
+        print 'Failed to start application ' + '${APP_NAME}' + '. Error: ' + result
+        raise Exception('Failed to start application ' + '${APP_NAME}')
+
+print 'Application ' + '${APP_NAME}' + ' started.'
 "
 
-# Check if shared libraries were provided
-if [ -z "$SHARED_LIB" ]; then
-    echo "No shared libraries provided. Deployment failed."
-    exit 1
-fi
-
 # Execute the script with wsadmin
-echo "Deploying $APP_NAME from WAR file: $WAR_FILE_PATH"
-echo "$WSADMIN_SCRIPT" | $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD
+$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD <<EOF
+$WSADMIN_SCRIPT
+EOF
 
+# Check deployment status
 if [ $? -eq 0 ]; then
-    echo "Deployment of $APP_NAME completed successfully."
+    echo 'Deployment of' ${APP_NAME} 'completed successfully.'
 else
-    echo "Deployment failed. Check the output for errors."
+    echo 'Deployment failed. Check the output for errors.'
     exit 1
 fi
