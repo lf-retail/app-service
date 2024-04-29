@@ -1477,13 +1477,65 @@ Class Loader: PARENT LAST
 CONTEXT_ROOT: "/KYC_Remediation"
 
 ===============
+Profile_home="$1"
+release_version="$2"
+zip_file_url="$3"
+zip_file_name="$4"
 
-Whenever we started the deployment the war file have to be moved to targeted location with user itdevtra but the war file having only read only access but we need full access for this. So can you please help on this
+# Extract the zip file to a new release directory
+unzip -q "$Profile_home/release.$release_version/$zip_file_name" -d "$Profile_home/release.$release_version"
 
-"Whenever we start the deployment, the WAR file needs to be moved to the targeted location with the user 'itdevtra.' However, the WAR file currently only has read-only access, and we require full access for this operation. Could you please assist with granting the necessary permissions?"
+# Check if release.txt exists
+release_txt_path="$Profile_home/release.$release_version/release/release.txt"
+if [ ! -f "$release_txt_path" ]; then
+    echo "Error: release.txt not found at $release_txt_path"
+    exit 1
+fi
 
+# Read the content of release.txt and remove any leading/trailing whitespace characters
+release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
 
+# Print the content of release_content
+echo "$release_content"
 
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$Profile_home/release.$release_version"
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+    chmod 777 "$backup_directory"
 
+    # Copy release.txt file into backup directory
+    cp "$release_txt_path" "$backup_directory"
 
+    # Iterate through each line in release_content
+    while IFS=, read -r app_name app_targeted_location; do
+        # Check if both app_name and app_targeted_location are not empty
+        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
+            # Construct paths for old deployment files and backup location
+            old_deployment_path="$app_targeted_location"
+            backup_path="$backup_directory/$app_name"
 
+            # Copy old deployment files to backup location
+            cp -r "$old_deployment_path" "$backup_path"
+
+            # Print information about the backup
+            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
+
+            # Define paths for new deployment files and targeted location
+            new_deployment_path="$Profile_home/release.$release_version/release/$app_name"  # Assuming the new files are in the release directory
+
+            # Copy new deployment files to targeted location
+            cp -r "$new_deployment_path" "$app_targeted_location"
+
+            # Print information about the copy
+            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
+        fi
+    done <<< "$release_content"
+fi
+
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig"
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig/KYC_Remediation"
+ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01"
+===============================
