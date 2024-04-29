@@ -1542,3 +1542,11 @@ ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig"
 ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig/KYC_Remediation"
 ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01"
 ===============================
+[target_wasuat209]
+ANTIBPSAPP1 ansible_ssh_host=10.15.11.209
+
+#[target_wasuat210]
+#ANTIBPSAPP1 ansible_ssh_host=10.15.11.210
+
+#[target_wasreplica86]
+#ANT3CASAPPS02 ansible_ssh_host=10.15.24.86
