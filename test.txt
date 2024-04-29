@@ -1529,6 +1529,9 @@ if [ -n "$release_content" ]; then
             # Copy new deployment files to targeted location
             cp -r "$new_deployment_path" "$app_targeted_location"
 
+            # Set permissions to 755 on new deployment files
+            chmod -R 755 "$app_targeted_location/$app_name"
+
             # Print information about the copy
             echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
         fi
