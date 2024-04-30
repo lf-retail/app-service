@@ -1,0 +1,264 @@
+.github/workflows/ibps_deployment.yml
+--------------------------------------------
+
+name: IBPS-deployment
+run-name: IBPS-deployment-${{ github.event.inputs.release_version }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh war-install-in-was.sh
+  
+    #- name: Download IBPS Release
+     # uses: robinraju/release-downloader@v1.9
+      #id: download_release
+      #with:
+       #repository: rakbank-internal/ibps-was-ansible-cd
+       #tag: ${{ github.event.inputs.tag }}
+       #fileName: ${{ github.event.inputs.fileName }}
+      #env:
+       #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
+    #- name: Set downloaded file URL as an environment variable
+     # run: |
+      #  echo "ZIP_FILE_URL=/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV 
+    
+    #- name: Display ZIP_FILE_URL
+     # run: |
+      #  echo $ZIP_FILE_URL        
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=false rollback_mode=false warinstallation_mode=true release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml #Cluster ip:10.15.11.209
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=false rollback_mode=false warinstallation_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml #Cluster ip:10.15.11.210
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=false rollback_mode=false warinstallation_mode=false release_version=${RELEASE_VERSION}" ./playbook/IBPS-deployment.yml #replica ip:10.15.24.86
+========================================
+playbook/IBPS-deployment.yml
+-------------------------------
+
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: yes
+  roles:
+    - IBPS-deployment
+========================================
+roles/IBPS-deployment/defaults/
+----------------------------------
+
+---
+#ibps_server: 10.15.13.148:9043
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+#zip_file_url: "https://maven.pkg.github.com/rakbank-internal/ibps-was-ansible-cd/Rak/IBPS/release/{{ lookup('env', 'RELEASE_VERSION') }}/release.{{ lookup('env', 'RELEASE_VERSION') }}.zip"
+#zip_file_url: "https://github.com/rakbank-internal/ibps-was-ansible-cd/releases/download/KYC-test_21032024/release.zip"
+zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+#zip_file_name: "{{ lookup('env', 'FILE_NAME') }}"
+zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+Profile_home: "/ibm/IBM/Application/release"
+#Profile_home: "/ibm/IBM-CAS/WebSphere/deploy_script"
+
+# Server details
+WAR_FILE_PATH: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME: "KYC_Remediation_war"
+CONTEXT_ROOT: "/KYC_Remediation"
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+WAS_ADMIN_USER: "deployer"
+WAS_ADMIN_PASSWORD: "deployer@123"
+CELL_NAME: "antibpsapp1Cell01"
+CLUSTER_NAME: "BPMCLUSTER"
+...
+==================================================
+
+roles/IBPS-deployment/tasks/main.yml
+----------------------------------------
+- name: Include deploy playbook
+  include_tasks: main-deploy.yml
+  when: deploy_mode
+
+- name: Include rollback playbook
+  include_tasks: main-rollback.yml
+  when: rollback_mode
+
+- name: Include war instalation playbook
+  include_tasks: main-war-installation.yml
+  when: warinstallation_mode
+===========================================
+
+roles/IBPS-deployment/tasks/main-deploy.yml
+--------------------------------------------
+#- name: Download zip from GitHub packages on Runner
+ # delegate_to: localhost
+  #run_once: true
+  #get_url:
+   # url: "{{ zip_file_url }}"
+    #dest: "/tmp/{{ zip_file_name }}"
+    #headers:
+     # Authorization: "token {{ github_token }}"  
+
+- name: Copy release.zip to tmp location
+  delegate_to: localhost
+  copy:
+    src: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"     
+
+- name: list directory
+  command: "ls -la /ibm/IBM/Application/release"
+
+- name: Create directory for new release version
+  file:
+    path: "{{ Profile_home }}/release.{{ release_version }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/{{ zip_file_name }}"
+    mode: '0755'      
+ 
+- name: Copy deploy.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
+  register: deploy_result
+  ignore_errors: yes
+
+- name: Clean up WAR from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/release"
+    state: absent
+  run_once: true
+======================================================
+roles/IBPS-deployment/tasks/main-rollback.yml
+-------------------------------------------------
+
+- name: Copy rollback.sh to Target Server
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/rollback.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/rollback.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run rollback on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./rollback.sh {{ Profile_home }} {{ release_version }}"
+  register: deploy_result
+  ignore_errors: yes
+====================================
+roles/IBPS-deployment/tasks/main-war-installation.yml
+-----------------------------------------------------
+
+---
+- name: Copy war-install-in-was.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was.sh" 
+  #ibps_library omnidocs_library wfs_library od_library"
+  register: deploy_result
+
+# - name: Install the application
+#   become: true
+#   become_user: "{{ ansible_user }}"
+#   shell:
+#     cmd: |
+#       /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -conntype SOAP -host {{ WAS_HOST }} -port {{ WAS_PORT }} -user {{ WAS_ADMIN_USER }} -password {{ WAS_ADMIN_PASSWORD }} -c "
+#       result = AdminApp.install('{{ WAR_FILE_PATH }}', '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname {{ APP_NAME }} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot {{ CONTEXT_ROOT }} -MapModulesToServers [[ {{ APP_NAME }} {{ APP_NAME }},WEB-INF/web.xml WebSphere:cell={{ CELL_NAME }},cluster={{ CLUSTER_NAME }} ]] -MapWebModToVH [[ {{ APP_NAME }} {{ APP_NAME }},WEB-INF/web.xml default_host ]] -usedefaultbindings -MapSharedLibForMod [[ {{ APP_NAME }} META-INF/application.xml ibps_library ]] -MapSharedLibForMod [[ {{ APP_NAME }} META-INF/application.xml omnidocs_library ]] -MapSharedLibForMod [[ {{ APP_NAME }} META-INF/application.xml wfs_library ]] -WASPolicyClassloaderMode PARENT_LAST -WASWarPolicyClassloaderMode MODULE ]')
+#       if result != '':
+#           print 'Failed to install application ' + '{{ APP_NAME }}' + '. Error: ' + result
+#           raise Exception('Failed to install application ' + '{{ APP_NAME }}')
+#       "
+
+- name: Map shared libraries
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: |
+    /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -conntype SOAP -host {{ WAS_HOST }} -port {{ WAS_PORT }} -user {{ WAS_ADMIN_USER }} -password {{ WAS_ADMIN_PASSWORD }} -c "AdminApp.edit('{{ APP_NAME }}', '[-MapSharedLibForMod [[ \"{{ APP_NAME }}\" \"META-INF/application.xml\" \"ibps_library\" ] [ \"{{ APP_NAME }}\" \"META-INF/application.xml\" \"omnidocs_library\" ] [ \"{{ APP_NAME }}\" \"META-INF/application.xml\" \"wfs_library\" ]]]')"
+
+- name: Set class loader policy
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: |
+    /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -conntype SOAP -host {{ WAS_HOST }} -port {{ WAS_PORT }} -user {{ WAS_ADMIN_USER }} -password {{ WAS_ADMIN_PASSWORD }} -c "AdminApp.edit('{{ APP_NAME }}', '[-classloaderPolicy PARENT_LAST -WASPolicyClassloaderMode PARENT_LAST]')"
+    
+- name: Get app managers
+  shell: >
+    /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -conntype SOAP -host {{ WAS_HOST }} -port {{ WAS_PORT }} -user {{ WAS_ADMIN_USER }} -password {{ WAS_ADMIN_PASSWORD }} -c "print AdminControl.queryNames('type=ApplicationManager,*')"
+  register: app_managers
+
+- name: Start the application
+  become: true
+  become_user: "{{ ansible_user }}"
+  shell: |
+    /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh -lang jython -conntype SOAP -host {{ WAS_HOST }} -port {{ WAS_PORT }} -user {{ WAS_ADMIN_USER }} -password {{ WAS_ADMIN_PASSWORD }} -c "AdminControl.invoke('{{ item }}', 'startApplication', '{{ APP_NAME }}')"
+  loop: "{{ app_managers.stdout_lines | select('match', '^WebSphere:') | list }}"
+  when: app_managers.stdout_lines | length > 0
+  register: app_start_results
+
+- name: Check application start status
+  debug:
+    msg: "Application {{ APP_NAME }} started."
+  when: app_start_results | selectattr('rc', 'eq', 0) | list | length > 0
+=================================================================
+
+
+
