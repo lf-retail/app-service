@@ -64,4 +64,1691 @@ runs:
 
 deh_onboarding_retail_account_v1111/.github/workflows/ci-gradle-build.yml
 ----------------------------------------------------------------------------
-                                                                                                                                                                                                                                                                                                                                                        
+name: Gradle_Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        default: '1111'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '4.10.1'
+
+    - name: Execute Gradle build
+      run: ./gradlew clean build -PbuildVersion=${{ github.event.inputs.version }}
+      env:
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+    
+    - name: List generated WAR files
+      run: ls build/libs
+
+    - name: Sonarscan with Java 17
+      uses: ./.github/actions/sonar
+      with:
+        sonarHostUrl: ${{ secrets.SONAR_HOST_URL }}
+        sonarToken: ${{ secrets.SONAR_TOKEN }}
+        sonarProjectKey: deh-retail_accounts
+
+    - name: Publish to GitHub Packages with Gradle Wrapper
+      run: ./gradlew publish -PbuildVersion=${{ github.event.inputs.version }}
+      env:
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+=====================================
+
+.github/workflows/hif_data.yml
+---------------------------------------
+name: hif & config
+on:
+  # workflow_run:
+  #   workflows: ["Gradle_Build"]
+  #   types:
+  #     - completed
+
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release Tag'
+        required: true
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout actions code
+        uses: actions/checkout@v2
+        with:
+          repository: rakbank-internal/deh_onboarding_retail_account_v1111
+          token: ${{ secrets.TOKEN_GITHUB }}
+          fetch-depth: 0
+
+      - name: Install 7-Zip
+        run: |
+          Invoke-WebRequest -Uri "https://www.7-zip.org/a/7z1900-x64.msi" -OutFile "7z.msi"
+          Start-Process msiexec.exe -ArgumentList '/i', '7z.msi', '/quiet', '/norestart' -NoNewWindow -Wait
+          
+      - name: hif file changes
+        id: hif_changes
+        shell: powershell
+        run: |
+          $filesChanged = git diff --name-only HEAD^ HEAD
+          Write-Host "Files changed:"
+          Write-Host $filesChanged
+          $hifChanged = $false
+          foreach ($file in $filesChanged -split [Environment]::NewLine) {
+            if ($file.StartsWith("hif/hif_spec/") -And -Not [String]::IsNullOrWhiteSpace($file)) {
+              $src = Join-Path "${{ github.workspace }}" -ChildPath $file
+              $dest = $file.Replace("hif/hif_spec", "hif/input")
+              $dest = Join-Path "${{ github.workspace }}" -ChildPath $dest
+              $destDir = Split-Path $dest -Parent
+              if (-Not (Test-Path $destDir)) {
+                New-Item -ItemType Directory -Path $destDir -Force
+              }
+              Copy-Item $src $dest -Force
+              Write-Host "Copied $file to $dest"
+              $hifChanged = $true
+            }
+          }
+          echo "::set-output name=hifChanged::$hifChanged"
+      
+      - name: Generate HIF
+        uses: ./.github/actions/hif
+        if: steps.hif_changes.outputs.hifChanged == 'True'
+
+      - name: data file changes & create zip
+        shell: powershell
+        run: |
+          $tempDir = Join-Path "${{ github.workspace }}" "tempZipStructure"
+          New-Item -Path $tempDir -ItemType Directory
+
+          $structure = @('env-uat', 'env-replica', 'env-prod', 'Output')
+          foreach ($folder in $structure) {
+            $srcPath = if ($folder -eq 'Output') {
+                        Join-Path "${{ github.workspace }}/hif" $folder
+                      } else {
+                        Join-Path "${{ github.workspace }}/workdir" $folder
+                      }
+            $destPath = Join-Path $tempDir "workdir/$folder"
+            if (Test-Path $srcPath) {
+              Copy-Item -Path $srcPath -Destination $destPath -Recurse
+            } else {
+              New-Item -Path $destPath -ItemType Directory
+            }
+          }
+          
+          $srcPathExtension = Join-Path "${{ github.workspace }}/workdir/extension/hif/host" "default"
+          $destPathExtension = Join-Path $tempDir "workdir/extension/hif/host/default"
+          if (Test-Path $srcPathExtension) {
+            Copy-Item -Path $srcPathExtension -Destination $destPathExtension -Recurse
+          } else {
+            New-Item -Path $destPathExtension -ItemType Directory
+          }
+          
+          $filesChanged = git diff --name-only HEAD^ HEAD
+          foreach ($file in $filesChanged -split [Environment]::NewLine) {
+            if (($file.StartsWith("workdir/data/") -Or ($file.StartsWith("workdir/extension/") -And -Not $file.StartsWith("workdir/extension/hif/host/default"))) -And -Not [String]::IsNullOrWhiteSpace($file)) {
+              $src = Join-Path "${{ github.workspace }}" -ChildPath $file
+              $relativePath = $file.Substring("workdir/".Length)
+              $destPath = Join-Path $tempDir "workdir/$relativePath"
+              $destDir = Split-Path -Path $destPath -Parent
+              if (-Not (Test-Path $destDir)) {
+                New-Item -Path $destDir -ItemType Directory
+              }
+              Copy-Item -Path $src -Destination $destPath -Force
+            }
+          }
+          
+          & "C:\Program Files\7-Zip\7z.exe" a -tzip release.zip "$tempDir\workdir\*"
+          Remove-Item -Path $tempDir -Recurse -Force
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        with:
+          tag_name: ${{ github.event.inputs.release_tag }}
+          release_name: Release ${{ github.event.inputs.release_tag }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip
+====================================
+
+.github/workflows/jboss_deploy-github.yml
+----------------------------------------
+name: Deploy WAR to JBoss
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: dehitdevtra1
+    steps: 
+    - name: Checkout ansible playbooks
+      uses: actions/checkout@v2
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -b --extra-vars 'target=target_jb' ./playbook/dehrepdeployment.yml
+==============================
+
+gradle/wrapper/gradle-wrapper.properties
+------------------------------------------
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-4.10.1-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+=================================================
+hif/devrun_HIFCompiler.bat
+-------------------------------
+@echo off
+setlocal enabledelayedexpansion
+
+rem Assuming the current directory is already set to where the batch file resides
+set PATH=%JAVA_HOME%/bin;%PATH%
+set HIF_OUTPUT=%GITHUB_WORKSPACE%\hif\Output\
+set DEBUG_MODE=0
+set APPLICATION_CONFIGURATION_FILE=%GITHUB_WORKSPACE%\hif\BankAway.properties
+set FEBA_SYS_PATH=%GITHUB_WORKSPACE%\hif\WorkingDirectory\data
+set classpath=%GITHUB_WORKSPACE%\hif\lib\*;
+
+rem Check if the Output directory exists, if not create it
+if not exist "%HIF_OUTPUT%" mkdir "%HIF_OUTPUT%"
+
+rem Directory containing the XML files
+set "XML_DIR=%GITHUB_WORKSPACE%\hif\Input"
+
+rem Copy CustomRAKOnboardingTransformerUtil.xml to the input directory
+copy "%GITHUB_WORKSPACE%\hif\hif_spec\CustomRAKOnboardingTransformerUtil.xml" "%XML_DIR%"
+
+rem Loop over each XML file in the directory
+for /R %XML_DIR% %%F in (*.xml) do (
+    set "TOOLS_SPEC=%%F"
+    java -DAPPLICATION_CONFIGURATION_FILE=!APPLICATION_CONFIGURATION_FILE! -DFEBA_SYS_PATH=!FEBA_SYS_PATH! -DFEBA_EXTENSION_DIRECTORY=%GITHUB_WORKSPACE%\hif\WorkingDirectory\extension -DFEBA_MERGE_DIRECTORY=%GITHUB_WORKSPACE%\hif\WorkingDirectory\merge -classpath !classpath! com.infosys.feba.framework.hif.compiler.LaunchHIFCompilerTool -SOURCE !TOOLS_SPEC! -OUTPUT !HIF_OUTPUT! -xsdValidation N
+)
+
+rem File sorting logic begins here
+set DEST_DIR_REQ=%GITHUB_WORKSPACE%\workdir\extension\hif\host\default\request
+set DEST_DIR_TRANS=%GITHUB_WORKSPACE%\workdir\extension\hif\host\default\transformer
+
+rem Ensure destination directories exist
+if not exist "%DEST_DIR_REQ%" mkdir "%DEST_DIR_REQ%"
+if not exist "%DEST_DIR_TRANS%" mkdir "%DEST_DIR_TRANS%"
+
+rem Copy Request files
+for %%f in (%HIF_OUTPUT%\*Request*.hif) do (
+    echo Copying %%f to %DEST_DIR_REQ%
+    copy %%f %DEST_DIR_REQ%
+)
+
+rem Copy Transformer files
+for %%f in (%HIF_OUTPUT%\*Transformer*.hif) do (
+    echo Copying %%f to %DEST_DIR_TRANS%
+    copy %%f %DEST_DIR_TRANS%
+)
+
+echo Verifying copied files in request directory:
+dir %DEST_DIR_REQ%\*Request*.hif
+
+echo Verifying copied files in transformer directory:
+dir %DEST_DIR_TRANS%\*Transformer*.hif
+
+pause
+endlocal
+==============================
+hif/host.cfg
+-----------------
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_jb]
+ANT3CASAPPS01 ansible_ssh_host=10.15.24.32
+
+path : /apps/FEBA_BATCH_11.11/      (cntrlm user to be used to execute shell scripts)
+===========================
+
+playbook/dehrepdeployment.yml
+---------------------------------
+  - hosts: '{{ target }}'
+    become: yes
+    #become_method: sudo
+    become_user: itdevtra
+    gather_facts: yes
+    roles:
+      - dehrepdeployment
+==================================
+roles/dehrepdeployment/defaults/main.yml
+-----------------------------------------------
+jboss_controller: 10.15.24.33:10006
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+war_file_url: "https://maven.pkg.github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/com/rakbank/infosys/lib/retailonboarding-accms/1111/retailonboarding-accms-1111.war"
+war_file_name: "{{ war_file_url | basename }}"
+jboss_home: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0"
+jboss_deployments_dir: "{{ jboss_home }}/standalone/deployments"
+...
+=================================================
+roles/dehrepdeployment/tasks/main.yml
+--------------------------------------
+---
+- name: Stop JBoss
+  become: true 
+  become_user: itdevtra
+  command: "/apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/jboss-cli.sh --connect controller={{ jboss_controller }} command=:shutdown"
+  ignore_errors: yes
+
+- name: Download WAR from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ war_file_url }}"
+    dest: "/tmp/{{ war_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy WAR to Target Server
+  copy:
+    src: "/tmp/{{ war_file_name }}"
+    dest: "{{ jboss_deployments_dir }}/{{ war_file_name }}"
+
+- name: Start JBoss 
+  become: true 
+  become_user: itdevtra
+  command: /apps/JBOSSEAP_RETAIL_ONBOARDING/EAP-7.2.0/bin/STARTJBOSS_RETAILONBORADING.sh
+
+- name: Clean up WAR file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ war_file_name }}"
+    state: absent
+  run_once: true
+======================================================
+ansible.cfg
+------------------
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+inventory=hosts.cfg
+roles_path=roles/
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+timeout=30
+ansible_pipelining=True
+==================================
+build.gradle
+---------------------
+apply plugin: 'java'
+apply plugin: 'war'
+
+//test publish code
+apply plugin: 'maven-publish'
+apply plugin: "com.github.ManifestClasspath"
+
+def resolvedVersion = project.hasProperty('buildVersion') ? project.buildVersion : project.version
+
+buildscript {
+	repositories {
+    	maven {
+        	url = uri('https://maven.pkg.github.com/rakbank-internal/deh_onboarding_retail_account_v1111')
+        	credentials {
+            	username = project.findProperty("gpr.user") ?: System.getenv("USERNAME_GITHUB")
+            	password = project.findProperty("gpr.token") ?: System.getenv("TOKEN_GITHUB")
+        	}
+    	}
+		mavenCentral()
+
+		maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+		
+	}
+	
+	dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3" 
+    }
+
+	def commonsioVersion='2.6'
+	
+	dependencies {
+		classpath "gradle.plugin.com.github.viswaramamoorthy:gradle-util-plugins:0.1.0-RELEASE"
+		classpath 'com.rakbank.infosys.lib:gradle-plugin:1111'
+		classpath 'com.rakbank.infosys.lib.fbk:gradle-plugin:1111'
+		classpath 'com.rakbank.infosys.lib.fba:gradle-plugin:1111'
+        classpath  'org.apache.ant:ant:1.9.4'
+        classpath  'org.jdom:jdom2:2.0.5'
+        classpath  'org.ow2.asm:asm:5.0.3'
+        classpath  'org.ow2.asm:asm-commons:5.0.3'
+        classpath  "commons-io:commons-io:${commonsioVersion}"
+        classpath  'org.codehaus.plexus:plexus-utils:2.0.6'
+        classpath  'org.codehaus.groovy:groovy-backports-compat23:2.4.4'
+        classpath  'org.ow2.asm:asm-tree:5.0.3'
+    }
+}
+ project.plugins.each {
+   println it
+}
+
+apply plugin: 'fdk.tools.plugin.VO'
+apply plugin: 'fdk.tools.plugin.Spec'
+apply plugin: 'fdk.tools.plugin.HIF'
+apply plugin: 'fdk.tools.plugin.DAL'
+apply plugin: 'fdk.tools.plugin.TSPC'
+apply plugin: 'fdk.tools.plugin.ER'
+
+apply plugin: 'org.sonarqube'
+
+sonarqube {
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+    }
+}
+
+//Added for Data Encryption
+apply plugin : 'fdk.tools.plugin.DATA'
+
+apply plugin: 'application'
+
+//apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: "com.github.ManifestClasspath"
+configurations{
+    generate
+    generate.extendsFrom(compile)
+	
+	externalConfig
+	generateAlertSeed {transitive=false }
+	generateAuditSeed { transitive=false}
+	generateService { transitive=false}
+}
+
+repositories {
+
+	
+    maven {
+        url = uri('https://maven.pkg.github.com/rakbank-internal/deh_onboarding_retail_account_v1111')
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME_GITHUB")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN_GITHUB")
+        }
+    }
+	mavenCentral()
+
+	maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+	  
+        
+}
+dependencies {
+    // For javax.ws.rs.core
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
+    
+    // For org.glassfish.jersey.linking
+    implementation 'org.glassfish.jersey.ext:jersey-declarative-linking:2.32'
+    
+    // For org.glassfish.jersey.media.multipart
+    implementation 'org.glassfish.jersey.media:jersey-media-multipart:2.32'
+    
+    // For com.fasterxml.jackson.databind and related Jackson imports
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    
+    // For com.fasterxml.jackson.module.jaxb
+    implementation 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.12.3'
+    
+    // ... add any other dependencies you need here
+	//implementation 'org.springframework.boot:spring-boot-starter-web:2.5.3' // Replace 2.5.3 with your desired version.
+
+}
+
+dependencies {
+    //implementation "org.springframework:spring-webmvc:${springFrameworkVersion}"
+}
+
+configurations.all{
+	exclude group: 'javax.ws.rs', module: 'jsr311-api'
+	exclude group: '', module: 'com.ibm.ws.runtime'
+	exclude group: 'org.restlet.jee', module: 'org.restlet'
+	exclude group: 'org.restlet.jee', module: 'org.restlet.ext.httpclient'
+	exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+	
+	exclude group: 'external', module: 'j2ee'
+	exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+	exclude group: 'log4j', module: 'log4j'
+	exclude group: 'external', module: 'ojdbc6'
+	exclude group: 'external', module: 'com.ibm.ws.portletcontainer'
+	exclude group: 'external', module: 'net.sf.dozer'
+	exclude group: 'org.bouncycastle', module: 'bctsp-jdk14'
+	exclude group: 'bouncycastle', module: 'bcmail-jdk14'
+	exclude group: 'bouncycastle', module: 'bcprov-jdk14'
+}
+
+def commonsioVersion='2.6'
+def nettyAllVersion='4.1.48.Final'
+def camelVersion='2.24.0'
+def commonsLang3Version='2.6'
+
+dependencies{
+
+compile fileTree(dir: 'lib', include: '*.jar')
+
+    compile 'com.rakbank.infosys.lib:ebanking-common:1111'
+    compile 'com.rakbank.infosys.lib:ebanking-types:1111'
+    compile 'com.rakbank.infosys.lib:ebanking-types-catalogue:1111'
+    compile 'com.rakbank.infosys.lib:ebanking-core:1111'
+    compile 'com.rakbank.infosys.lib:ebanking-transaction:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-servicerequest:1111'
+	//compile 'com.rakbank.infosys.lib:retaccms:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-hif:1111'
+
+	//missing jars from latest build which is testing with github actions
+	compile 'com.rakbank.infosys.lib:customchqreturn:1111'
+	compile 'com.rakbank.infosys.lib:zstd-jni:1.4.3.1'
+	compile 'com.rakbank.infosys.lib:zookeeper-jute:3.5.6'
+	compile 'com.rakbank.infosys.lib:zookeeper:3.5.6'
+	compile 'com.rakbank.infosys.lib:xmlbeans:2.6.0'
+	compile 'com.rakbank.infosys.lib:xml-apis:1.4.01'
+	compile 'com.rakbank.infosys.lib:xercesimpl-gen:1111'
+	compile 'com.rakbank.infosys.lib:xercesimpl:2.12.0'
+	compile 'com.rakbank.infosys.lib:xalan:2.7.2'
+	compile 'com.rakbank.infosys.lib:wsdlj-gen:1111'
+	compile 'com.rakbank.infosys.lib:woodstox-core:6.0.1'
+	compile 'com.rakbank.infosys.lib:uberfire-maven-support-final:1.3.0'
+	compile 'com.rakbank.infosys.lib:tools-typeextngen:1111'
+	compile 'com.rakbank.infosys.lib:tools-servicegen-plugin:1111'
+	compile 'com.rakbank.infosys.lib:tools-servicegen:1111'
+	compile 'com.rakbank.infosys.lib:tomcat-servlet-api:9.0.37'
+	compile 'com.rakbank.infosys.lib:tomcat-juli:9.0.37'
+	compile 'com.rakbank.infosys.lib:tomcat-jsp-api:9.0.37'
+	compile 'com.rakbank.infosys.lib:tomcat-jdbc:9.0.37'
+	compile 'com.rakbank.infosys.lib:tomcat-el-api:9.0.37'
+	compile 'com.rakbank.infosys.lib:swagger-parser:1.0.19'
+	compile 'com.rakbank.infosys.lib:swagger-jersey-jaxrs:1.5.11'
+	compile 'com.rakbank.infosys.lib:swagger-models-new:1.5.11'
+	compile 'com.rakbank.infosys.lib:swagger-jaxrs-new:1.5.11'
+	compile 'com.rakbank.infosys.lib:swagger-hibernate-validations:1.5.8'
+	compile 'com.rakbank.infosys.lib:swagger-core-new:1.5.11'
+	compile 'com.rakbank.infosys.lib:swagger-annotation:1.5.11'
+	compile 'com.rakbank.infosys.lib:sundial:2.1.2'
+	compile 'com.rakbank.infosys.lib:stringtemplate:3.2.1'
+	compile 'com.rakbank.infosys.lib:stcommsrvrtk-gen:1111'
+	compile 'com.rakbank.infosys.lib:stax-api:4.2'
+	compile 'com.rakbank.infosys.lib:spring-webmvc-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-web-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-tx-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-retry-release:1.2.5'
+	compile 'com.rakbank.infosys.lib:spring-messaging-release:5.2.8'
+	compile 'com.rakbank.infosys.lib:spring-jcl-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-integration-sftp-release:5.3.2'
+	compile 'com.rakbank.infosys.lib:spring-integration-file-release:5.3.2'
+	compile 'com.rakbank.infosys.lib:spring-integration-core-release:5.3.2'
+	compile 'com.rakbank.infosys.lib:spring-expression-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-core-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-context-support-release:5.2.8'
+	compile 'com.rakbank.infosys.lib:spring-context-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-beans-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:spring-aop-release:5.2.11'
+	compile 'com.rakbank.infosys.lib:snappy-java:1.1.7.3'
+	compile 'com.rakbank.infosys.lib:slfj-ext:1.6.3'
+	compile 'com.rakbank.infosys.lib:slfj-api:1.7.28'
+	compile 'com.rakbank.infosys.lib:serializer:2.7.2'
+	compile 'com.rakbank.infosys.lib:scala-reflect:2.13.1'
+	compile	'com.rakbank.infosys.lib:scala-logging:2.13-3.9.2'
+	compile	'com.rakbank.infosys.lib:scala-java-compat:2.13-0.9.0'
+	compile	'com.rakbank.infosys.lib:scala-collection-compat:2.13-2.1.2'
+	compile	'com.rakbank.infosys.lib:rxjava:1.3.8'
+	compile	'com.rakbank.infosys.lib:rserveengine-gen:1111'
+	compile	'com.rakbank.infosys.lib:rengine-gen:1111'
+	compile	'com.rakbank.infosys.lib:reactor-core-release:3.3.8'
+	compile	'com.rakbank.infosys.lib:reactive-streams:1.0.3'
+	compile	'com.rakbank.infosys.lib:radien-gen:5.0'
+	compile	'com.rakbank.infosys.lib:protobuf-java:2.6.0'
+	compile	'com.rakbank.infosys.lib:pd-gen:1111'
+	compile 'com.rakbank.infosys.lib:custom_types:1111'
+	compile	'com.rakbank.infosys.lib:custom-dbaccess:1111' 
+ 	compile 'com.rakbank.infosys.lib:poi-ooxml-schemas:3.17'
+    compile 'com.rakbank.infosys.lib:poi-ooxml:3.17'
+    compile 'com.rakbank.infosys.lib:pfl-tf-tools:4.0.1'
+    compile 'com.rakbank.infosys.lib:pfl-tf:4.1.0'
+    compile 'com.rakbank.infosys.lib:pfl-dynamic:4.1.0'
+    compile 'com.rakbank.infosys.lib:pfl-basic-tools:4.0.1'
+    compile 'com.rakbank.infosys.lib:pfl-basic:4.1.0'
+    compile 'com.rakbank.infosys.lib:pfl-asm:4.1.0'
+    compile 'com.rakbank.infosys.lib:pdfbox:2.0.15'
+    compile 'com.rakbank.infosys.lib:paranamer:2.8'
+    compile 'com.rakbank.infosys.lib:opennlp-tools:1.6.0'
+    compile 'com.rakbank.infosys.lib:nimbus-jose-jwt:8.20'
+    compile 'com.rakbank.infosys.lib:mongo-java-driver:3.1.1'
+    compile 'com.rakbank.infosys.lib:mongodb-metrics:0.0.2'
+    compile 'com.rakbank.infosys.lib:mimepull:1.9.6'
+    compile 'com.rakbank.infosys.lib:metrics-elasticsearch-reporter:2.2.0'
+    compile 'com.rakbank.infosys.lib:management-api:3.2.1'
+    //compile 'com.rakbank.infosys.lib:lombok:1.18.12'
+    compile 'com.rakbank.infosys.lib:logstash-gelf:1.11.1'
+    compile 'com.rakbank.infosys.lib:logback-core:1.2.3'
+    compile 'com.rakbank.infosys.lib:logback-classic:1.2.3'
+    compile 'com.rakbank.infosys.lib:logback-access:1.2.3'
+    compile 'com.rakbank.infosys.lib:kafka-clients:2.4.0'
+    compile 'com.rakbank.infosys.lib:jxl:2.6.10'
+    compile 'com.rakbank.infosys.lib:json-smart:2.3'
+    compile 'com.rakbank.infosys.lib:jopt-simple:5.0.4'
+    compile 'com.rakbank.infosys.lib:jjwt:0.2'
+    compile 'com.rakbank.infosys.lib:jfreechart:1.0.19'
+    compile 'com.rakbank.infosys.lib:jersey-media-multipart:2.23.2'
+    compile 'com.rakbank.infosys.lib:jedis:3.1.0'
+    compile 'com.rakbank.infosys.lib:jdbi:2.73'
+    //compile 'com.rakbank.infosys.lib:jcommon:1.0.23'
+    compile 'com.rakbank.infosys.lib:jaxen:1.1.6'
+    compile 'com.rakbank.infosys.lib:javax.interceptor-api:1.2'
+    compile 'com.rakbank.infosys.lib:javax.enterprise.concurrent-api:1.1'
+    compile 'com.rakbank.infosys.lib:java-jwt:3.3.0'
+    compile 'com.rakbank.infosys.lib:jasperreports:6.4.1'
+    compile 'com.rakbank.infosys.lib:jakarta.xml.bind-api:2.3.2'
+    compile 'com.rakbank.infosys.lib:jakarta.transaction-api:1.3.2'
+    compile 'com.rakbank.infosys.lib:jakarta.activation-api:1.2.1'
+    compile 'com.rakbank.infosys.lib:jackson-module-paranamer:2.10.0'
+    compile 'com.rakbank.infosys.lib:jackson-module-jaxb-annotations:2.10.0'
+    compile 'com.rakbank.infosys.lib:jackson-module-afterburner:2.7.8'
+	compile 'com.rakbank.infosys.lib:jackson-jaxrs-base:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-joda:2.7.8'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-guava:2.7.8'
+	compile 'com.rakbank.infosys.lib:jackson-dataformat-yaml:2.4.5'
+	compile 'com.rakbank.infosys.lib:jackson-dataformat-xml:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-dataformat-csv:2.10.0'
+	compile 'com.rakbank.infosys.lib:itext:2.1.7'
+	compile 'com.rakbank.infosys.lib:httpcore:4.4.10'
+	compile 'com.rakbank.infosys.lib:httpclient:4.5.6'
+	compile 'com.rakbank.infosys.lib:grizzly-framework:2.4.3'
+	compile 'com.rakbank.infosys.lib:gmbal:4.0.0'
+	compile 'com.rakbank.infosys.lib:glassfish-corba-orb:4.2.2'
+	compile 'com.rakbank.infosys.lib:glassfish-corba-omgapi:4.2.2'
+	compile 'com.rakbank.infosys.lib:glassfish-corba-internal-api:4.2.2'
+	compile 'com.rakbank.infosys.lib:gelfclient:1.4.1'
+	compile 'com.rakbank.infosys.lib:freemarker:2.3.23'
+	compile 'com.rakbank.infosys.lib:framework-ria:1111'
+	compile 'com.rakbank.infosys.lib:framework-reportmaintenance:1111'
+	compile 'com.rakbank.infosys.lib:framework-profile:1111'
+	compile 'com.rakbank.infosys.lib:framework-parameter:1111'
+	compile 'com.rakbank.infosys.lib:framework-onlinevault:1111'
+	compile 'com.rakbank.infosys.lib:framework-nlp:1111'
+	compile 'com.rakbank.infosys.lib:framework-formmanagement:1111'
+	compile 'com.rakbank.infosys.lib:framework-filedownload:1111'             
+	compile 'com.rakbank.infosys.lib:framework-data-security:1111'
+	compile 'com.rakbank.infosys.lib:framework-audit:1111'
+	compile 'com.rakbank.infosys.lib:fontbox:2.0.15'
+	compile 'com.rakbank.infosys.lib:fentbase-workflowrule:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-usermaintenance:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-transaction:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-tao:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-servicerequest:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-security:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-rules:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-reports:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-reportmaintenance:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-onlinevault:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-nlp:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-monitor:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-limits:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-genericdriver:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-general:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-formmanagement:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-filter:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-fileupload:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-easyreports:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-directbanking:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-crpadmin:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-corporateadministration:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-channeladministration:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-batchadministration:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-bankuseradministration:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-applicationmaintenance:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-addenda:1111'
+	compile 'com.rakbank.infosys.lib:failureaccess:1.0.1'
+	compile 'com.rakbank.infosys.lib:ezmorph:1.0.6'
+	compile 'com.rakbank.infosys.lib:exception-annotation-processor:4.2.2'
+	compile 'com.rakbank.infosys.lib:error_prone_annotations:2.3.4'
+	compile 'com.rakbank.infosys.lib:ecj:4.6.1'
+	compile 'com.rakbank.infosys.lib:ebanking-workflowrule:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-workflow:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-virtualaccounts-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-virtualaccounts:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-user-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-usermaintenance:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ui:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-txnss-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-txnss:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-treas-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-treas:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-transaction-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-tfin-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-tfin:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-servicerequest-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-service:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-sctemplate:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-retailadministration:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-resource:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-reports:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-reportmaintenance:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-recon:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-prepaidcards:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-positivepay:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-pfm:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-parameter:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-oprmanagement:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-onlinevault:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-onlinereg:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-mufu:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-monitor:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-mails:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-lqmg-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-lqmg:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-lockbox:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-limits:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-license:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ivmt-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ivmt:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ir-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ir:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-ipo:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-insurance:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-inmg-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-inmg:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-generaladministration:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-general:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-framework:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-formmanagement:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-filter:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-fileupload-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-fileupload:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-filedownload:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-fcast:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-eqty-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-eqty:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-eipp:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-directbanking:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-demat:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-dehmon:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-dbaccess:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-custom:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-crpadmin-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-crpadmin:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-creditcards:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-corporateadministration-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-corporateadministration:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-core-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-consent-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-consent:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-common-validators:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-channeladministration:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-bonds:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-billpayments:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-batch:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-baseapplication:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-bankuseradministration-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-bankuseradministration:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-bankstaff:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-applicationmaintenance:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-analytics-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-analytics:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-alerts:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-accounts-rest-generated:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-accounts:1111'
+	compile 'com.rakbank.infosys.lib:dropwizard-views-freemarker:1.0.5'
+	compile 'com.rakbank.infosys.lib:dropwizard-views:1.0.5'
+	compile 'com.rakbank.infosys.lib:dropwizard-sundial:1.1.0.0'
+	compile 'com.rakbank.infosys.lib:dropwizard-jetty:1.1.0'
+	compile 'com.rakbank.infosys.lib:dropwizard-jdbi:1.0.3'
+	compile 'com.rakbank.infosys.lib:dropwizard-db:1.0.3'
+	compile 'com.rakbank.infosys.lib:dropwizard-auth:1.0.5'
+	compile 'com.rakbank.infosys.lib:dropwizard-assets:1.0.5'
+	compile 'com.rakbank.infosys.lib:curvesapi:1.04'
+	compile 'com.rakbank.infosys.lib:consul-api:1.4.2'
+	compile 'com.rakbank.infosys.lib:compiler:0.9.6'
+	compile 'com.rakbank.infosys.lib:commons-discovery:0.2'
+	compile 'com.rakbank.infosys.lib:commons-digester:2.1'
+	compile 'com.rakbank.infosys.lib:commons-dbcp:1.4'
+	compile 'com.rakbank.infosys.lib:commons-codec:1.10'
+	compile 'com.rakbank.infosys.lib:commons-cli:1.4'
+	compile 'com.rakbank.infosys.lib:commons-beanutils:1.9.4'
+	compile 'com.rakbank.infosys.lib:classmate:1.3.1'
+	compile 'com.rakbank.infosys.lib:checker-qual:2.10.0'
+	compile 'com.rakbank.infosys.lib:cdi-api:1.2'
+	compile 'com.rakbank.infosys.lib:camel-xmljson:2.19.0'
+	compile 'com.rakbank.infosys.lib:bcel:6.0'
+	compile 'com.rakbank.infosys.lib:audience-annotations:0.5.0'
+	compile 'com.rakbank.infosys.lib:asm:5.0.4'
+	compile 'com.rakbank.infosys.lib:antlr-runtime:3.5'
+	compile 'com.rakbank.infosys.lib:antlr:2.7.7'
+	compile 'com.rakbank.infosys.lib:accessors-smart:1.2'
+	compile 'com.rakbank.infosys.lib:org.restlet:2.3.12-1'
+	compile 'com.rakbank.infosys.lib:org.osgi.core:6.0.0'
+	compile 'com.rakbank.infosys.lib:org.eclipse.jetty.server:1111'
+	compile 'com.rakbank.infosys.lib:openapi-generated:1111'
+	compile 'com.rakbank.infosys.lib:ojdbc:8.0.0'
+	compile 'com.rakbank.infosys.lib:netty-transport-native-unix-common-final:4.1.42'
+	compile 'com.rakbank.infosys.lib:netty-transport-native-epoll-final:4.1.42'
+	compile 'com.rakbank.infosys.lib:netty-transport-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:netty-resolver-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:netty-handler-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:netty-common-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:netty-codec-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:netty-buffer-final:4.1.48'
+	compile 'com.rakbank.infosys.lib:mvel-final:2.3.0'
+	compile 'com.rakbank.infosys.lib:microservice-base:1111'
+	compile 'com.rakbank.infosys.lib:metrics-jetty:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-core-old:2.2.0'
+	compile 'com.rakbank.infosys.lib:lz-java:1.6.0'
+	compile 'com.rakbank.infosys.lib:listenablefuture-empty-to-avoid-conflict-with-guava:9999.0'  
+	compile 'com.rakbank.infosys.lib:kie-internal-final:7.3.0'
+	compile 'com.rakbank.infosys.lib:kie-api-final:7.3.0'
+	compile 'com.rakbank.infosys.lib:jsr:305.3.0.2'
+	compile 'com.rakbank.infosys.lib:json-lib:2.4'
+	compile 'com.rakbank.infosys.lib:joda-time:2.4'
+	compile 'com.rakbank.infosys.lib:jersey-server:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-media-jaxb:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-guava:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-container-servlet:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-common:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-client:2.18'
+	compile 'com.rakbank.infosys.lib:jersey-bean-validation:2.18'
+	compile 'com.rakbank.infosys.lib:jdom:2.0.6'
+	compile 'com.rakbank.infosys.lib:jcomon:1.0.15'
+	compile 'com.rakbank.infosys.lib:jcip-annotations:1.0.1'
+	compile 'com.rakbank.infosys.lib:jboss-logging-final:3.3.0'
+	compile 'com.rakbank.infosys.lib:javax.el:2.2.4'
+	compile 'com.rakbank.infosys.lib:jackson-module-scala:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-module-jsonschema:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-module-afterburner:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-jsr:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-jsr:2.7.8'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-joda:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-jdk:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-jdk:2.7.8'
+	compile 'com.rakbank.infosys.lib:jackson-datatype-guava:2.10.0'
+	compile 'com.rakbank.infosys.lib:jackson-dataformat-yaml:2.10.0'
+	compile 'com.rakbank.infosys.lib:jobjc-annotations:1.3'
+	compile 'com.rakbank.infosys.lib:hibernate-validator-final:6.0.0'
+	compile 'com.rakbank.infosys.lib:hibernate-validator-final:5.1.2'
+	compile 'com.rakbank.infosys.lib:h:1.4.200'
+	compile 'com.rakbank.infosys.lib:glassfish-corba-csiv-idl:4.2.2'
+	compile 'com.rakbank.infosys.lib:genericdriver-base-library:1111'
+	compile 'com.rakbank.infosys.lib:fiwasframework-gen:1111'
+	compile 'com.rakbank.infosys.lib:fiframework-gen:1111'
+	compile 'com.rakbank.infosys.lib:fifmwkcustom:1111'
+	compile 'com.rakbank.infosys.lib:fifmwkclient-gen:1111'
+	compile 'com.rakbank.infosys.lib:ficrmclient-gen:1111'
+	compile 'com.rakbank.infosys.lib:fentbase-interactivity:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-modellingtools:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-interactivity:1111'
+	compile 'com.rakbank.infosys.lib:dropwizard-swagger:1.0.5.1'
+	compile 'com.rakbank.infosys.lib:drools-core-final:7.3.0'
+	compile 'com.rakbank.infosys.lib:drools-compiler-final:7.3.0'
+	compile 'com.rakbank.infosys.lib:domj:2.1.3'
+	compile 'com.rakbank.infosys.lib:configparser-gen:1111'
+	compile 'com.rakbank.infosys.lib:commons-pool:2.6.2'
+	compile 'com.rakbank.infosys.lib:commonj-twm-gen:1111'
+	compile 'com.rakbank.infosys.lib:caln-api:0.7.4'
+	compile 'com.rakbank.infosys.lib:bcpkix:1.60'
+	compile 'com.rakbank.infosys.lib:bcmail:1.60'
+	compile 'com.rakbank.infosys.lib:axis:1111'
+	compile 'com.rakbank.infosys.lib:arlimoc-gen:1111'
+	compile 'com.rakbank.infosys.lib:ararm-gen:1111'
+	compile 'com.rakbank.infosys.lib:arappmonitor-gen:1111'
+	compile 'com.rakbank.infosys.lib:kafka:2.4.0'
+	compile 'com.rakbank.infosys.lib:jtidy-r:938'
+	compile 'com.rakbank.infosys.lib:javax.inject:2.4.0'
+	compile 'com.rakbank.infosys.lib:javassist:3.18.2'
+	compile 'com.rakbank.infosys.lib:guava:28.2'
+	compile 'com.rakbank.infosys.lib:aopalliance-repackaged:2.4.0'
+	compile 'com.rakbank.infosys.lib:scala-library:2.13.1'
+
+
+	// Fentbase Jars Dependency
+    compile 'com.rakbank.infosys.lib:fentbase-common:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-core:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-dbaccess:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-framework:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-hif:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-inquiryfw:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-types:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-common-validators:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-alerts:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-audit:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-batch:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-confirmation:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-reportsinfrastructure:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-service:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-ui:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-user:1111'
+    compile 'com.rakbank.infosys.lib:fentbase-workflow:1111'
+	compile 'com.rakbank.infosys.lib:portlet-api:2.0'
+	
+	// Framework Jars Dependency
+    compile 'com.rakbank.infosys.lib:framework-authentication:1111'
+    compile 'com.rakbank.infosys.lib:framework-batch:1111'
+    compile 'com.rakbank.infosys.lib:framework-cache:1111'
+    compile 'com.rakbank.infosys.lib:framework-component:1111'
+    compile 'com.rakbank.infosys.lib:framework-common:1111'
+    compile 'com.rakbank.infosys.lib:framework-commontran:1111'
+    compile 'com.rakbank.infosys.lib:framework-commonweb:1111'
+    compile 'com.rakbank.infosys.lib:framework-dal:1111'
+    compile 'com.rakbank.infosys.lib:framework-formsgroup:1111'
+    compile 'com.rakbank.infosys.lib:framework-hif:1111'
+    compile 'com.rakbank.infosys.lib:framework-interceptor:1111'
+    compile 'com.rakbank.infosys.lib:framework-reports:1111'
+    compile 'com.rakbank.infosys.lib:framework-security:1111'
+    compile 'com.rakbank.infosys.lib:framework-service:1111'
+    compile 'com.rakbank.infosys.lib:framework-sql:1111'
+    compile 'com.rakbank.infosys.lib:framework-tao:1111'
+    compile 'com.rakbank.infosys.lib:framework-tmo:1111'
+    compile 'com.rakbank.infosys.lib:framework-transaction:1111'
+    compile 'com.rakbank.infosys.lib:framework-typesystem:1111'
+    compile 'com.rakbank.infosys.lib:framework-utils:1111'
+    compile 'com.rakbank.infosys.lib:framework-valengine:1111'
+    compile 'com.rakbank.infosys.lib:och_base_library:1111'
+    compile 'com.rakbank.infosys.lib:och_event_bus:1111'
+    compile 'com.rakbank.infosys.lib:framework-alerts:1111'
+    compile 'com.rakbank.infosys.lib:framework-extension:1111'
+    compile 'com.rakbank.infosys.lib:framework-filter:1111'
+    compile 'com.rakbank.infosys.lib:framework-license:1111'
+    compile 'com.rakbank.infosys.lib:framework-monitor:1111'
+    compile 'com.rakbank.infosys.lib:framework-ui:1111'
+    compile 'com.rakbank.infosys.lib:framework-util:1111'
+    compile 'com.rakbank.infosys.lib:tools-common:1111'
+	compile 'com.rakbank.infosys.lib:camel-restlet:2.24.0'
+	compile 'com.rakbank.infosys.lib:camel-spring:2.24.0'
+
+	// Third party Jars Dependency
+	
+	compile group:'com.rakbank.infosys.lib', name:'jackson-annotations', version: '2.11.2'
+	compile group:'com.rakbank.infosys.lib', name:'jackson-core', version: '2.11.2'
+	compile group:'com.rakbank.infosys.lib', name:'jackson-databind', version: '2.11.2'
+	compile group:'com.rakbank.infosys.lib', name:'jackson-jaxrs-json-provider', version: '2.10.0'
+	compile group:'com.rakbank.infosys.lib', name:'disruptor', version:'3.2.0'
+	compile group:'commons-io', name:'commons-io', version: commonsioVersion
+	//compileOnly group:'external', name:'edb-jdbc17', version:'GEN'
+	compile group: 'org.json', name: 'json', version: '20180813'
+	compile group:'com.rakbank.infosys.lib', name:'dynacredsmsappserver', version:'1.60'
+	compile group:'io.dropwizard', name:'dropwizard-client', version:'1.0.6'
+	compile group:'io.dropwizard', name:'dropwizard-core', version:'1.0.6'
+	//compile group:'io.dropwizard', name:'dropwizard-util', version:'1.0.6'
+	compile group:'io.netty', name:'netty-all', version: nettyAllVersion 
+	compile group:'io.netty', name:'netty-buffer', version:'4.1.6.Final'
+	compile group:'io.netty', name:'netty-codec', version:'4.1.6.Final'
+	compile group:'io.netty', name:'netty-common', version:'4.1.6.Final'
+	compile group:'io.netty', name:'netty-handler', version:'4.1.6.Final'
+	
+	//compile group:'io.swagger', name:'swagger-annotations', version:'1.5.8'
+	//compile group:'io.swagger', name:'swagger-jaxrs', version:'1.5.8'
+	compile group:'io.swagger', name:'swagger-jersey2-jaxrs', version:'1.5.8'
+	compile group:'javax.ws.rs', name:'javax.ws.rs-api', version:'2.0.1'
+	
+	//compile group:'org.apache.camel', name: 'camel-jsch', version: camelVersion
+	compile group:'org.apache.camel', name: 'camel-ftp', version: camelVersion
+	//compile group:'org.apache.camel', name: 'camel-spring', version: camelVersion 
+	compile group:'org.apache.camel', name:'camel-core', version:camelVersion
+	
+	compile group:'org.apache.camel', name:'camel-dozer', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-ejb', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-http4', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-hystrix', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-jackson', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-jaxb', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-jetty', version:camelVersion
+	//compile group:'org.apache.camel', name:'camel-spring', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-netty4', version:camelVersion
+	compile group:'org.apache.camel', name:'camel-xstream', version:camelVersion
+	compile group:'com.rakbank.infosys.lib', name:'commons-lang', version:'2.6'
+	compile group:'org.apache.logging.log4j', name:'log4j-api', version:'2.11.0'
+	compile group:'org.apache.logging.log4j', name:'log4j-core', version:'2.11.0'
+	compile group:'org.apache.oltu.oauth2', name:'org.apache.oltu.oauth2.authzserver', version:'1.0.2'
+	compile group:'org.apache.oltu.oauth2', name:'org.apache.oltu.oauth2.client', version:'1.0.2'
+	compile group:'org.apache.oltu.oauth2', name:'org.apache.oltu.oauth2.resourceserver', version:'1.0.2'
+	compile group:'org.apache.poi', name:'poi', version:'3.17'
+	compile group:'org.bouncycastle', name:'bcprov-jdk14', version:'1.60'
+	compile group:'org.glassfish.jersey.core', name:'jersey-common', version:'2.18'
+	compile group:'org.glassfish.jersey.core', name:'jersey-server', version:'2.18'
+	compile group:'org.glassfish.jersey.ext', name:'jersey-declarative-linking', version:'2.18'
+	compile group:'org.glassfish.jersey.media', name:'jersey-media-multipart', version:'2.18'
+	compile group:'com.rakbank.infosys.lib.core2.18', name:'jersey-container-servlet-core', version:'2.18'
+	//custom external jars
+	//implementation 'javax.mail:javax.mail-api:1.6.2'
+	//implementation group: 'javax.mail', name: 'javax.mail', version: '1.4.0.v201005080615'
+	compile 'com.rakbank.infosys.lib:ficrmclient-gen:1111'
+	compile 'com.rakbank.infosys.lib:java-jwt:3.3.0'
+	compile 'com.rakbank.infosys.lib:javax.mail:1111'
+	implementation 'axis:axis:1.4'
+	compile 'com.rakbank.infosys.lib:jaxrpc:1111'
+	compile group:'com.rakbank.infosys.lib', name:'jsoup', version:'1.12.1'
+	compile group:'com.rakbank.infosys.lib', name:'gson', version:'2.8.2'
+	compile group:'com.rakbank.infosys.lib', name:'aws-java-sdk-core', version:'1.11.642'
+	compile group:'com.rakbank.infosys.lib', name:'aws-java-sdk-kms', version:'1.11.642'
+	compile group:'com.rakbank.infosys.lib.core2.18', name:'aws-java-sdk-s3', version:'1.11.642'
+	//compile group:'ebanking-transaction-1111', name:'ebanking-transaction-1111'
+	compile 'com.rakbank.infosys.lib:ebanking-rest:1111'
+	compile 'com.rakbank.infosys.lib:ebanking-security:1111'
+	compile 'com.rakbank.infosys.lib:validation-api:2.0.0'
+	compile 'com.rakbank.infosys.lib:javax.servlet-api:3.1.0'
+	compile 'com.rakbank.infosys.lib:metrics-servlets:3.1.2'
+	compile 'com.rakbank.infosys.lib:metrics-annotation:3.2.2'
+	//compile 'com.rakbank.infosys.lib:metrics-core:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-healthchecks:3.1.2'
+	compile 'com.rakbank.infosys.lib:metrics-graphite:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-jdbi:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-jetty:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-jvm:3.1.2'
+	compile 'com.rakbank.infosys.lib:metrics-logback:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-jersey2:3.2.2'
+	compile 'com.rakbank.infosys.lib:metrics-gelf:1.0.0'
+	compile 'com.rakbank.infosys.lib:metrics-json:3.1.2'
+	compile 'com.rakbank.infosys.lib:jetty-server:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-client:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-http:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-io:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-security:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-servlet:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-util:9.4.12.v20180830'
+	compile 'com.rakbank.infosys.lib:jetty-xml:9.4.2.v20170220'
+	compile 'com.rakbank.infosys.lib:jetty-webapp:9.4.2.v20170220'
+
+	//compile group:'jetty-servlets', name:'jetty-servlets',version:'9.4.12.v20180830'
+	
+	compile 'com.rakbank.infosys.lib:ebanking-user:1111'
+	compile 'com.rakbank.infosys.lib:classindex:3.9'
+	compile 'com.rakbank.infosys.lib:snakeyaml:1.27'
+	
+	
+	generateAlertSeed 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateAlertSeed group: fdkGroup, version: version, name: "tools-alertgen"
+	generateAlertSeed group: fdkGroup, version: version, name: "tools-common"
+
+	generateAuditSeed 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateAuditSeed group: fdkGroup, version: version, name: "tools-auditconfiggen"
+	generateAuditSeed group: fdkGroup, version: version, name: "tools-common"
+
+	generateService 'com.rakbank.infosys.lib:ebanking-types:1111'
+	generateService group: fbaGroup, version: version, name: "fentbase-framework"
+	generateService 'com.rakbank.infosys.lib:fentbase-types:1111'
+	generateService group: fdkGroup, version: version, name: "tools-servicegen-plugin"
+	generateService group: fdkGroup, version: version, name: "framework-cache"
+	generateService 'com.rakbank.infosys.lib:framework-common:1111'
+	generateService group: fdkGroup, version: version, name: "framework-commontran"
+	generateService group: fdkGroup, version: version, name: "framework-commonweb"
+	generateService group: fdkGroup, version: version, name: "framework-hif"
+	generateService group: fdkGroup, version: version, name: "framework-security"
+	generateService 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateService 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateService group: fdkGroup, version: version, name: "tools-common"
+	generateService group: fdkGroup, version: version, name: "tools-servicegen"
+	generateService group: fdkGroup, version: version, name: "tools-servicegen-plugin"
+	generateService group:'xalan', name:'serializer', version:'2.7.2'
+	generateService group:'xalan', name:'xalan', version:'2.7.2'
+	generateService group:'external', name:'xercesImpl', version:'GEN'
+	generateService group:'xml-apis', name:'xml-apis', version:'1.4.01'
+
+
+	generateVO 'com.rakbank.infosys.lib:framework-common:1111'
+	generateVO 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateVO 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateVO group: fdkGroup, version: version, name: "tools-common"
+	generateVO group: fdkGroup, version: version, name: "tools-typeextngen"
+	generateVO group:'xalan', name:'serializer', version:'2.7.2'
+	generateVO group:'xalan', name:'xalan', version:'2.7.2'
+	generateVO group:'external', name:'xercesImpl', version:'GEN'
+	generateVO group:'xml-apis', name:'xml-apis', version:'1.4.01'
+	encryptData group: fdkGroup, version: version, name:'tools-common'
+	
+	generateTAO 'com.rakbank.infosys.lib:framework-common:1111'
+	generateTAO 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateTAO group: fdkGroup, version: version, name: "tools-tao"
+	generateTAO group: fdkGroup, version: version, name: "tools-typeextngen"
+	
+	generateTMO 'com.rakbank.infosys.lib:framework-common:1111'
+	generateTMO 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateTMO group: fdkGroup, version: version, name: "tools-tao"
+	generateTMO group: fdkGroup, version: version, name: "tools-tmo"
+
+	generateTSPC group: fdkGroup, version: version, name: "framework-cache"
+	generateTSPC 'com.rakbank.infosys.lib:framework-common:1111'
+	generateTSPC 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateTSPC 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateTSPC group: fdkGroup, version: version, name: "tools-common"
+	generateTSPC group: fdkGroup, version: version, name: "tools-typeextngen"
+	generateTSPC group:'xalan', name:'serializer', version:'2.7.2'
+	generateTSPC group:'xalan', name:'xalan', version:'2.7.2'
+	generateTSPC group:'external', name:'xercesImpl', version:'GEN'
+	generateTSPC group:'xml-apis', name:'xml-apis', version:'1.4.01'
+	
+	generateER 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateER group: fdkGroup, version: version, name: "tools-common"
+	generateER group: fdkGroup, version: version, name: "tools-typeextngen"
+	generateER group:'xalan', name:'xalan', version:'2.7.2'
+	generateER group:'xalan', name:'serializer', version:'2.7.2'
+	generateER group:'external', name:'xercesImpl', version:'GEN'
+	generateER group:'xml-apis', name:'xml-apis', version:'1.4.01'	
+	
+	generateDAL 'com.rakbank.infosys.lib:framework-common:1111'
+	generateDAL 'com.rakbank.infosys.lib:framework-typesystem:1111'
+	generateDAL 'com.rakbank.infosys.lib:framework-utils:1111'
+	generateDAL group: fdkGroup, version: version, name: "tools-common"
+	generateDAL group: fdkGroup, version: version, name: "tools-dalgen"
+	generateDAL group: fdkGroup, version: version, name: "tools-tao"
+	generateDAL group: fdkGroup, version: version, name: "tools-typeextngen"
+	generateDAL group:'xalan', name:'serializer', version:'2.7.2'
+	generateDAL group:'xalan', name:'xalan', version:'2.7.2'
+	generateDAL group:'external', name:'xercesImpl', version:'GEN'
+	generateDAL group:'xml-apis', name:'xml-apis', version:'1.4.01'
+	
+	externalConfig group: fbaGroup, version: version, name: 'externalconfig'
+
+    
+    //fdk
+    compile 'com.rakbank.infosys.lib:framework-typesystem:1111'
+    compile 'com.rakbank.infosys.lib:framework-utils:1111'
+    //fba
+    compile 'com.rakbank.infosys.lib:fentbase-types:1111'
+    
+    compile 'com.rakbank.infosys.lib:framework-common:1111'
+    compile 'com.rakbank.infosys.lib:ebanking-types:1111'
+
+}
+
+generateService.helpersPackage="com.infosys.custom.ebanking.loan.onboarding.service"
+generateService.helpersPrefix="EB"
+
+generateServiceAuditSeed.voSpecPath = "src/main/spec/types/valueobjects/"
+mainClassName = "com.infosys.customer.onboarding.framework.dropwizard.CustOnboardingApplication"
+
+//////VO
+/*generateVO.specFile = "src/main/spec/types/valueobjects/"
+generateVO.classPath = project.files("../build/WIN/FEBA20-TOOLS/typeextngen/Output/resource/")
+
+generateService.helpersPackage="com.infosys.custom.ebanking.loan.onboarding.service"
+generateService.helpersPrefix="EB"
+
+generateServiceAuditSeed.voSpecPath = "src/main/spec/types/valueobjects/"
+mainClassName = "com.infosys.customer.onboarding.framework.dropwizard.CustOnboardingApplication"
+
+
+task copyVOTypesCatalogue(type:DefaultTask){
+	doLast{
+		copy{
+			from("../build/typesCatalogue/")
+			into("./")
+			include('VO_TypesCatalogue.xml','VO_TypesCatalogue_For_UI_Customization.xml')
+			rename("VO_TypesCatalogue.xml",'TypesCatalogue.xml')
+			rename("VO_TypesCatalogue_For_UI_Customization.xml",'TypesCatalogue_For_UI_Customization.xml')
+		}
+	}
+}
+
+task typesConstantVO(type: JavaExec){
+	
+	
+	classpath =sourceSets.main.runtimeClasspath
+	main 'com.infosys.feba.tools.typeextngen.TypesCatalogueConstantsGenerator'
+	args "-output","src/main/java"
+
+}
+
+copyVOTypesCatalogue.dependsOn(generateVO)
+
+typesConstantVO.dependsOn(generateVO,copyVOTypesCatalogue)
+typesConstantVO.onlyIf{generateVO.didWork}
+
+//compileJava.dependsOn(typesConstantVO)
+compileJava.dependsOn('generateVO','generateTAO','generateDAL')
+
+*/
+
+
+project.ext {
+    configPath = "$rootProject.projectDir/"
+}
+
+run
+    {
+        systemProperties['FEBA_SYS_PATH'] = 'D:/micro/customerOnboarding/CustomerOnboardingMS/data'
+        systemProperties['APPLICATION_CONFIGURATION_FILE'] = 'BankAway.properties'
+        jvmArgs '-XX:MaxPermSize=512m','-Xmx4096m', '-noverify'
+        args 'server', configPath + 'CustomerOnboarding.yml'
+    }
+def febaSysPath="./data"
+
+compileHIFTransformer.source="src/main/spec/hif/transformer"
+compileHIFRequest.febaSysPath ="${febaSysPath}"
+compileHIFTransformer.febaSysPath ="${febaSysPath}"
+ 
+build.dependsOn('compileHIFRequest','compileHIFTransformer')
+project.ext {
+    configPath = "$rootProject.projectDir/"
+}
+
+// Defining the path in build 
+def auditFolder = project.file("build/spec/main/seed")
+def tspcFolder = project.file("src/main/spec/dbaccess/tspc")
+def ddlFolderOracle = project.file("tables/oracle")
+def ddlFolderPostgresql = project.file("tables/postgresql")
+def ddlFolderSqlServer = project.file("tables/sqlserver")
+
+// Creating the directory 
+
+if(!auditFolder.exists())
+	auditFolder.mkdirs()	
+if(!ddlFolderOracle.exists())
+	ddlFolderOracle.mkdirs()	
+if(!ddlFolderPostgresql.exists())
+	ddlFolderPostgresql.mkdirs()	
+if(!ddlFolderSqlServer.exists())
+	ddlFolderSqlServer.mkdirs()	
+
+
+task compileSeed (type: JavaCompile) {
+    
+    source = sourceSets.main.java.srcDirs
+    classpath = configurations.compile
+	classpath += project.files("build/libs/feba-ReferenceApp-${version}.jar")
+    destinationDir = project.file("build/tempClasses")
+}
+task archiveData (type: Zip) {
+	from("./data"){
+		exclude("**/externalconfig")
+		archiveName project.name+"-data.zip"
+	}
+}
+
+
+def externalConfigPath = "./data/externalconfig"
+
+task archiveExternalConfig(type:Zip) {
+
+	from(externalConfigPath){
+		archiveName "externalconfig.zip"
+	}
+	
+} 
+
+jar {
+    archiveName = "${project.name}-${resolvedVersion}.jar"
+}
+
+war{
+	 classpath = configurations.compile
+	  // Include the JAR inside the WAR
+     from("${buildDir}/libs/${project.name}-${resolvedVersion}.jar") {
+        into 'WEB-INF/lib'
+     }
+
+	 classpath += project.files(project.libsDirName + File.separator + project.name+"-"+resolvedVersion+".jar")
+	 println "classpath:: $classpath"
+	 //archiveName = "${project.name.toLowerCase()}-${version}.war"
+	 archiveName = "${project.name.toLowerCase()}-${resolvedVersion}.war"
+	 println "archiveName:: $archiveName"
+   	 destinationDir=file("${buildDir}/libs/")
+}
+war.dependsOn(jar)
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.rakbank.infosys.lib'  // change this to your group ID
+            artifactId = project.name.toLowerCase()
+            //version = project.version
+			version = resolvedVersion
+
+            from components.java
+			artifact source: file("${buildDir}/libs/${project.name.toLowerCase()}-${resolvedVersion}.war"), extension: 'war'
+            //artifactId = project.name.toLowerCase()
+            //artifact source: file("${buildDir}/libs/${project.name.toLowerCase()}-${version}.war"), extension: 'war'
+
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri("https://maven.pkg.github.com/rakbank-internal/deh_onboarding_retail_account_v1111")
+
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME_GITHUB")
+                password = project.findProperty("gpr.token") ?: System.getenv("TOKEN_GITHUB")
+            }
+        }
+    }
+}
+====================================================
+gradle.properties
+------------------
+#group
+group=com.infosys.och
+
+#External libraries
+extLibRepo=http://infyartifactory.ad.infosys.com/artifactory/och-ext-finacle_virtual/
+
+#OCH repository
+repositoryURL=http://infyartifactory.ad.infosys.com/artifactory/deh-finacle/
+
+fdkGroup=com.infosys.fdk
+fbaGroup=com.infosys.fba
+ebGroup=com.infosys.ebanking
+#Application Version
+#version=1111
+===========================
+gradlew
+--------------
+#!/bin/sh
+
+#
+# Copyright © 2015-2021 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##############################################################################
+#
+#   Gradle start up script for POSIX generated by Gradle.
+#
+#   Important for running:
+#
+#   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
+#       noncompliant, but you have some other compliant shell such as ksh or
+#       bash, then to run this script, type that shell name before the whole
+#       command line, like:
+#
+#           ksh Gradle
+#
+#       Busybox and similar reduced shells will NOT work, because this script
+#       requires all of these POSIX shell features:
+#         * functions;
+#         * expansions «$var», «${var}», «${var:-default}», «${var+SET}»,
+#           «${var#prefix}», «${var%suffix}», and «$( cmd )»;
+#         * compound commands having a testable exit status, especially «case»;
+#         * various built-in commands including «command», «set», and «ulimit».
+#
+#   Important for patching:
+#
+#   (2) This script targets any POSIX shell, so it avoids extensions provided
+#       by Bash, Ksh, etc; in particular arrays are avoided.
+#
+#       The "traditional" practice of packing multiple parameters into a
+#       space-separated string is a well documented source of bugs and security
+#       problems, so this is (mostly) avoided, by progressively accumulating
+#       options in "$@", and eventually passing that to Java.
+#
+#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
+#       see the in-line comments for details.
+#
+#       There are tweaks for specific operating systems such as AIX, CygWin,
+#       Darwin, MinGW, and NonStop.
+#
+#   (3) This script is generated from the Groovy template
+#       https://github.com/gradle/gradle/blob/HEAD/subprojects/plugins/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       within the Gradle project.
+#
+#       You can find Gradle at https://github.com/gradle/gradle/.
+#
+##############################################################################
+
+# Attempt to set APP_HOME
+
+# Resolve links: $0 may be a link
+app_path=$0
+
+# Need this for daisy-chained symlinks.
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # leaves a trailing /; empty if no leading path
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# This is normally unused
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd "${APP_HOME:-./}" > /dev/null && pwd -P ) || exit
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# Collect all arguments for the java command, stacking in reverse order:
+#   * args from the command line
+#   * the main class name
+#   * -classpath
+#   * -D...appname settings
+#   * --module-path (only if needed)
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # don't mess with options #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # looks like a POSIX filepath
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # Roll the args list around exactly as many times as the number of
+        # args, so each arg winds up back in the position where it started, but
+        # possibly modified.
+        #
+        # NB: a `for` loop captures its iteration list before it begins, so
+        # changing the positional parameters here affects neither the number of
+        # iterations, nor the values presented in `arg`.
+        shift                   # remove old arg
+        set -- "$@" "$arg"      # push replacement arg
+    done
+fi
+
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -classpath "$CLASSPATH" \
+        org.gradle.wrapper.GradleWrapperMain \
+        "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# but POSIX shell has neither arrays nor command substitution, so instead we
+# post-process each arg (as a line of input to sed) to backslash-escape any
+# character that might be a shell metacharacter, then use eval to reverse
+# that process (while maintaining the separation between arguments), and wrap
+# the whole thing up as a single "set" statement.
+#
+# This will of course break if any of these variables contains a newline or
+# an unmatched quote.
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
+===================================================
+gradlew.bat
+---------------
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+
+@if "%DEBUG%"=="" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+@rem This is normally unused
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if %ERRORLEVEL% equ 0 goto execute
+
+echo.
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+echo.
+echo Please set the JAVA_HOME variable in your environment to match the
+echo location of your Java installation.
+
+goto fail
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo.
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+echo.
+echo Please set the JAVA_HOME variable in your environment to match the
+echo location of your Java installation.
+
+goto fail
+
+:execute
+@rem Setup the command line
+
+set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+
+
+@rem Execute Gradle
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
+
+:end
+@rem End local scope for the variables with windows NT shell
+if %ERRORLEVEL% equ 0 goto mainEnd
+
+:fail
+rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+rem the _cmd.exe /c_ return code!
+set EXIT_CODE=%ERRORLEVEL%
+if %EXIT_CODE% equ 0 set EXIT_CODE=1
+if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
+exit /b %EXIT_CODE%
+
+:mainEnd
+if "%OS%"=="Windows_NT" endlocal
+
+:omega
+=================================================
+hosts.cfg
+---------
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_jb]
+ANT1DEHAPPS02 ansible_ssh_host=10.15.24.33
+==================================================
+
+sonar-project.properties
+------------------------------
+sonar.sourceEncoding=ISO-8859-1
+=======================================
+
+
+
+
+
+
+
+
+
+
