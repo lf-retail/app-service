@@ -1691,3 +1691,8 @@ CLUSTER_NAME: "BPMCLUSTER"
 WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 shared_libs: ("ibps_library" "omnidocs_library" "wfs_library")
 ...
+
+Requested runner group: rakbank-self-hosted-runner
+Requested labels: dehitdevtra1
+Job defined at: rakbank-internal/ibps-was-ansible-cd/.github/workflows/ibps_deployment.yml@refs/heads/feature/warinstall
+Waiting for a runner to pick up this job...
