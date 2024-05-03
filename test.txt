@@ -1675,3 +1675,19 @@ fi
 I am checking with Application support team and newgen team for the availability time to schedule the meeting and will update once I get it.
 
 I am checking with the Application Support team and the Newgen team to determine their availability for scheduling the meeting. I will update you once I receive the information.
+
+
+---
+# Server details
+WAR_FILE_PATH: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME: "KYC_Remediation_war"
+CONTEXT_ROOT: "/KYC_Remediation"
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+WAS_ADMIN_USER: "deployer"
+WAS_ADMIN_PASSWORD: "deployer@123"
+CELL_NAME: "antibpsapp1Cell01"
+CLUSTER_NAME: "BPMCLUSTER"
+WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+shared_libs: ("ibps_library" "omnidocs_library" "wfs_library")
+...
