@@ -1704,3 +1704,27 @@ Job defined at: rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warf
 Waiting for a runner to pick up this job...
 
 https://github.com/rakbank-internal/ibps-was-ansible-cd/actions/workflows/ibps_loose_file_deployment.yml
+=================
+
+ERROR! Syntax Error while loading YAML.
+  did not find expected ',' or ']'
+
+The error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-warfileinstall/defaults/main.yml': line 13, column 30, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+shared_libs: ["ibps_library" "omnidocs_library" "wfs_library"]
+                             ^ here
+We could be wrong, but this one looks like it might be an issue with
+unbalanced quotes. If starting a value with a quote, make sure the
+line ends with the same set of quotes. For instance this arbitrary
+example:
+
+    foo: "bad" "wolf"
+
+Could be written as:
+
+    foo: '"bad" "wolf"'
+Error: Process completed with exit code 4.
