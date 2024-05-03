@@ -1670,3 +1670,6 @@ else
     echo "Deployment failed. Check the output for errors."
     exit 1
 fi
+========================
+
+I am checking with Application support team and newgen team for the availability time to schedule the meeting and will update once I get it.
