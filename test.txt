@@ -1749,7 +1749,7 @@ CLUSTER_NAME="$9"
 WSADMIN="$10"
  
 # Define the shared libraries array
-shared_libs="$11"
+shared_libs=(${11//+/ })
  
 # Create a new file for the Jython script
 WSADMIN_SCRIPT="wsadmin_script.jy"
@@ -1786,7 +1786,8 @@ if '${APP_NAME}' in AdminApp.list().splitlines():
         print 'Application %s removed.' % '${APP_NAME}'
 
 # Install the application
-result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ ${WAR_FILE_PATH} ${WAR_FILE_PATH},WEB-INF/web.xml WebSphere:cell=${CELL_NAME},cluster=${CLUSTER_NAME} ]] -MapSharedLibForMod [[ ${APP_NAME} META-INF/application.xml wfs_library+omnidocs_library+ibps_library ]]')
+shared_libs_str = '+'.join(['${APP_NAME}', 'META-INF/application.xml'] + shared_libs)
+result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ ${WAR_FILE_PATH} ${WAR_FILE_PATH},WEB-INF/web.xml WebSphere:cell=${CELL_NAME},cluster=${CLUSTER_NAME} ]] -MapSharedLibForMod [[ ${shared_libs_str} ]]')
 if result != '':
     print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
     raise Exception('Failed to install application ' + '${APP_NAME}')
