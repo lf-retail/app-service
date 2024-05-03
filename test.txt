@@ -1696,3 +1696,11 @@ Requested runner group: rakbank-self-hosted-runner
 Requested labels: dehitdevtra1
 Job defined at: rakbank-internal/ibps-was-ansible-cd/.github/workflows/ibps_deployment.yml@refs/heads/feature/warinstall
 Waiting for a runner to pick up this job...
+==========
+
+Requested runner group: rakbank-self-hosted-runner
+Requested labels: dehitdevtra1
+Job defined at: rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warfileinstall.yml@refs/heads/feature/changes
+Waiting for a runner to pick up this job...
+
+https://github.com/rakbank-internal/ibps-was-ansible-cd/actions/workflows/ibps_loose_file_deployment.yml
