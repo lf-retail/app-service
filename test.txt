@@ -2135,7 +2135,9 @@ WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
   become: yes
   become_user: "{{ ansible_user }}"
   ignore_errors: yes
-  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was.sh {{ WAS_ADMIN_USER }} {{ WAS_ADMIN_PASSWORD }} {{ WAR_FILE_PATH }} {{ APP_NAME }} {{ CONTEXT_ROOT }} {{ CELL_NAME }} {{ CLUSTER_NAME }} {{ WSADMIN }}" 
+  shell: |
+    cd "{{ Profile_home }}/release.{{ release_version }}"
+    ./war-install-in-was.sh "{{ WAS_HOST }}" "{{ WAS_PORT }}" "{{ WAS_ADMIN_USER }}" "{{ WAS_ADMIN_PASSWORD }}" "{{ WAR_FILE_PATH }}" "{{ APP_NAME }}" "{{ CONTEXT_ROOT }}" "{{ CELL_NAME }}" "{{ CLUSTER_NAME }}" "{{ WSADMIN }}" "{{ WAR_FILE_NAME }}"
   args:
     executable: /bin/bash
   register: deploy_result
@@ -2145,23 +2147,23 @@ WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 #!/bin/bash
  
 # Server details
-WAS_HOST="10.15.11.209"
-WAS_PORT="8879"
-WAS_ADMIN_USER="$1"
-WAS_ADMIN_PASSWORD="$2"
+WAS_HOST="$1"
+WAS_PORT="$2"
+WAS_ADMIN_USER="$3"
+WAS_ADMIN_PASSWORD="$4"
  
 # WAR file and application details
-WAR_FILE_PATH="$3"
-APP_NAME="$4"
-CONTEXT_ROOT="$5"
-CELL_NAME="$6"
-CLUSTER_NAME="$7"
+WAR_FILE_PATH="$5"
+APP_NAME="$6"
+CONTEXT_ROOT="$7"
+CELL_NAME="$8"
+CLUSTER_NAME="$9"
  
 # Path to wsadmin.sh
-WSADMIN="$8"
- 
+WSADMIN="${10}"
+WAR_FILE_NAME="${11}"
+
 # Define the shared libraries array
-#shared_libs=(${9//+/ })
 shared_libs=("ibps_library" "omnidocs_library" "wfs_library")
  
 # Create a new file for the Jython script
