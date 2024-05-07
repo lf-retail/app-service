@@ -1913,3 +1913,93 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
 ...ignoring
 META: ran handlers
 META: ran handlers
+==================
+
+#!/bin/bash
+ 
+# Server details
+WAS_HOST="$1"
+WAS_PORT="$2"
+WAS_ADMIN_USER="$3"
+WAS_ADMIN_PASSWORD="$4"
+ 
+# WAR file and application details
+WAR_FILE_PATH="$5"
+APP_NAME="$6"
+CONTEXT_ROOT="$7"
+CELL_NAME="$8"
+CLUSTER_NAME="$9"
+ 
+# Path to wsadmin.sh
+WSADMIN="$10"
+ 
+# Define the shared libraries array
+shared_libs=(${11//+/ })
+ 
+# Create a new file for the Jython script
+WSADMIN_SCRIPT="wsadmin_script.jy"
+ 
+# Write the initial part of the Jython script to the file
+cat <<EOF >$WSADMIN_SCRIPT
+import time
+import sys
+
+# Check if the application is already running
+if '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Application ${APP_NAME} is already running. Stopping it...'
+    app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
+    for app_manager in app_managers:
+        AdminControl.invoke(app_manager, 'stopApplication', '${APP_NAME}', '[${CELL_NAME},${CLUSTER_NAME}]')
+    print 'Application ${APP_NAME} stop command issued.'
+
+# Wait for the application to stop
+while '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Waiting for application %s to stop...' % '${APP_NAME}'
+    time.sleep(30)
+
+print 'Application %s is not running.' % '${APP_NAME}'
+
+# Uninstall the application if it already exists
+if '${APP_NAME}' in AdminApp.list().splitlines():
+    print 'Application %s already exists. Removing...' % '${APP_NAME}'
+    result = AdminApp.uninstall('${APP_NAME}')
+    if result != '':
+        print 'Failed to uninstall application ' + '${APP_NAME}' + '. Error: ' + result
+        raise Exception('Failed to uninstall application ' + '${APP_NAME}')
+    else:
+        AdminConfig.save()
+        print 'Application %s removed.' % '${APP_NAME}'
+
+# Install the application
+shared_libs_str = '+'.join(['${APP_NAME}', 'META-INF/application.xml'] + shared_libs)
+result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ ${WAR_FILE_PATH} ${WAR_FILE_PATH},WEB-INF/web.xml WebSphere:cell=${CELL_NAME},cluster=${CLUSTER_NAME} ]] -MapSharedLibForMod [[ ${shared_libs_str} ]]')
+if result != '':
+    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
+    raise Exception('Failed to install application ' + '${APP_NAME}')
+
+# Get the deployment descriptor
+dep = AdminConfig.getid('/Deployment:${APP_NAME}/')
+
+# Get the deployment descriptor's class loader policy
+depObject = AdminConfig.showAttribute(dep, 'deployedObject')
+classldr = AdminConfig.showAttribute(depObject, 'classloader')
+
+# Set the class loader order to PARENT_LAST
+AdminConfig.modify(classldr, [['mode', 'PARENT_LAST']])
+
+# Set the WAR class loader policy to 'for each WAR file in application'
+AdminConfig.modify(depObject, [['warClassLoaderPolicy', 'SINGLE']])
+
+# Save configuration and add a delay before starting the application
+AdminConfig.save()
+time.sleep(60)
+
+# Start the application on each node in the cluster
+print 'Starting application ${APP_NAME}'
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR01,platform=proxy,node=antibpsapp1Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR02,platform=proxy,node=antibpsapp2Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
+print 'Application ${APP_NAME} started.'
+EOF
+
+# Execute the script with wsadmin
+$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
