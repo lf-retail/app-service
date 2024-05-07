@@ -2003,3 +2003,93 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+
+=========================
+
+#!/bin/bash
+ 
+# Server details
+WAS_HOST="10.15.11.209"
+WAS_PORT="8879"
+WAS_ADMIN_USER="deployer"
+WAS_ADMIN_PASSWORD="deployer@123"
+ 
+# WAR file and application details
+WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME="KYC_Remediation_war"
+CONTEXT_ROOT="/KYC_Remediation"
+CELL_NAME="antibpsapp1Cell01"
+CLUSTER_NAME="BPMCLUSTER"
+ 
+# Path to wsadmin.sh
+WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+ 
+# Define the shared libraries array
+shared_libs=("ibps_library" "omnidocs_library" "wfs_library")
+ 
+# Create a new file for the Jython script
+WSADMIN_SCRIPT="wsadmin_script.jy"
+ 
+# Write the initial part of the Jython script to the file
+cat <<EOF >$WSADMIN_SCRIPT
+import time
+import sys
+
+# Check if the application is already running
+if 'KYC_Remediation_war' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Application KYC_Remediation_war is already running. Stopping it...'
+    app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
+    for app_manager in app_managers:
+        AdminControl.invoke(app_manager, 'stopApplication', 'KYC_Remediation_war', '[antibpsapp1Cell01,BPMCLUSTER]')
+    print 'Application KYC_Remediation_war stop command issued.'
+
+# Wait for the application to stop
+while '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Waiting for application %s to stop...' % '${APP_NAME}'
+    time.sleep(30)
+
+print 'Application %s is not running.' % '${APP_NAME}'
+
+# Uninstall the application if it already exists
+if '${APP_NAME}' in AdminApp.list().splitlines():
+    print 'Application %s already exists. Removing...' % '${APP_NAME}'
+    result = AdminApp.uninstall('${APP_NAME}')
+    if result != '':
+        print 'Failed to uninstall application ' + '${APP_NAME}' + '. Error: ' + result
+        raise Exception('Failed to uninstall application ' + '${APP_NAME}')
+    else:
+        AdminConfig.save()
+        print 'Application %s removed.' % '${APP_NAME}'
+
+# Install the application
+result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ KYC_Remediation.war KYC_Remediation.war,WEB-INF/web.xml WebSphere:cell=antibpsapp1Cell01,cluster=BPMCLUSTER ]] -MapSharedLibForMod [[ KYC_Remediation_war META-INF/application.xml wfs_library+omnidocs_library+ibps_library ]]')
+if result != '':
+    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
+    raise Exception('Failed to install application ' + '${APP_NAME}')
+
+# Get the deployment descriptor
+dep = AdminConfig.getid('/Deployment:${APP_NAME}/')
+
+# Get the deployment descriptor's class loader policy
+depObject = AdminConfig.showAttribute(dep, 'deployedObject')
+classldr = AdminConfig.showAttribute(depObject, 'classloader')
+
+# Set the class loader order to PARENT_LAST
+AdminConfig.modify(classldr, [['mode', 'PARENT_LAST']])
+
+# Set the WAR class loader policy to 'for each WAR file in application'
+AdminConfig.modify(depObject, [['warClassLoaderPolicy', 'SINGLE']])
+
+# Save configuration and add a delay before starting the application
+AdminConfig.save()
+time.sleep(60)
+
+# Start the application on each node in the cluster
+print 'Starting application KYC_Remediation_war'
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR01,platform=proxy,node=antibpsapp1Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=antibpsapp1Cell01,spec=1.0', 'startApplication', 'KYC_Remediation_war')
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR02,platform=proxy,node=antibpsapp2Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=antibpsapp1Cell01,spec=1.0', 'startApplication', 'KYC_Remediation_war')
+print 'Application KYC_Remediation_war started.'
+EOF
+
+# Execute the script with wsadmin
+$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
