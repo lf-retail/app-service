@@ -2413,3 +2413,19 @@ Node: antibpsapp1Node01, antibpsapp2Node01
 Application name: KYC_Remediation.war
 
 This is the over view of IBPS deployment and feel free to ask Regarding this deployment if you  have any doubts and clarification
+
+
+===============
+
+I wanted to bring to your attention that the scheduled meeting for today at 2:30 PM regarding the completion status of the UAT cluster IBPS deployment unfortunately did not see any attendees from the Rakbank Support team and Newgen team.
+
+Nonetheless, I'd like to provide you with an update on the IBPS deployment progress:
+
+Loose file deployment
+WAR file installation in WebSphere Application Server (WAS)
+Here are the specific details:
+
+Cluster IP: 10.15.11.209
+Nodes: antibpsapp1Node01, antibpsapp2Node01
+Application Name: KYC_Remediation.war
+If you have any questions, doubts, or require further clarification regarding this deployment, please don't hesitate to reach out. 
