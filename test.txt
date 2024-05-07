@@ -2232,3 +2232,69 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+===========================
+
+TASK [IBPS-warfileinstall : Run war-install-in-was.sh on Target Server] ********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-warfileinstall/tasks/main.yml:10
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205 && echo ansible-tmp-1715070770.880623-1690940-58615062085205="` echo /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1715070770.880623-1690940-58615062085205=/tmp/ansible-tmp-1715070770.880623-1690940-58615062085205\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-1690905j9vuxqmg/tmprvesd2t4 TO /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1690905j9vuxqmg/tmprvesd2t4 /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/ /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-05-07 12:36:32.499809", "stdout": "WASX7209I: Connected to process \\"dmgr\\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager\\nApplication KYC_Remediation_war is not running.\\nApplication KYC_Remediation_war already exists. Removing...\\nADMA5017I: Uninstallation of KYC_Remediation_war started.\\nADMA5104I: The server index entry for WebSphere:cell=antibpsapp1Cell01,node=antibpsapp2Node01+WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01 is updated successfully.\\nADMA5102I: The configuration data for KYC_Remediation_war from the configuration repository is deleted successfully.\\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.\\nADMA5106I: Application KYC_Remediation_war uninstalled successfully.\\nApplication KYC_Remediation_war removed.\\nWASX7017E: Exception received while running file \\"wsadmin_script.jy\\"; exception information: com.ibm.bsf.BSFException: exception from Jython:\\nTraceback (innermost last):\\n  File \\"<string>\\", line 31, in ?\\nNameError: shared_libs", "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.48 && ./war-install-in-was.sh deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh", "failed": true, "delta": "0:00:10.911300", "stderr": "", "rc": 105, "invocation": {"module_args": {"creates": null, "executable": "/bin/bash", "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.48 && ./war-install-in-was.sh deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-05-07 12:36:21.588509", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.11.209 closed.\r\n')
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1715070770.880623-1690940-58615062085205/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.48 && ./war-install-in-was.sh deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh",
+    "delta": "0:00:10.911300",
+    "end": "2024-05-07 12:36:32.499809",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.48 && ./war-install-in-was.sh deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": "/bin/bash",
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 105,
+    "start": "2024-05-07 12:36:21.588509",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "WASX7209I: Connected to process \"dmgr\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager\nApplication KYC_Remediation_war is not running.\nApplication KYC_Remediation_war already exists. Removing...\nADMA5017I: Uninstallation of KYC_Remediation_war started.\nADMA5104I: The server index entry for WebSphere:cell=antibpsapp1Cell01,node=antibpsapp2Node01+WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01 is updated successfully.\nADMA5102I: The configuration data for KYC_Remediation_war from the configuration repository is deleted successfully.\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.\nADMA5106I: Application KYC_Remediation_war uninstalled successfully.\nApplication KYC_Remediation_war removed.\nWASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.bsf.BSFException: exception from Jython:\nTraceback (innermost last):\n  File \"<string>\", line 31, in ?\nNameError: shared_libs",
+    "stdout_lines": [
+        "WASX7209I: Connected to process \"dmgr\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager",
+        "Application KYC_Remediation_war is not running.",
+        "Application KYC_Remediation_war already exists. Removing...",
+        "ADMA5017I: Uninstallation of KYC_Remediation_war started.",
+        "ADMA5104I: The server index entry for WebSphere:cell=antibpsapp1Cell01,node=antibpsapp2Node01+WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01 is updated successfully.",
+        "ADMA5102I: The configuration data for KYC_Remediation_war from the configuration repository is deleted successfully.",
+        "ADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.",
+        "ADMA5106I: Application KYC_Remediation_war uninstalled successfully.",
+        "Application KYC_Remediation_war removed.",
+        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.bsf.BSFException: exception from Jython:",
+        "Traceback (innermost last):",
+        "  File \"<string>\", line 31, in ?",
+        "NameError: shared_libs"
+    ]
+}
+...ignoring
+META: ran handlers
+META: ran handlers
