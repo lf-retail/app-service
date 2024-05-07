@@ -2394,3 +2394,7 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+====================
+
+Meeting ID: 337 860 001 989 
+Passcode: AeNPTY 
