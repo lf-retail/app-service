@@ -1818,3 +1818,98 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+==================
+
+---
+- name: Copy war-install-in-was.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was.sh {{ WAS_HOST }} {{ WAS_PORT }} {{ WAS_ADMIN_USER }} {{ WAS_ADMIN_PASSWORD }} {{ WAR_FILE_PATH }} {{ APP_NAME }} {{ CONTEXT_ROOT }} {{ CELL_NAME }} {{ CLUSTER_NAME }} {{ WSADMIN }} {{ shared_libs }}" 
+  register: deploy_result
+------------------------
+
+---
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+#zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+#zip_file_name: "{{ zip_file_url | basename }}"
+ansible_user: "itdevtra"
+Profile_home: "/ibm/IBM/Application/release"
+
+# Server details
+WAR_FILE_PATH: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+APP_NAME: "KYC_Remediation_war"
+CONTEXT_ROOT: "/KYC_Remediation"
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+WAS_ADMIN_USER: "deployer"
+WAS_ADMIN_PASSWORD: "deployer@123"
+CELL_NAME: "antibpsapp1Cell01"
+CLUSTER_NAME: "BPMCLUSTER"
+WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+shared_libs: ["ibps_library","omnidocs_library","wfs_library"]
+...
+
+=======================
+
+TASK [IBPS-warfileinstall : Run war-install-in-was.sh on Target Server] ********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-warfileinstall/tasks/main.yml:10
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908 && echo ansible-tmp-1715064702.2528074-1653016-240504202769908="` echo /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908 `" ) && sleep 0'"'"''
+<10.15.11.210> (0, b'ansible-tmp-1715064702.2528074-1653016-240504202769908=/tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.210> PUT /home/itdevtra/.ansible/tmp/ansible-local-1652980oci0ask4/tmp925c_rco TO /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/AnsiballZ_command.py
+<10.15.11.210> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 '[10.15.11.210]'
+<10.15.11.210> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1652980oci0ask4/tmp925c_rco /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/AnsiballZ_command.py\n', b'')
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/ /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.210> (0, b'', b'')
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 -tt 10.15.11.210 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.210> (1, b'\r\n{"changed": true, "end": "2024-05-07 10:55:12.889429", "stdout": "", "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.47 && ./war-install-in-was.sh 10.15.11.209 8879 deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh [\'ibps_library\', \'omnidocs_library\', \'wfs_library\']", "failed": true, "delta": "0:00:00.028033", "stderr": "./war-install-in-was.sh: line 88: 10.15.11.2090: command not found", "rc": 127, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.47 && ./war-install-in-was.sh 10.15.11.209 8879 deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation an
+<10.15.11.210> Failed to connect to the host via ssh: Shared connection to 10.15.11.210 closed.
+<10.15.11.210> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.210> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/a17f7a9915 10.15.11.210 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1715064702.2528074-1653016-240504202769908/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.210> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "cd /ibm/IBM/Application/release/release.3.0.0.47 && ./war-install-in-was.sh 10.15.11.209 8879 deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh ['ibps_library', 'omnidocs_library', 'wfs_library']",
+    "delta": "0:00:00.028033",
+    "end": "2024-05-07 10:55:12.889429",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd /ibm/IBM/Application/release/release.3.0.0.47 && ./war-install-in-was.sh 10.15.11.209 8879 deployer deployer@123 /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh ['ibps_library', 'omnidocs_library', 'wfs_library']",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": null,
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 127,
+    "start": "2024-05-07 10:55:12.861396",
+    "stderr": "./war-install-in-was.sh: line 88: 10.15.11.2090: command not found",
+    "stderr_lines": [
+        "./war-install-in-was.sh: line 88: 10.15.11.2090: command not found"
+    ],
+    "stdout": "",
+    "stdout_lines": []
+}
+...ignoring
+META: ran handlers
+META: ran handlers
