@@ -5,3 +5,10 @@
         "ADMA5014E: The installation of application KYC_Remediation_war failed.",
         "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: WASX7132E: Application install for /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war failed: see previous messages for details."
     ]
+==========
+
+[5:40 PM] Pradip Kanasani
+just only write a mail to him keeping only me in the mail will verify if space is not there he can remove some old logs 
+
+[5:40 PM] Pradip Kanasani
+com.ibm.websphere.management.exception.DocumentIOException: Unable to create temp file for document: cells/antibpsapp1Cell01/nodes/antibpsapp1CellManager01/serverindex.xml",
