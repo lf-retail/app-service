@@ -2429,3 +2429,8 @@ Cluster IP: 10.15.11.209
 Nodes: antibpsapp1Node01, antibpsapp2Node01
 Application Name: KYC_Remediation.war
 If you have any questions, doubts, or require further clarification regarding this deployment, please don't hesitate to reach out. 
+============
+
+I would like to confirm the IBPS deployment verification for the server 10.15.11.209. Please reach out to me for the deployment verification.
+
+If you have any questions or need further clarification, feel free to contact me. 
