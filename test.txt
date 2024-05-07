@@ -2398,3 +2398,18 @@ $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_
 
 Meeting ID: 337 860 001 989 
 Passcode: AeNPTY 
+
+=============================
+
+
+I scheduled the meeting today 2:30pm for UAT cluster IBPS deployment completion status but no one joining from Rakbank Support team and Newgen team also.
+
+So this is the update for the IBPS deployment 
+1.	Loose file deployment
+2.	War file installation in WAS
+
+Cluster ip: 10.15.11.209
+Node: antibpsapp1Node01, antibpsapp2Node01
+Application name: KYC_Remediation.war
+
+This is the over view of IBPS deployment and feel free to ask Regarding this deployment if you  have any doubts and clarification
