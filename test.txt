@@ -85,3 +85,22 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+=====================
+
+Hi Gaurav/Dev,
+
+So far we are done the IBPS deployment for 10.15.11.209 server for the below automation
+1.	Loose file deployment
+2.	WAR file installation in WebSphere Application Server (WAS)
+
+•	Cluster ip: 10.15.11.209
+•	Node: antibpsapp1Node01, antibpsapp2Node01
+•	Application name: KYC_Remediation.war
+
+Earlier we discussed about UAT cluster environment server ip for 10.15.11.209 and 10.15.11.210 
+
+So can you please conform can we start 10.15.11.210 for the WAR installation in WAS.
+ 
+
+Thanks,
+Shanmuganathan M.
