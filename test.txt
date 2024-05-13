@@ -105,3 +105,22 @@ Could you please confirm if we are ready to commence the installation process on
 
 Thanks,
 Shanmuganathan M.
+=========================
+
+# Backup old deployment files for each application with timestamp
+if [ -n "$release_content" ]; then
+    backup_location="$Profile_home/release.$release_version"
+    backup_timestamp=$(date +'%Y%m%d%H%M%S')
+    backup_directory="$backup_location/backup-$backup_timestamp"
+    mkdir -p "$backup_directory"
+    chmod 777 "$backup_directory"
+
+    # Copy release.txt file into backup directory
+    cp "$release_txt_path" "$backup_directory"
+-----------------
+
+Profile_home: "/ibm/IBM/Application/release"
+
+Please confirm how the backup will be taken  before the deployment and what will be the location .
+
+1.	Please confirm on the update war ?
