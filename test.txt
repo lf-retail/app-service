@@ -1,150 +1,59 @@
-#!/bin/bash
- 
-# Server details
-WAS_HOST="$1"
-WAS_PORT="$2"
-WAS_ADMIN_USER="$3"
-WAS_ADMIN_PASSWORD="$4"
- 
-# WAR file and application details
-WAR_FILE_PATH="$5"
-APP_NAME="$6"
-CONTEXT_ROOT="$7"
-CELL_NAME="$8"
-CLUSTER_NAME="$9"
- 
-# Path to wsadmin.sh
-WSADMIN="${10}"
-WAR_FILE_NAME="${11}"
+name: IBPS-warfileinstall
+run-name: IBPS-warfileinstall-${{ github.event.inputs.release_version }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
 
-# Define the shared libraries array
-shared_libs=("ibps_library" "omnidocs_library" "wfs_library")
- 
-# Create a new file for the Jython script
-WSADMIN_SCRIPT="wsadmin_script.jy"
- 
-# Write the initial part of the Jython script to the file
-cat <<EOF >$WSADMIN_SCRIPT
-import time
-import sys
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
 
-# Check if the application is already running
-if '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
-    print 'Application ${APP_NAME} is already running. Stopping it...'
-    app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
-    for app_manager in app_managers:
-        AdminControl.invoke(app_manager, 'stopApplication', '${APP_NAME}', '[${CELL_NAME},${CLUSTER_NAME}]')
-    print 'Application ${APP_NAME} stop command issued.'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-# Wait for the application to stop
-while '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
-    print 'Waiting for application %s to stop...' % '${APP_NAME}'
-    time.sleep(30)
+    - name: Debug Working Directory
+      run: |
+        ls -al
+        pwd
+    - name: Make war-install-in-was.sh executable
+      run: |
+        chmod +x war-install-in-was.sh
+  
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.209
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.210
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #replica ip:10.15.24.86
 
-print 'Application %s is not running.' % '${APP_NAME}'
+================
 
-# Uninstall the application if it already exists
-if '${APP_NAME}' in AdminApp.list().splitlines():
-    print 'Application %s already exists. Removing...' % '${APP_NAME}'
-    result = AdminApp.uninstall('${APP_NAME}')
-    if result != '':
-        print 'Failed to uninstall application ' + '${APP_NAME}' + '. Error: ' + result
-        raise Exception('Failed to uninstall application ' + '${APP_NAME}')
-    else:
-        AdminConfig.save()
-        print 'Application %s removed.' % '${APP_NAME}'
-
-# Install the application
-result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ ${WAR_FILE_NAME} ${WAR_FILE_NAME},WEB-INF/web.xml WebSphere:cell=${CELL_NAME},cluster=${CLUSTER_NAME} ]] -MapSharedLibForMod [[ ${APP_NAME} META-INF/application.xml wfs_library+omnidocs_library+ibps_library ]]')
-
-if result != '':
-    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
-    raise Exception('Failed to install application ' + '${APP_NAME}')
-    
-# Set the class loader policy to PARENT_LAST
-dep = AdminConfig.getid('/Deployment:${APP_NAME}/')
-depObject = AdminConfig.showAttribute(dep, 'deployedObject')
-
-modules = AdminConfig.showAttribute(depObject, 'modules')
-for module in modules[1:-1].split():
-    if AdminConfig.showAttribute(module, 'uri') == 'KYC_Remediation.war':
-        warClassldr = AdminConfig.showAttribute(module, 'classloader')
-        AdminConfig.modify(warClassldr, [['mode', 'PARENT_LAST']])
-        break
-
-# Save configuration and add a delay before starting the application
-AdminConfig.save()
-time.sleep(60)
-
-# Start the application on each node in the cluster
-print 'Starting application ${APP_NAME}'
-AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR01,platform=proxy,node=antibpsapp1Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
-AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR02,platform=proxy,node=antibpsapp2Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
-print 'Application ${APP_NAME} started.'
-EOF
-
-# Execute the script with wsadmin
-$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
-=====================
-
-Hi Gaurav/Dev,
-
-I wanted to confirm the deployment status of the IBPS on the UAT cluster environment. As of now, we have successfully completed the deployment on server 10.15.11.209, covering both loose file deployment and WAR file installation in WebSphere Application Server (WAS).
-
-To recap, here are the details:
-
-Cluster IP: 10.15.11.209
-Nodes: antibpsapp1Node01, antibpsapp2Node01
-Application Name: KYC_Remediation.war
-Considering our previous discussions regarding the UAT environment, I would like to proceed with the WAR installation on the server with the IP address 10.15.11.210.
-
-Could you please confirm if we are ready to commence the installation process on 10.15.11.210?
-
-
- 
-
-Thanks,
-Shanmuganathan M.
-=========================
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$Profile_home/release.$release_version"
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-    chmod 777 "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
------------------
-
+---
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+release_version: "{{ lookup('env', 'RELEASE_VERSION') }}"
+ansible_user: "itdevtra"
 Profile_home: "/ibm/IBM/Application/release"
 
-Please confirm how the backup will be taken  before the deployment and what will be the location .
-
-1.	Please confirm on the update war ?
-==============
-
-Sure, here's how the backup process works before deployment:
-
-Backup Procedure:
-
-Before each deployment, we perform a backup of the old deployment files for each application.
-This is done by creating a timestamped directory within the $Profile_home directory, which is set to "/ibm/IBM/Application/release".
-Inside this timestamped directory, we copy the release.txt file from the current deployment.
-Backup Location:
-
-The backup files are stored in a directory structure under $Profile_home.
-Specifically, each backup is stored in a directory named backup-<timestamp> within the corresponding application's release directory ($Profile_home/release.<release_version>).
-For example, if the current release version is 1.0, and we're backing up files for an application, the backup directory would be: /ibm/IBM/Application/release/release.1.0/backup-<timestamp>.
-
-This process ensures that we have a snapshot of the previous deployment state for each application before proceeding with the new deployment.
-
-Please let me know if you need any further clarification or if there are any additional details you'd like to know.
-
-
-
-
-
-
+# Server details
+WAR_FILE_PATH: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
+WAR_FILE_NAME: "KYC_Remediation.war"
+APP_NAME: "KYC_Remediation_war"
+CONTEXT_ROOT: "/KYC_Remediation"
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+WAS_ADMIN_USER: "deployer"
+WAS_ADMIN_PASSWORD: "deployer@123"
+CELL_NAME: "antibpsapp1Cell01"
+CLUSTER_NAME: "BPMCLUSTER"
+WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+...
