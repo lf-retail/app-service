@@ -7,6 +7,27 @@ on:
         description: 'Release version to deploy'
         required: true 
         type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
+        required: true
+        type: string
+        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+        default: 'KYC_Remediation.war'
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+        default: 'KYC_Remediation_war'
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+        default: '/KYC_Remediation'
+
 
 jobs:
   deploy:
@@ -30,11 +51,15 @@ jobs:
       env:
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
         RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+        WAR_FILE_PATH: ${{ github.event.inputs.war_file_path }}
+        WAR_FILE_NAME: ${{ github.event.inputs.war_file_name }}
+        APP_NAME: ${{ github.event.inputs.app_name }}
+        CONTEXT_ROOT: ${{ github.event.inputs.context_root }}
       run: |
         cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.209
-        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.210
-        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} release_version=${RELEASE_VERSION}" ./playbook/IBPS-warfileinstall.yml #replica ip:10.15.24.86
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${RELEASE_VERSION} war_file_path=${WAR_FILE_PATH} war_file_name=${WAR_FILE_NAME} app_name=${APP_NAME} context_root=${CONTEXT_ROOT}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.209
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} release_version=${RELEASE_VERSION} war_file_path=${WAR_FILE_PATH} war_file_name=${WAR_FILE_NAME} app_name=${APP_NAME} context_root=${CONTEXT_ROOT}" ./playbook/IBPS-warfileinstall.yml #Cluster ip:10.15.11.210
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} release_version=${RELEASE_VERSION} war_file_path=${WAR_FILE_PATH} war_file_name=${WAR_FILE_NAME} app_name=${APP_NAME} context_root=${CONTEXT_ROOT}" ./playbook/IBPS-warfileinstall.yml #replica ip:10.15.24.86
 
 ================
 
@@ -45,10 +70,10 @@ ansible_user: "itdevtra"
 Profile_home: "/ibm/IBM/Application/release"
 
 # Server details
-WAR_FILE_PATH: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
-WAR_FILE_NAME: "KYC_Remediation.war"
-APP_NAME: "KYC_Remediation_war"
-CONTEXT_ROOT: "/KYC_Remediation"
+WAR_FILE_PATH:  "{{ lookup('env', 'WAR_FILE_PATH') }}"
+WAR_FILE_NAME:  "{{ lookup('env', 'WAR_FILE_NAME') }}"
+APP_NAME:  "{{ lookup('env', 'APP_NAME') }}"
+CONTEXT_ROOT:  "{{ lookup('env', 'CONTEXT_ROOT') }}"
 WAS_HOST: "10.15.11.209"
 WAS_PORT: "8879"
 WAS_ADMIN_USER: "deployer"
