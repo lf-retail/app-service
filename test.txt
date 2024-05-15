@@ -89,11 +89,15 @@ rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warfileinstall.yml@r
 
 Hi Anisur Rahman/Hritik,
 
-We have run the CD pipeline again for the below application could you please conform the war file installed successfully in WAS for the below?
+I'm reaching out to confirm whether the deployment of the KYC_Remediation.war file to the WebSphere Application Server (WAS) cluster was successful.
+
+Below are the details for your reference:
 
 Cluster IP: 10.15.11.209
 Nodes: antibpsapp1Node01, antibpsapp2Node01
 Application Name: KYC_Remediation.war
+
+Could you please verify if the installation was completed without any issues?
 
 Thanks,
 Shanmuganathan M
