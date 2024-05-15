@@ -85,3 +85,15 @@ WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 ===================
 
 rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warfileinstall.yml@refs/heads/feature/changes-new-update
+================
+
+Hi Anisur Rahman/Hritik,
+
+We have run the CD pipeline again for the below application could you please conform the war file installed successfully in WAS for the below?
+
+Cluster IP: 10.15.11.209
+Nodes: antibpsapp1Node01, antibpsapp2Node01
+Application Name: KYC_Remediation.war
+
+Thanks,
+Shanmuganathan M
