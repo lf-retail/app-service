@@ -101,3 +101,11 @@ Could you please verify if the installation was completed without any issues?
 
 Thanks,
 Shanmuganathan M
+==========================
+
+Hi Hritik,
+
+We implemented CD pipeline so today we ran once again so please verify today the WAR file installation is completed in WAS console.
+
+Thanks,
+Shanmuganathan M
