@@ -82,3 +82,6 @@ CELL_NAME: "antibpsapp1Cell01"
 CLUSTER_NAME: "BPMCLUSTER"
 WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 ...
+===================
+
+rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warfileinstall.yml@refs/heads/feature/changes-new-update
