@@ -261,3 +261,41 @@ task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibp
 fatal: [ANTIBPSAPP1]: FAILED! => {
     "msg": "The task includes an option with an undefined variable. The error was: 'github' is undefined\n\nThe error appears to be in '/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/main-deploy.yml': line 34, column 3, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n\n- name: Copy deploy.sh to Target Server\n  ^ here\n"
 }
+========================
+
+TASK [IBPS-loose-file-deployment : Copy deploy.sh to Target Server] ************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/main-deploy.yml:34
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1716190861.4948874-279298-71998740743396 && echo ansible-tmp-1716190861.4948874-279298-71998740743396="` echo /tmp/ansible-tmp-1716190861.4948874-279298-71998740743396 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1716190861.4948874-279298-71998740743396=/tmp/ansible-tmp-1716190861.4948874-279298-71998740743396\n', b'')
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/site-packages/ansible/plugins/action/copy.py", line 469, in run
+    source = self._find_needle('files', source)
+  File "/usr/lib/python3.6/site-packages/ansible/plugins/action/__init__.py", line 1168, in _find_needle
+    return self._loader.path_dwim_relative_stack(path_stack, dirname, needle)
+  File "/usr/lib/python3.6/site-packages/ansible/parsing/dataloader.py", line 327, in path_dwim_relative_stack
+    raise AnsibleFileNotFound(file_name=source, paths=[to_text(p) for p in search])
+ansible.errors.AnsibleFileNotFound: Could not find or access '$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh'
+Searched in:
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh
+	/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh on the Ansible Controller.
+If you are using a module and expect the file to exist on the remote, see the remote_src option
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": false,
+    "invocation": {
+        "dest": "/ibm/IBM/Application/release/release.3.0.0.52/deploy.sh",
+        "mode": "0755",
+        "module_args": {
+            "dest": "/ibm/IBM/Application/release/release.3.0.0.52/deploy.sh",
+            "mode": "0755",
+            "src": "$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+        },
+        "src": "$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    },
+    "msg": "Could not find or access '$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh'\nSearched in:\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"
+}
