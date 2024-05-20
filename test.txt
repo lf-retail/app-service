@@ -112,3 +112,8 @@ Shanmuganathan M
 =======================
 
 /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/
+
+- name: Your step name
+  run: |
+    cd ${{ github.workspace }}
+    # Your commands here
