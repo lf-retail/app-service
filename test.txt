@@ -299,3 +299,22 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
     },
     "msg": "Could not find or access '$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh'\nSearched in:\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/roles/IBPS-loose-file-deployment/tasks/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/files/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/$/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"
 }
+
+remote_src: true
+
+- name: Run Ansible Playbook
+  env:
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+    RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+  run: |
+    cd ${{ github.workspace }}
+    ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${RELEASE_VERSION} github_workspace=${{ github.workspace }}" ./playbook/IBPS-loose-file-deployment.yml
+
+
+- name: Run Ansible Playbook
+  env:
+    TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+    RELEASE_VERSION: ${{ github.event.inputs.release_version }}
+  run: |
+    cd ${{ github.workspace }}
+    ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${RELEASE_VERSION} github_workspace=${{ github.workspace }}" ./playbook/IBPS-loose-file-deployment.yml
