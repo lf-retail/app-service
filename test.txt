@@ -327,3 +327,11 @@ remote_src: true
     mode: '0755'
   become: yes
   become_user: "{{ ansible_user }}"
+
+
+Requested runner group: rakbank-self-hosted-runner
+Requested labels: dehitdevtra1
+Job defined at: rakbank-internal/enterprise-reusable-workflows/.github/workflows/IBPS-loose-file-deployment.yml@refs/heads/feature/optimum-deh-mcf-templates
+Reusable workflow chain:
+rakbank-internal/ibps-was-ansible-cd/.github/workflows/release-IBPS-loosefile-cd.yml@refs/heads/IBPS-APP-ROLE (36555658864781b3c9dfe6f4ff36b2c897806080)
+-> rakbank-internal/enterprise-reusable-workflows/.github/workflows/IBPS-loose-file-deployment.yml@refs/heads/feature/optimum-deh-mcf-templates (f97f224c80e2d6b2f442c872cc324150a01a646b
