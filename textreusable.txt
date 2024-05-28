@@ -1,13 +1,7 @@
-using below release pipeline
-name: release-IBPS-loose-file-deployment
-run-name: release-IBPS-loose-file-deployment-${{ github.event.inputs.release_version }}
+using below workflow
 
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
+name: IBPS-warfileinstall
+run-name: IBPS-warfileinstall-${{ github.event.inputs.release_version }}
 
 on:
   workflow_dispatch:
@@ -16,347 +10,132 @@ on:
         description: 'Release version to deploy'
         required: true 
         type: string
-      tag:
-        description: 'Release tag name'
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
         required: true
         type: string
-        default: 'KYC-test_21032024'
-      fileName:
-        description: 'Release file name'
+        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
+      war_file_name:
+        description: 'Name of the WAR file'
         required: true
         type: string
-        #default: 'release.zip'
-      deploy_mode:
-        description: 'deploy loose file'
+        default: 'KYC_Remediation.war'
+      app_name:
+        description: 'Name of the deployed application'
         required: true
         type: string
-        default: 'false'
-      rollback_mode:
-        description: 'rollback loose file'
+        default: 'KYC_Remediation_war'
+      context_root:
+        description: 'Context root of the deployed application'
         required: true
         type: string
-        default: 'false'          
-jobs:
-  CD:
-    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/IBPS-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
-    with:
-      release_version: ${{ github.event.inputs.release_version }}
-      tag: ${{ github.event.inputs.tag }}
-      fileName: ${{ github.event.inputs.fileName }}
-      deploy_mode: ${{ github.event.inputs.deploy_mode }}
-      rollback_mode: ${{ github.event.inputs.rollback_mode }}
-    secrets:
-      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-=====================
-using below reusable workflow
-name: IBPS-loose-file-deployment-reusable-workflow
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-
-on:
-  workflow_call:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      tag:
-        description: 'Release tag name'
-        required: true
-        type: string
-        #default: 'KYC-test_21032024'
-      fileName:
-        description: 'Release file name'
-        required: true
-        type: string
-        #default: 'release.zip'
-      deploy_mode:
-        description: 'deploy loose file'
-        required: true
-        type: string
-        default: 'false'
-      rollback_mode:
-        description: 'rollback loose file'
-        required: true
-        type: string
-        default: 'false'       
-
-    secrets:
-      TOKEN_GITHUB: 
-        required: true
-      USERNAME_GITHUB:
-        required: true
+        default: '/KYC_Remediation'
 
 jobs:
   deploy:
     runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
+      group: rakbank-self-hosted-runner
+      labels: [dehitdevtra1]
 
     steps:
     - name: Checkout ibps-was-ansible-cd repository
       uses: actions/checkout@v4
-      #with:
-        #repository: rakbank-internal/ibps-was-ansible-cd
-
-    - name: Checkout roles repository
+      with:
+        repository: rakbank-internal/ibps-was-ansible-cd
+        ref: ${{ github.event.inputs.branch }}
+      
+    - name: Checkout enterprise-ansible-roles repository
       uses: actions/checkout@v4
       with:
         repository: rakbank-internal/enterprise-ansible-roles
         token: ${{ secrets.TOKEN_GITHUB }}
         path: ansible-roles
-        ref: Feature    
-      
-    - name: Checkout reusable code
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-reusable-workflows
-        ref: feature/optimum-deh-mcf-templates
-        path: reusable-workflows
-        token: ${{ secrets.TOKEN_GITHUB }}  
+        ref: Feature
 
-    - name: Downlaod the releaseartifact from GitHub release
-      uses: ./reusable-workflows/.github/actions/IBPS-releaseartifact-download
-      with:
-        tag: ${{ github.event.inputs.tag }}
-        fileName: ${{ github.event.inputs.fileName }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-
-    - name: Run Ansible Playbook
-      uses: ./reusable-workflows/.github/actions/IBPS-loosfile-cd
-      with: 
-        release_version: ${{ github.event.inputs.release_version }}
-        deploy_mode: ${{ github.event.inputs.release_version }}
-        rollback_mode: ${{ github.event.inputs.release_version }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-==========================
-using below action for download releaseartifact
-name: 'Downlaod the releaseartifact from GitHub release'
-description: 'Downlaod the releaseartifact from GitHub release'
-inputs:
-  tag:
-    description: 'Release tag name'
-    required: true
-    type: string
-    #default: 'KYC-test_21032024'
-  filename:
-    description: 'Release file name'
-    required: true
-    type: string
-    #default: 'release.zip'
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-
-runs:
-  using: "composite"
-  steps:
-    - name: Download IBPS Release
-      uses: robinraju/release-downloader@v1.9
-      id: download_release
-      with:
-       repository: rakbank-internal/ibps-was-ansible-cd
-       tag: ${{ github.event.inputs.tag }}
-       fileName: ${{ github.event.inputs.fileName }}
-      env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Set downloaded file URL as an environment variable
+    - name: Debug Working Directory
       run: |
-        echo "ZIP_FILE_URL=${{ github.workspace }}/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
-=====================
-using below action for IBPS-loosefile-cd
-name: 'IBPS-loosefile-CD'
-description: 'IBPS-loosefile-CD'
-inputs:
-  release_version:
-    description: 'Release version to deploy'
-    required: true 
-    type: string
-  deploy_mode:
-    description: 'deploy loose file'
-    required: true
-    type: string
-    #default: 'false'
-  rollback_mode:
-    description: 'rollback loose file'
-    required: true
-    type: string
-    #default: 'false'
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-
-runs:
-  using: "composite"
-  steps:
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
+        ls -al
+        pwd
+        
+    - name: Make war-install-in-was.sh executable
+      run: chmod +x war-install-in-was.sh
+  
     - name: Run Ansible Playbook
       env:
         TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
         release_version: ${{ github.event.inputs.release_version }}
+        war_file_path: ${{ github.event.inputs.war_file_path }}
+        war_file_name: ${{ github.event.inputs.war_file_name }}
+        app_name: ${{ github.event.inputs.app_name }}
+        context_root: ${{ github.event.inputs.context_root }}
       run: |
         cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #Cluster ip:10.15.11.209
-        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #Cluster ip:10.15.11.210
-        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #replica ip:10.15.24.86    
-===============================
-using below ansible task for deploy
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }}" ./playbook/IBPS-warfileinstall.yml
+        # Uncomment and modify the lines below to run the playbook on additional targets
+        # ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }}" ./playbook/IBPS-warfileinstall.yml
+        # ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }}" ./playbook/IBPS-warfileinstall.yml
+=============================
+using below playbook defaults
 
-- name: Copy release.zip to tmp location
-  delegate_to: localhost
-  copy:
-    src: "{{ zip_file_url }}"
-    dest: "/tmp/{{ zip_file_name }}"
-    mode: '0755'
+- name: ibps deploy app
+  hosts: '{{ target }}'
   become: yes
-  become_user: "{{ ansible_user }}"     
+  become_user: itdevtra
 
-- name: list directory
-  command: "ls -la /ibm/IBM/Application/release"
+  tasks:
+    - name: Include IBPS-warfileinstall
+      include_role:
+        name: IBPS-warfileinstall
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        ansible_user: "itdevtra"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME:  "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
+        WAS_HOST: "10.15.11.209"
+        WAS_PORT: "8879"
+        WAS_ADMIN_USER: "deployer"
+        WAS_ADMIN_PASSWORD: "deployer@123"
+        CELL_NAME: "antibpsapp1Cell01"
+        CLUSTER_NAME: "BPMCLUSTER"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 
-- name: Create directory for new release version
-  file:
-    path: "{{ Profile_home }}/release.{{ release_version }}"
-    state: directory
-    mode: '0755'
-
-- name: Copy zip to Target Server
-  copy:
-    src: "/tmp/{{ zip_file_name }}"
-    dest: "{{ Profile_home }}/release.{{ release_version }}/{{ zip_file_name }}"
-    mode: '0755'      
- 
-- name: Copy deploy.sh to Target Server
-  copy:
-    #src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
-    src: "{{ destination }}/deploy.sh"
-    dest: "{{ Profile_home }}/release.{{ release_version }}/deploy.sh"
-    mode: '0755'
-  become: yes
-  become_user: "{{ ansible_user }}"
-
-- name: Run deploy on Target Server
-  become: yes
-  become_user: "{{ ansible_user }}"
-  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
-  register: deploy_result
-  ignore_errors: yes
-
-- name: Clean up WAR from Runner
-  delegate_to: localhost
-  file:
-    path: "/tmp/release"
-    state: absent
-  run_once: true
-=====================================
-
-Error: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 34, Col: 22): Unrecognized named-value: 'secrets'. Located at position 1 within expression: secrets.GITHUB_TOKEN
-Error: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 35, Col: 7): Required property is missing: shell
-Error: GitHub.DistributedTask.ObjectTemplating.TemplateValidationException: The template is not valid. /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 34, Col: 22): Unrecognized named-value: 'secrets'. Located at position 1 within expression: secrets.GITHUB_TOKEN,/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 35, Col: 7): Required property is missing: shell
-   at GitHub.DistributedTask.ObjectTemplating.TemplateValidationErrors.Check()
-   at GitHub.Runner.Worker.ActionManifestManager.ConvertRuns(IExecutionContext executionContext, TemplateContext templateContext, TemplateToken inputsToken, String fileRelativePath, MappingToken outputs)
-   at GitHub.Runner.Worker.ActionManifestManager.Load(IExecutionContext executionContext, String manifestFile)
-Error: Failed to load /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml
-
-==========================
-
-name: 'Downlaod the releaseartifact from GitHub release'
-description: 'Downlaod the releaseartifact from GitHub release'
-inputs:
-  tag:
-    description: 'Release tag name'
-    required: true
-    type: string
-  filename:
-    description: 'Release file name'
-    required: true
-    type: string
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-
-runs:
-  using: "composite"
-  steps:
-    - name: Download IBPS Release
-      uses: robinraju/release-downloader@v1.9
-      id: download_release
-      with:
-        repository: rakbank-internal/ibps-was-ansible-cd
-        tag: ${{ inputs.tag }}
-        fileName: ${{ inputs.filename }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.TOKEN_GITHUB }}
-    - name: Set downloaded file URL as an environment variable
-      run: |
-        echo "ZIP_FILE_URL=${{ github.workspace }}/${{ inputs.filename }}" >> $GITHUB_ENV
-      shell: bash
-=======================
-
-name: 'IBPS-loosefile-CD'
-description: 'IBPS-loosefile-CD'
-inputs:
-  release_version:
-    description: 'Release version to deploy'
-    required: true 
-    type: string
-  deploy_mode:
-    description: 'deploy loose file'
-    required: true
-    type: string
-  rollback_mode:
-    description: 'rollback loose file'
-    required: true
-    type: string
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-
-runs:
-  using: "composite"
-  steps:
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x deploy.sh rollback.sh
-      shell: bash
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
-        release_version: ${{ inputs.release_version }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ inputs.deploy_mode }} rollback_mode=${{ inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml
-      shell: bash
 ======================
 
+using below ansible tasks
+
+---
+- name: Copy war-install-in-was.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    #src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was.sh"
+    src: "{{ destination }}/war-install-in-was.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: |
+    cd "{{ Profile_home }}/release.{{ release_version }}"
+    ./war-install-in-was.sh "{{ WAS_HOST }}" "{{ WAS_PORT }}" "{{ WAS_ADMIN_USER }}" "{{ WAS_ADMIN_PASSWORD }}" "{{ WAR_FILE_PATH }}" "{{ APP_NAME }}" "{{ CONTEXT_ROOT }}" "{{ CELL_NAME }}" "{{ CLUSTER_NAME }}" "{{ WSADMIN }}" "{{ WAR_FILE_NAME }}"
+  args:
+    executable: /bin/bash
+  register: deploy_result
+
+=================
+
+but ansible role not calling from this
+TASK [Include IBPS-warfileinstall] *********************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/IBPS-warfileinstall.yml:7
+META: ran handlers
+META: ran handlers
