@@ -279,3 +279,84 @@ Error: GitHub.DistributedTask.ObjectTemplating.TemplateValidationException: The 
    at GitHub.Runner.Worker.ActionManifestManager.Load(IExecutionContext executionContext, String manifestFile)
 Error: Failed to load /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml
 
+==========================
+
+name: 'Downlaod the releaseartifact from GitHub release'
+description: 'Downlaod the releaseartifact from GitHub release'
+inputs:
+  tag:
+    description: 'Release tag name'
+    required: true
+    type: string
+  filename:
+    description: 'Release file name'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      id: download_release
+      with:
+        repository: rakbank-internal/ibps-was-ansible-cd
+        tag: ${{ inputs.tag }}
+        fileName: ${{ inputs.filename }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.TOKEN_GITHUB }}
+    - name: Set downloaded file URL as an environment variable
+      run: |
+        echo "ZIP_FILE_URL=${{ github.workspace }}/${{ inputs.filename }}" >> $GITHUB_ENV
+      shell: bash
+=======================
+
+name: 'IBPS-loosefile-CD'
+description: 'IBPS-loosefile-CD'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  deploy_mode:
+    description: 'deploy loose file'
+    required: true
+    type: string
+  rollback_mode:
+    description: 'rollback loose file'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+      shell: bash
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ inputs.deploy_mode }} rollback_mode=${{ inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml
+      shell: bash
+======================
+
