@@ -139,3 +139,87 @@ TASK [Include IBPS-warfileinstall] *********************************************
 task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/IBPS-warfileinstall.yml:7
 META: ran handlers
 META: ran handlers
+================================
+
+- name: ibps deploy app
+  hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+
+  tasks:
+    - name: Debug Variables
+      debug:
+        var: "{{ item }}"
+      with_items:
+        - github_token
+        - owner
+        - repo
+        - branch
+        - release_version
+        - ansible_user
+        - Profile_home
+        - WAR_FILE_PATH
+        - WAR_FILE_NAME
+        - APP_NAME
+        - CONTEXT_ROOT
+        - WAS_HOST
+        - WAS_PORT
+        - WAS_ADMIN_USER
+        - WAS_ADMIN_PASSWORD
+        - CELL_NAME
+        - CLUSTER_NAME
+        - WSADMIN
+
+    - name: Include IBPS-warfileinstall
+      include_role:
+        name: IBPS-warfileinstall
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        ansible_user: "itdevtra"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME:  "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
+        WAS_HOST: "10.15.11.209"
+        WAS_PORT: "8879"
+        WAS_ADMIN_USER: "deployer"
+        WAS_ADMIN_PASSWORD: "deployer@123"
+        CELL_NAME: "antibpsapp1Cell01"
+        CLUSTER_NAME: "BPMCLUSTER"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+=======================
+
+# roles/IBPS-warfileinstall/tasks/main.yml
+
+- name: Debug Start of Role Execution
+  debug:
+    msg: "Starting role IBPS-warfileinstall"
+
+- name: Copy war-install-in-was.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    src: "{{ destination }}/war-install-in-was.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was.sh"
+    mode: '0755'
+
+- name: Run war-install-in-was.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: |
+    cd "{{ Profile_home }}/release.{{ release_version }}"
+    ./war-install-in-was.sh "{{ WAS_HOST }}" "{{ WAS_PORT }}" "{{ WAS_ADMIN_USER }}" "{{ WAS_ADMIN_PASSWORD }}" "{{ WAR_FILE_PATH }}" "{{ APP_NAME }}" "{{ CONTEXT_ROOT }}" "{{ CELL_NAME }}" "{{ CLUSTER_NAME }}" "{{ WSADMIN }}" "{{ WAR_FILE_NAME }}"
+  args:
+    executable: /bin/bash
+  register: deploy_result
+
+- name: Debug End of Role Execution
+  debug:
+    msg: "Finished role IBPS-warfileinstall execution"
