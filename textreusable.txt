@@ -269,3 +269,13 @@ using below ansible task for deploy
     path: "/tmp/release"
     state: absent
   run_once: true
+=====================================
+
+Error: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 34, Col: 22): Unrecognized named-value: 'secrets'. Located at position 1 within expression: secrets.GITHUB_TOKEN
+Error: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 35, Col: 7): Required property is missing: shell
+Error: GitHub.DistributedTask.ObjectTemplating.TemplateValidationException: The template is not valid. /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 34, Col: 22): Unrecognized named-value: 'secrets'. Located at position 1 within expression: secrets.GITHUB_TOKEN,/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml (Line: 35, Col: 7): Required property is missing: shell
+   at GitHub.DistributedTask.ObjectTemplating.TemplateValidationErrors.Check()
+   at GitHub.Runner.Worker.ActionManifestManager.ConvertRuns(IExecutionContext executionContext, TemplateContext templateContext, TemplateToken inputsToken, String fileRelativePath, MappingToken outputs)
+   at GitHub.Runner.Worker.ActionManifestManager.Load(IExecutionContext executionContext, String manifestFile)
+Error: Failed to load /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/./reusable-workflows/.github/actions/IBPS-releaseartifact-download/action.yml
+
