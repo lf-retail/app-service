@@ -1,0 +1,271 @@
+using below release pipeline
+name: release-IBPS-loose-file-deployment
+run-name: release-IBPS-loose-file-deployment-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+        default: 'KYC-test_21032024'
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+        #default: 'release.zip'
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+        default: 'false'
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+        default: 'false'          
+jobs:
+  CD:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/IBPS-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      tag: ${{ github.event.inputs.tag }}
+      fileName: ${{ github.event.inputs.fileName }}
+      deploy_mode: ${{ github.event.inputs.deploy_mode }}
+      rollback_mode: ${{ github.event.inputs.rollback_mode }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+=====================
+using below reusable workflow
+name: IBPS-loose-file-deployment-reusable-workflow
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+        #default: 'KYC-test_21032024'
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+        #default: 'release.zip'
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+        default: 'false'
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+        default: 'false'       
+
+    secrets:
+      TOKEN_GITHUB: 
+        required: true
+      USERNAME_GITHUB:
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout ibps-was-ansible-cd repository
+      uses: actions/checkout@v4
+      #with:
+        #repository: rakbank-internal/ibps-was-ansible-cd
+
+    - name: Checkout roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature    
+      
+    - name: Checkout reusable code
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-reusable-workflows
+        ref: feature/optimum-deh-mcf-templates
+        path: reusable-workflows
+        token: ${{ secrets.TOKEN_GITHUB }}  
+
+    - name: Downlaod the releaseartifact from GitHub release
+      uses: ./reusable-workflows/.github/actions/IBPS-releaseartifact-download
+      with:
+        tag: ${{ github.event.inputs.tag }}
+        fileName: ${{ github.event.inputs.fileName }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+
+    - name: Run Ansible Playbook
+      uses: ./reusable-workflows/.github/actions/IBPS-loosfile-cd
+      with: 
+        release_version: ${{ github.event.inputs.release_version }}
+        deploy_mode: ${{ github.event.inputs.release_version }}
+        rollback_mode: ${{ github.event.inputs.release_version }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+==========================
+using below action for download releaseartifact
+name: 'Downlaod the releaseartifact from GitHub release'
+description: 'Downlaod the releaseartifact from GitHub release'
+inputs:
+  tag:
+    description: 'Release tag name'
+    required: true
+    type: string
+    #default: 'KYC-test_21032024'
+  filename:
+    description: 'Release file name'
+    required: true
+    type: string
+    #default: 'release.zip'
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      id: download_release
+      with:
+       repository: rakbank-internal/ibps-was-ansible-cd
+       tag: ${{ github.event.inputs.tag }}
+       fileName: ${{ github.event.inputs.fileName }}
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set downloaded file URL as an environment variable
+      run: |
+        echo "ZIP_FILE_URL=${{ github.workspace }}/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
+=====================
+using below action for IBPS-loosefile-cd
+name: 'IBPS-loosefile-CD'
+description: 'IBPS-loosefile-CD'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  deploy_mode:
+    description: 'deploy loose file'
+    required: true
+    type: string
+    #default: 'false'
+  rollback_mode:
+    description: 'rollback loose file'
+    required: true
+    type: string
+    #default: 'false'
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        release_version: ${{ github.event.inputs.release_version }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #Cluster ip:10.15.11.209
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #Cluster ip:10.15.11.210
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=${{ github.event.inputs.deploy_mode }} rollback_mode=${{ github.event.inputs.rollback_mode }} release_version=${release_version}" ./playbook/IBPS-loose-file-deployment.yml #replica ip:10.15.24.86    
+===============================
+using below ansible task for deploy
+
+- name: Copy release.zip to tmp location
+  delegate_to: localhost
+  copy:
+    src: "{{ zip_file_url }}"
+    dest: "/tmp/{{ zip_file_name }}"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"     
+
+- name: list directory
+  command: "ls -la /ibm/IBM/Application/release"
+
+- name: Create directory for new release version
+  file:
+    path: "{{ Profile_home }}/release.{{ release_version }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy zip to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name }}"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/{{ zip_file_name }}"
+    mode: '0755'      
+ 
+- name: Copy deploy.sh to Target Server
+  copy:
+    #src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/deploy.sh"
+    src: "{{ destination }}/deploy.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/deploy.sh"
+    mode: '0755'
+  become: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Run deploy on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./deploy.sh {{ Profile_home }} {{ release_version }} {{ zip_file_url }} {{ zip_file_name }}"
+  register: deploy_result
+  ignore_errors: yes
+
+- name: Clean up WAR from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/release"
+    state: absent
+  run_once: true
