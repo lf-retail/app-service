@@ -1,2 +1,81 @@
-#BAIS.jsp, /ibm/IBM-CAS/WebSphere/AppServer/profiles/AppSrv01/installedApps/dspcasapps01Cell01/BAIS_war.ear/BAIS.war/CustomForms/Forms_cas_31
-helloworld.jar,/home/ubuntu/app-dir
+name: IBPS-loose-file-deployment
+run-name: IBPS-loose-file-deployment-${{ github.event.inputs.release_version }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+      deploy_mode:
+        description: 'Deploy loose file'
+        required: true
+        type: string
+        default: 'false'
+      rollback_mode:
+        description: 'Rollback loose file'
+        required: true
+        type: string
+        default: 'false'
+
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: [dehitdevtra1]
+
+    steps:
+    - name: Checkout ibps-was-ansible-cd repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/ibps-was-ansible-cd
+        ref: ${{ github.event.inputs.branch }}
+      
+    - name: Checkout enterprise-ansible-roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x deploy.sh rollback.sh
+
+    - name: Download IBPS Release
+      uses: robinraju/release-downloader@v1.9
+      id: download_release
+      with:
+        repository: rakbank-internal/ibps-was-ansible-cd
+        tag: ${{ github.event.inputs.tag }}
+        fileName: ${{ github.event.inputs.fileName }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set downloaded file URL as an environment variable
+      run: echo "ZIP_FILE_URL=${{ github.workspace }}/${{ github.event.inputs.fileName }}" >> $GITHUB_ENV
+
+    - name: Display ZIP_FILE_URL
+      run: echo $ZIP_FILE_URL
+
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        release_version: ${{ github.event.inputs.release_version }}
+        deploy_mode: ${{ github.event.inputs.deploy_mode }}
+        rollback_mode: ${{ github.event.inputs.rollback_mode }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ env.deploy_mode }} rollback_mode=${{ env.rollback_mode }} release_version=${{ env.release_version }}" ./playbook/IBPS-loose-file-deployment.yml
+        # Uncomment and modify the lines below to run the playbook on additional targets
+        # ansible-playbook -vvv -b --extra-vars "target=target_wasuat210 destination=${{ github.workspace }} deploy_mode=${{ env.deploy_mode }} rollback_mode=${{ env.rollback_mode }} release_version=${{ env.release_version }}" ./playbook/IBPS-loose-file-deployment.yml
+        # ansible-playbook -vvv -b --extra-vars "target=target_wasreplica86 destination=${{ github.workspace }} deploy_mode=${{ env.deploy_mode }} rollback_mode=${{ env.rollback_mode }} release_version=${{ env.release_version }}" ./playbook/IBPS-loose-file-deployment.yml
