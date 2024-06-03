@@ -49,7 +49,8 @@ jobs:
 
     - name: Make deploy.sh and rollback.sh executable
       run: |
-        chmod +x deploy.sh rollback.sh
+        #chmod +x deploy.sh rollback.sh
+        chmod +x scripts/deploy.sh scripts/rollback.sh
 
     - name: Download IBPS Release
       uses: robinraju/release-downloader@v1.9
