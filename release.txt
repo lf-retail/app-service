@@ -1,4 +1,5 @@
-using below github workflow
+using below workflow
+
 name: release-was-warfileinstall
 run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
 
@@ -49,9 +50,160 @@ jobs:
     secrets:
       TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
       USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-===================================
-using below playblook variables
+      WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
+      WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
+==============================
 
+using below reusable workflow
+name: was-warfileinstall-reusable-workflow
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
+        required: true
+        type: string
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+
+    secrets:
+      TOKEN_GITHUB: 
+        required: true
+      USERNAME_GITHUB:
+        required: true
+      WAS_ADMIN_USER:
+        required: true
+      WAS_ADMIN_PASSWORD:
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Checkout roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature      
+      
+    - name: Checkout reusable code
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-reusable-workflows
+        ref: feature/optimum-deh-mcf-templates
+        path: reusable-workflows
+        token: ${{ secrets.TOKEN_GITHUB }}  
+
+    - name: Make war-install-in-was.sh executable
+      run: |
+        chmod +x scripts/war-install-in-was.sh    
+
+    - name: war file installation in WAS
+      uses: ./reusable-workflows/.github/actions/was-warfileinstall
+      with:
+        release_version: ${{ inputs.release_version }}
+        war_file_path: ${{ inputs.war_file_path }}
+        war_file_name: ${{ inputs.war_file_name }}
+        app_name: ${{ inputs.app_name }}
+        context_root: ${{ inputs.context_root }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
+        WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
+==============================
+
+using below composite action
+name: 'was-warfileinstall'
+description: 'was-warfileinstall'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  war_file_path:
+    description: 'Path to the WAR file on the target server'
+    required: true
+    type: string
+  war_file_name:
+    description: 'Name of the WAR file'
+    required: true
+    type: string
+  app_name:
+    description: 'Name of the deployed application'
+    required: true
+    type: string
+  context_root:
+    description: 'Context root of the deployed application'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string    
+  WAS_ADMIN_USER:
+    description: 'GitHub username'
+    required: true
+    type: string
+  WAS_ADMIN_PASSWORD:
+    description: 'GitHub username'
+    required: true
+    type: string
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+        war_file_path: ${{ inputs.war_file_path }}
+        war_file_name: ${{ inputs.war_file_name }}
+        app_name: ${{ inputs.app_name }}
+        context_root: ${{ inputs.context_root }}
+        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+        WAS_ADMIN_USER: ${{ inputs.WAS_ADMIN_USER }}
+        WAS_ADMIN_PASSWORD: ${{ inputs.WAS_ADMIN_PASSWORD }}
+        
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }} WAS_ADMIN_USER=${{ env.WAS_ADMIN_USER }} WAS_ADMIN_PASSWORD=${{ env.WAS_ADMIN_PASSWORD }}" ./playbook/was-warfileinstall.yml #Cluster ip:10.15.11.209
+      shell: bash  
+=============================================
+using playbook variables
 - name: was deploy warfileinstall in was
   hosts: '{{ target }}'
   become: yes
@@ -76,23 +228,176 @@ using below playblook variables
         CONTEXT_ROOT: "{{ lookup('env', 'context_root') }}"
         WAS_HOST: "10.15.11.209"
         WAS_PORT: "8879"
-        WAS_ADMIN_USER: "deployer"
-        WAS_ADMIN_PASSWORD: "deployer@123"
+        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
+        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
+        #WAS_ADMIN_USER: "deployer"
+        #WAS_ADMIN_PASSWORD: "deployer@123"
         CELL_NAME: "antibpsapp1Cell01"
         CLUSTER_NAME: "BPMCLUSTER"
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 ==================================
+using roles tasks
+---
+- name: Copy war-install-in-was.sh to Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  copy:
+    #src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was.sh"
+    src: "{{ destination }}/scripts/war-install-in-was.sh"
+    dest: "{{ Profile_home }}/release.{{ release_version }}/war-install-in-was.sh"
+    mode: '0755'
 
-rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates
-========================
+- name: Run war-install-in-was.sh on Target Server
+  become: yes
+  become_user: "{{ ansible_user }}"
+  ignore_errors: yes
+  shell: |
+    cd "{{ Profile_home }}/release.{{ release_version }}"
+    ./war-install-in-was.sh "{{ WAS_HOST }}" "{{ WAS_PORT }}" "{{ WAS_ADMIN_USER }}" "{{ WAS_ADMIN_PASSWORD }}" "{{ WAR_FILE_PATH }}" "{{ APP_NAME }}" "{{ CONTEXT_ROOT }}" "{{ CELL_NAME }}" "{{ CLUSTER_NAME }}" "{{ WSADMIN }}" "{{ WAR_FILE_NAME }}"
+  args:
+    executable: /bin/bash
+  register: deploy_result
+==================================
+using below script
+#!/bin/bash
+ 
+# Server details
+WAS_HOST="$1"
+WAS_PORT="$2"
+WAS_ADMIN_USER="$3"
+WAS_ADMIN_PASSWORD="$4"
+ 
+# WAR file and application details
+WAR_FILE_PATH="$5"
+APP_NAME="$6"
+CONTEXT_ROOT="$7"
+CELL_NAME="$8"
+CLUSTER_NAME="$9"
+ 
+# Path to wsadmin.sh
+WSADMIN="${10}"
+WAR_FILE_NAME="${11}"
 
-Requested runner group: rakbank-self-hosted-runner
-Requested labels: dehitdevtra1
-Job defined at: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates
-Reusable workflow chain:
-rakbank-internal/ibps-was-ansible-cd/.github/workflows/release-was-warfileinstall-cd.yml@refs/heads/ibps-app-role (7e4821d1dd727cf9cfc0eefa5fed20d83191e1cd)
--> rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates (585992b0df99d3a95498665eef4462f8f322b7cc)
-Waiting for a runner to pick up this job...
-==========================
+# Define the shared libraries array
+shared_libs=("ibps_library" "omnidocs_library" "wfs_library")
+ 
+# Create a new file for the Jython script
+WSADMIN_SCRIPT="wsadmin_script.jy"
+ 
+# Write the initial part of the Jython script to the file
+cat <<EOF >$WSADMIN_SCRIPT
+import time
+import sys
 
-rakbank-internal/ibps-was-ansible-cd/.github/workflows/IBPS-warfileinstall.yml@refs/heads/ibps-app-role
+# Check if the application is already running
+if '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Application ${APP_NAME} is already running. Stopping it...'
+    app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
+    for app_manager in app_managers:
+        AdminControl.invoke(app_manager, 'stopApplication', '${APP_NAME}', '[${CELL_NAME},${CLUSTER_NAME}]')
+    print 'Application ${APP_NAME} stop command issued.'
+
+# Wait for the application to stop
+while '${APP_NAME}' in AdminControl.queryNames('type=Application,*').splitlines():
+    print 'Waiting for application %s to stop...' % '${APP_NAME}'
+    time.sleep(30)
+
+print 'Application %s is not running.' % '${APP_NAME}'
+
+# Uninstall the application if it already exists
+if '${APP_NAME}' in AdminApp.list().splitlines():
+    print 'Application %s already exists. Removing...' % '${APP_NAME}'
+    result = AdminApp.uninstall('${APP_NAME}')
+    if result != '':
+        print 'Failed to uninstall application ' + '${APP_NAME}' + '. Error: ' + result
+        raise Exception('Failed to uninstall application ' + '${APP_NAME}')
+    else:
+        AdminConfig.save()
+        print 'Application %s removed.' % '${APP_NAME}'
+
+# Install the application
+result = AdminApp.install("${WAR_FILE_PATH}", '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ ${WAR_FILE_NAME} ${WAR_FILE_NAME},WEB-INF/web.xml WebSphere:cell=${CELL_NAME},cluster=${CLUSTER_NAME} ]] -MapSharedLibForMod [[ ${APP_NAME} META-INF/application.xml wfs_library+omnidocs_library+ibps_library ]]')
+
+if result != '':
+    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
+    raise Exception('Failed to install application ' + '${APP_NAME}')
+    
+# Set the class loader policy to PARENT_LAST
+dep = AdminConfig.getid('/Deployment:${APP_NAME}/')
+depObject = AdminConfig.showAttribute(dep, 'deployedObject')
+
+modules = AdminConfig.showAttribute(depObject, 'modules')
+for module in modules[1:-1].split():
+    if AdminConfig.showAttribute(module, 'uri') == 'KYC_Remediation.war':
+        warClassldr = AdminConfig.showAttribute(module, 'classloader')
+        AdminConfig.modify(warClassldr, [['mode', 'PARENT_LAST']])
+        break
+
+# Save configuration and add a delay before starting the application
+AdminConfig.save()
+time.sleep(60)
+
+# Start the application on each node in the cluster
+print 'Starting application ${APP_NAME}'
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR01,platform=proxy,node=antibpsapp1Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
+AdminControl.invoke('WebSphere:name=ApplicationManager,process=BPMMBR02,platform=proxy,node=antibpsapp2Node01,version=8.5.5.25,type=ApplicationManager,mbeanIdentifier=ApplicationManager,cell=${CELL_NAME},spec=1.0', 'startApplication', '${APP_NAME}')
+print 'Application ${APP_NAME} started.'
+EOF
+
+# Execute the script with wsadmin
+$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+==================================
+getting error
+TASK [was-warfile-deploy : Run war-install-in-was.sh on Target Server] *********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible-roles/was-warfile-deploy/tasks/main.yml:11
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1717505775.422791-149347-90282664504454 && echo ansible-tmp-1717505775.422791-149347-90282664504454="` echo /tmp/ansible-tmp-1717505775.422791-149347-90282664504454 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1717505775.422791-149347-90282664504454=/tmp/ansible-tmp-1717505775.422791-149347-90282664504454\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-1493091mjph36v/tmpcmz63m8m TO /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1493091mjph36v/tmpcmz63m8m /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/ /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-06-04 17:00:35.689605", "stdout": "WASX7023E: Error creating \\"SOAP\\" connection to host \\"10.15.11.209\\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]\\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\\nWASX8011W: Admi
+<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/ > /dev/null 2>&1 && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "changed": true,
+    "cmd": "cd \"/ibm/IBM/Application/release/release.2.0.0.4\"\n./war-install-in-was.sh \"10.15.11.209\" \"8879\" \"***\" \"***\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\" \"KYC_Remediation_war\" \"/KYC_Remediation\" \"antibpsapp1Cell01\" \"BPMCLUSTER\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh\" \"KYC_Remediation.war\"\n",
+    "delta": "0:00:06.524298",
+    "end": "2024-06-04 17:00:35.689605",
+    "invocation": {
+        "module_args": {
+            "_raw_params": "cd \"/ibm/IBM/Application/release/release.2.0.0.4\"\n./war-install-in-was.sh \"10.15.11.209\" \"8879\" \"***\" \"***\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\" \"KYC_Remediation_war\" \"/KYC_Remediation\" \"antibpsapp1Cell01\" \"BPMCLUSTER\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh\" \"KYC_Remediation.war\"\n",
+            "_uses_shell": true,
+            "argv": null,
+            "chdir": null,
+            "creates": null,
+            "executable": "/bin/bash",
+            "removes": null,
+            "stdin": null,
+            "stdin_add_newline": true,
+            "strip_empty_ends": true,
+            "warn": false
+        }
+    },
+    "msg": "non-zero return code",
+    "rc": 105,
+    "start": "2024-06-04 17:00:29.165307",
+    "stderr": "",
+    "stderr_lines": [],
+    "stdout": "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\nWASX8011W: AdminTask object is not available.\nWASX7017E: Exception received while running file \
+    "stdout_lines": [
+        "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]",
+        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
+        "WASX8011W: AdminTask object is not available.",
+        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available"
+    ]
+}
+...ignoring
