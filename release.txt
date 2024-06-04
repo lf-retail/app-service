@@ -84,3 +84,12 @@ using below playblook variables
 ==================================
 
 rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates
+========================
+
+Requested runner group: rakbank-self-hosted-runner
+Requested labels: dehitdevtra1
+Job defined at: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates
+Reusable workflow chain:
+rakbank-internal/ibps-was-ansible-cd/.github/workflows/release-was-warfileinstall-cd.yml@refs/heads/ibps-app-role (7e4821d1dd727cf9cfc0eefa5fed20d83191e1cd)
+-> rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates (585992b0df99d3a95498665eef4462f8f322b7cc)
+Waiting for a runner to pick up this job...
