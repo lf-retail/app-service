@@ -81,3 +81,6 @@ using below playblook variables
         CELL_NAME: "antibpsapp1Cell01"
         CLUSTER_NAME: "BPMCLUSTER"
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+==================================
+
+rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@refs/heads/feature/optimum-deh-mcf-templates
