@@ -1,8 +1,55 @@
-ansible_user: "itdevtra"
-WAS_HOST: "10.15.11.209"
-WAS_PORT: "8879"
-WAS_ADMIN_USER: "deployer"
-WAS_ADMIN_PASSWORD: "deployer@123"
+using github workflow
+name: release-was-warfileinstall
+run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
+        required: true
+        type: string
+        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+        default: 'KYC_Remediation.war'
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+        default: 'KYC_Remediation_war'
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+        default: '/KYC_Remediation'
+        
+jobs:
+  IBPS-warfileinstall:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      war_file_path: ${{ github.event.inputs.war_file_path }}
+      war_file_name: ${{ github.event.inputs.war_file_name }}
+      app_name: ${{ github.event.inputs.app_name }}
+      context_root: ${{ github.event.inputs.context_root }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+===================================
 
 
 - name: was deploy warfileinstall in was
