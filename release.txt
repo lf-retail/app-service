@@ -1,4 +1,4 @@
-using github workflow
+using below github workflow
 name: release-was-warfileinstall
 run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
 
@@ -50,7 +50,7 @@ jobs:
       TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
       USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
 ===================================
-
+using below playblook variables
 
 - name: was deploy warfileinstall in was
   hosts: '{{ target }}'
