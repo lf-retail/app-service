@@ -1,12 +1,5 @@
-Requested runner group: rakbank-self-hosted-runner
-Requested labels: dehitdevtra1
-Job defined at: 
-
-rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@refs/heads/feature/optimum-deh-mcf-templates
-rakbank-internal/enterprise-reusable-workflows/.github/workflows/release-was-warfileinstall-cd.yml@refs/heads/feature/optimum-deh-mcf-templates
-
-release-was-warfileinstall-cd.yml
-
-Reusable workflow chain:
-rakbank-internal/ibps-was-ansible-cd/.github/workflows/release-was-loosefile-cd.yml@refs/heads/IBPS-APP-ROLE (aa771b976135dd363e227d263ddaf886ad0f07ac)
--> rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@refs/heads/feature/optimum-deh-mcf-templates (07067fe37ed7cd8f2559adc708e518555fcbe68b)
+ansible_user: "itdevtra"
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+WAS_ADMIN_USER: "deployer"
+WAS_ADMIN_PASSWORD: "deployer@123"
