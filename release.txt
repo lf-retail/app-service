@@ -52,9 +52,11 @@ jobs:
       USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
       WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
       WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
-==============================
+
+========================================
 
 using below reusable workflow
+
 name: was-warfileinstall-reusable-workflow
 
 permissions:
@@ -140,8 +142,7 @@ jobs:
         USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
         WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
-==============================
-
+================================================
 using below composite action
 name: 'was-warfileinstall'
 description: 'was-warfileinstall'
@@ -197,13 +198,15 @@ runs:
         USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
         WAS_ADMIN_USER: ${{ inputs.WAS_ADMIN_USER }}
         WAS_ADMIN_PASSWORD: ${{ inputs.WAS_ADMIN_PASSWORD }}
-        
       run: |
         cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }} WAS_ADMIN_USER=${{ env.WAS_ADMIN_USER }} WAS_ADMIN_PASSWORD=${{ env.WAS_ADMIN_PASSWORD }}" ./playbook/was-warfileinstall.yml #Cluster ip:10.15.11.209
-      shell: bash  
-=============================================
-using playbook variables
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} WAS_ADMIN_USER=${WAS_ADMIN_USER} WAS_ADMIN_PASSWORD=${WAS_ADMIN_PASSWORD} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml #Cluster ip:10.15.11.209
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} WAS_ADMIN_USER=${WAS_ADMIN_USER} WAS_ADMIN_PASSWORD=${WAS_ADMIN_PASSWORD} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml #Cluster ip:10.15.11.209
+        #ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${{ env.release_version }} war_file_path=${{ env.war_file_path }} war_file_name=${{ env.war_file_name }} app_name=${{ env.app_name }} context_root=${{ env.context_root }} WAS_ADMIN_USER=${{ env.WAS_ADMIN_USER }} WAS_ADMIN_PASSWORD=${{ env.WAS_ADMIN_PASSWORD }}" ./playbook/was-warfileinstall.yml
+      shell: bash   
+=========================================================
+using below playbook 
+
 - name: was deploy warfileinstall in was
   hosts: '{{ target }}'
   become: yes
@@ -220,12 +223,11 @@ using playbook variables
         repo: "ibps-was-ansible-cd"
         branch: "IBPS-APP-ROLE"
         release_version: "{{ lookup('env', 'release_version') }}"
-        ansible_user: "itdevtra"
         Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH: "{{ lookup('env', 'war_file_path') }}"
-        WAR_FILE_NAME: "{{ lookup('env', 'war_file_name') }}"
-        APP_NAME: "{{ lookup('env', 'app_name') }}"
-        CONTEXT_ROOT: "{{ lookup('env', 'context_root') }}"
+        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME:  "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
         WAS_HOST: "10.15.11.209"
         WAS_PORT: "8879"
         WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
@@ -234,13 +236,52 @@ using playbook variables
         #WAS_ADMIN_PASSWORD: "deployer@123"
         CELL_NAME: "antibpsapp1Cell01"
         CLUSTER_NAME: "BPMCLUSTER"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
-==================================
-using roles tasks
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"        
+===========================================
+using below ansible configuration
+
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+inventory=hosts.cfg
+roles_path=ansible-roles
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+timeout=30
+ansible_pipelining=True
+
+========================================
+using below host configuration
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+#[target_wasuat148]
+#ANT3CASAPPS01 ansible_ssh_host=10.15.13.148
+
+[target_wasuat209]
+ANTIBPSAPP1 ansible_ssh_host=10.15.11.209
+
+#[target_wasuat210]
+#ANTIBPSAPP1 ansible_ssh_host=10.15.11.210
+
+#[target_wasreplica86]
+#ANT3CASAPPS02 ansible_ssh_host=10.15.24.86
+=================================
+using below ansible roles
+
 ---
 - name: Copy war-install-in-was.sh to Target Server
   become: yes
-  become_user: "{{ ansible_user }}"
+  become_user: itdevtra
   copy:
     #src: "/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/war-install-in-was.sh"
     src: "{{ destination }}/scripts/war-install-in-was.sh"
@@ -249,16 +290,13 @@ using roles tasks
 
 - name: Run war-install-in-was.sh on Target Server
   become: yes
-  become_user: "{{ ansible_user }}"
-  ignore_errors: yes
-  shell: |
-    cd "{{ Profile_home }}/release.{{ release_version }}"
-    ./war-install-in-was.sh "{{ WAS_HOST }}" "{{ WAS_PORT }}" "{{ WAS_ADMIN_USER }}" "{{ WAS_ADMIN_PASSWORD }}" "{{ WAR_FILE_PATH }}" "{{ APP_NAME }}" "{{ CONTEXT_ROOT }}" "{{ CELL_NAME }}" "{{ CLUSTER_NAME }}" "{{ WSADMIN }}" "{{ WAR_FILE_NAME }}"
-  args:
-    executable: /bin/bash
+  become_user: itdevtra
+  shell: "cd {{ Profile_home }}/release.{{ release_version }} && ./war-install-in-was.sh {{ WAS_HOST }} {{ WAS_PORT }} {{ WAS_ADMIN_USER }} {{ WAS_ADMIN_PASSWORD }} {{ WAR_FILE_PATH }} {{ APP_NAME }} {{ CONTEXT_ROOT }} {{ CELL_NAME }} {{ CLUSTER_NAME }} {{ WSADMIN }} {{ WAR_FILE_NAME }}"
   register: deploy_result
-==================================
-using below script
+  ignore_errors: yes
+================================
+using below ansible script for war file installation
+
 #!/bin/bash
  
 # Server details
@@ -346,58 +384,10 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
-==================================
-getting error
-TASK [was-warfile-deploy : Run war-install-in-was.sh on Target Server] *********
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible-roles/was-warfile-deploy/tasks/main.yml:11
-<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1717505775.422791-149347-90282664504454 && echo ansible-tmp-1717505775.422791-149347-90282664504454="` echo /tmp/ansible-tmp-1717505775.422791-149347-90282664504454 `" ) && sleep 0'"'"''
-<10.15.11.209> (0, b'ansible-tmp-1717505775.422791-149347-90282664504454=/tmp/ansible-tmp-1717505775.422791-149347-90282664504454\n', b'')
-Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
-<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-1493091mjph36v/tmpcmz63m8m TO /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py
-<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
-<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1493091mjph36v/tmpcmz63m8m /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py\n', b'')
-<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/ /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.11.209> (0, b'', b'')
-<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/AnsiballZ_command.py && sleep 0'"'"''
-<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-06-04 17:00:35.689605", "stdout": "WASX7023E: Error creating \\"SOAP\\" connection to host \\"10.15.11.209\\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]\\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\\nWASX8011W: Admi
-<10.15.11.209> Failed to connect to the host via ssh: Shared connection to 10.15.11.209 closed.
-<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
-<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'rm -f -r /tmp/ansible-tmp-1717505775.422791-149347-90282664504454/ > /dev/null 2>&1 && sleep 0'"'"''
-<10.15.11.209> (0, b'', b'')
-fatal: [ANTIBPSAPP1]: FAILED! => {
-    "changed": true,
-    "cmd": "cd \"/ibm/IBM/Application/release/release.2.0.0.4\"\n./war-install-in-was.sh \"10.15.11.209\" \"8879\" \"***\" \"***\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\" \"KYC_Remediation_war\" \"/KYC_Remediation\" \"antibpsapp1Cell01\" \"BPMCLUSTER\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh\" \"KYC_Remediation.war\"\n",
-    "delta": "0:00:06.524298",
-    "end": "2024-06-04 17:00:35.689605",
-    "invocation": {
-        "module_args": {
-            "_raw_params": "cd \"/ibm/IBM/Application/release/release.2.0.0.4\"\n./war-install-in-was.sh \"10.15.11.209\" \"8879\" \"***\" \"***\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war\" \"KYC_Remediation_war\" \"/KYC_Remediation\" \"antibpsapp1Cell01\" \"BPMCLUSTER\" \"/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh\" \"KYC_Remediation.war\"\n",
-            "_uses_shell": true,
-            "argv": null,
-            "chdir": null,
-            "creates": null,
-            "executable": "/bin/bash",
-            "removes": null,
-            "stdin": null,
-            "stdin_add_newline": true,
-            "strip_empty_ends": true,
-            "warn": false
-        }
-    },
-    "msg": "non-zero return code",
-    "rc": 105,
-    "start": "2024-06-04 17:00:29.165307",
-    "stderr": "",
-    "stderr_lines": [],
-    "stdout": "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]\nWASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.\nWASX8011W: AdminTask object is not available.\nWASX7017E: Exception received while running file \
-    "stdout_lines": [
-        "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]",
-        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
-        "WASX8011W: AdminTask object is not available.",
-        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available"
-    ]
-}
-...ignoring
+==========================
+
+in ansible playbook i am uisng 
+WAS_HOST: "10.15.11.209"
+WAS_PORT: "8879"
+
+but in my application i am using 3 ip address in host configuration because the WAS_HOST and WAS_PORT its dynamic it will be change so how do i parameter and pass it to my playbook default using host configuration
