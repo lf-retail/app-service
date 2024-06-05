@@ -240,3 +240,6 @@ ansible_ssh_port=22
 [target_was]
 host1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
 host2 ansible_ssh_host=10.15.13.148 ansible_host_port=887
+
+[target_wasuat209]
+host1 ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
