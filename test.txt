@@ -282,3 +282,16 @@ host1 ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
         CELL_NAME: "antibpsapp1Cell01"
         CLUSTER_NAME: "BPMCLUSTER"
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"        
+========================
+
+[4:33 PM] Pradip Kanasani
+ask this output log 
+ 
+/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout
+
+------------------
+[4:33 PM] Pradip Kanasani
+        "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]",
+185        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
+186        "WASX8011W: AdminTask object is not available.",
+187        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available"
