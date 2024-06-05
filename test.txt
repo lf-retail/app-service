@@ -243,3 +243,42 @@ host2 ansible_ssh_host=10.15.13.148 ansible_host_port=887
 
 [target_wasuat209]
 host1 ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
+================
+
+- name: was deploy warfileinstall in was
+  hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+
+  tasks:
+    - name: Set dynamic WAS_HOST and WAS_PORT
+      set_fact:
+        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
+        
+    - name: Include was-warfile-deploy
+      include_role:
+        name:  was-warfile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME:  "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
+        WAS_HOST: "{{ was_host }}"
+        WAS_PORT: "{{ was_port }}"
+        #WAS_HOST: "10.15.11.209"
+        #WAS_PORT: "8880"
+        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
+        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
+        #WAS_ADMIN_USER: "deployer"
+        #WAS_ADMIN_PASSWORD: "deployer@123"
+        CELL_NAME: "antibpsapp1Cell01"
+        CLUSTER_NAME: "BPMCLUSTER"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"        
