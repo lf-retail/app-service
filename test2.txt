@@ -1,140 +1,164 @@
-Profile_home="$1"
-release_version="$2"
-zip_file_url="$3"
-zip_file_name="$4"
+************ Start Display Current Environment ************
+Host Operating System is Linux, version 3.10.0-1160.105.1.el7.x86_64
+Java version = 1.8.0_391, Java Runtime Version = 8.0.8.15 - pxa6480sr8fp15-20231030_01(SR8 FP15), Java Compiler = j9jit29, Java VM name = IBM J9 VM
+was.install.root = /ibm/IBM/WebSphere/AppServer
+user.install.root = /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01
+Java Home = /ibm/IBM/WebSphere/AppServer/java/jre
+ws.ext.dirs = /ibm/IBM/WebSphere/AppServer/java/lib:/ibm/IBM/WebSphere/AppServer/classes:/ibm/IBM/WebSphere/AppServer/lib:/ibm/IBM/WebSphere/AppServer/installedChannels:/ibm/IBM/WebSphere/AppServer/lib/ext:/ibm/IBM/WebSphere/AppServer/web/help:/ibm/IBM/WebSphere/AppServer/deploytool/itp/plugins/com.ibm.etools.ejbdeploy/runtime
+Classpath = /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/properties:/ibm/IBM/WebSphere/AppServer/properties:/ibm/IBM/WebSphere/AppServer/lib/startup.jar:/ibm/IBM/WebSphere/AppServer/lib/bootstrap.jar:/ibm/IBM/WebSphere/AppServer/lib/lmproxy.jar:/ibm/IBM/WebSphere/AppServer/lib/urlprotocols.jar:/ibm/IBM/WebSphere/AppServer/java/lib/tools.jar:/ibm/IBM/WebSphere/AppServer/deploytool/itp/batchboot.jar:/ibm/IBM/WebSphere/AppServer/deploytool/itp/batch2.jar
+Java Library path = /ibm/IBM/WebSphere/AppServer/java/jre/lib/amd64/compressedrefs:/ibm/IBM/WebSphere/AppServer/java/jre/lib/amd64:/ibm/IBM/WebSphere/AppServer/lib/native/linux/x86_64/:/ibm/IBM/WebSphere/AppServer/bin:/ibm/IBM/WebSphere/AppServer/nulldllsdir:/usr/lib64:/usr/lib
+Orb Version = IBM Java ORB build orbdev-userlvl-20230924.2334
+Max file descriptor count = 20480
+Current trace specification = *=info
+************* End Display Current Environment *************
+[6/5/24 13:01:15:786 GST] 00000001 ManagerAdmin  I   TRAS0017I: The startup trace state is *=info.
+[6/5/24 13:01:16:088 GST] 00000001 AbstractShell A   WASX7326I: Loaded properties file "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/properties/wsadmin.properties"
+[6/5/24 13:01:16:450 GST] 00000001 ProviderTrack I com.ibm.ffdc.osgi.ProviderTracker AddingService FFDC1007I: FFDC Provider Installed: com.ibm.ffdc.util.provider.FfdcOnDirProvider@a22f868e
+[6/5/24 13:01:16:551 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.certpath.disabledAlgorithms set to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, include jdk.disabled.namedCurves, SHA1 usage SignedJAR & denyAfter 2019-01-01].  The WebSphere Application server is setting the java security property jdk.certpath.disabledAlgorithms to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224]. 
+[6/5/24 13:01:16:554 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.tls.disabledAlgorithms set to [SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC, include jdk.disabled.namedCurves].  The WebSphere Application server is setting the java security property jdk.tls.disabledAlgorithms to [SSLv3, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC]. 
+[6/5/24 13:01:16:556 GST] 00000001 SSLConfigMana I   CWPKI0027I: Disabling default hostname verification for HTTPS URL connections.
+[6/5/24 13:01:16:561 GST] 00000001 SecurityObjec I   CWSCF0002I: The client code is attempting to load the security configuration the server and this operation is not allowed.
+[6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
+[6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
+[6/5/24 13:01:18:538 GST] 00000001 AbstractShell A   WASX7093I: Issuing message: "WASX7023E: Error creating "SOAP" connection to host "10.15.11.209"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]"
+[6/5/24 13:01:18:541 GST] 00000001 AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.websphere.management.exception.ConnectorException
+java.lang.reflect.InvocationTargetException: java.lang.reflect.InvocationTargetException
+" follows:
 
-# Extract the zip file to a new release directory
-unzip -q "$Profile_home/release.$release_version/$zip_file_name" -d "$Profile_home/release.$release_version"
+ com.ibm.websphere.management.exception.ConnectorException: ADMC0016E: The system cannot create a SOAP connector to connect to host 10.15.11.209 at port 8879.
+	at com.ibm.websphere.management.AdminClientFactory.createAdminClientPrivileged(AdminClientFactory.java:635)
+	at com.ibm.websphere.management.AdminClientFactory.access$000(AdminClientFactory.java:127)
+	at com.ibm.websphere.management.AdminClientFactory$1.run(AdminClientFactory.java:210)
+	at com.ibm.ws.security.util.AccessController.doPrivileged(AccessController.java:63)
+	at com.ibm.websphere.management.AdminClientFactory.createAdminClient(AdminClientFactory.java:206)
+	at com.ibm.ws.scripting.CommonScriptingObject.connectToAdminService(CommonScriptingObject.java:123)
+	at com.ibm.ws.scripting.CommonScriptingObject.<init>(CommonScriptingObject.java:104)
+	at com.ibm.ws.scripting.AdminControlClient.<init>(AdminControlClient.java:170)
+	at com.ibm.ws.scripting.AbstractShell.createControlClient(AbstractShell.java:1290)
+	at com.ibm.ws.scripting.AbstractShell.run(AbstractShell.java:2253)
+	at com.ibm.ws.scripting.WasxShell.main(WasxShell.java:1172)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at com.ibm.wsspi.bootstrap.WSLauncher.launchMain(WSLauncher.java:234)
+	at com.ibm.wsspi.bootstrap.WSLauncher.main(WSLauncher.java:96)
+	at com.ibm.wsspi.bootstrap.WSLauncher.run(WSLauncher.java:77)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at org.eclipse.equinox.internal.app.EclipseAppContainer.callMethodWithException(EclipseAppContainer.java:587)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:198)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:369)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
+	at org.eclipse.core.launcher.Main.run(Main.java:981)
+	at com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)
+	at com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:83)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:57)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:437)
+	at com.ibm.websphere.management.AdminClientFactory.createAdminClientPrivileged(AdminClientFactory.java:457)
+	... 36 more
+Caused by: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]
+	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.reconnect(SOAPConnectorClient.java:437)
+	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.<init>(SOAPConnectorClient.java:236)
+	... 41 more
+Caused by: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]
+	at org.apache.soap.transport.http.SOAPHTTPConnection.send(SOAPHTTPConnection.java:475)
+	at org.apache.soap.rpc.Call.WASinvoke(Call.java:525)
+	at com.ibm.ws.management.connector.soap.SOAPConnectorClient$4.run(SOAPConnectorClient.java:395)
+	at com.ibm.ws.security.util.AccessController.doPrivileged(AccessController.java:118)
+	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.reconnect(SOAPConnectorClient.java:380)
+	... 42 more
 
-# Check if release.txt exists
-release_txt_path="$Profile_home/release.$release_version/release/release.txt"
-if [ ! -f "$release_txt_path" ]; then
-    echo "Error: release.txt not found at $release_txt_path"
-    exit 1
-fi
+[6/5/24 13:01:18:542 GST] 00000001 AdminControlC W   WASX7072E: The control service is not available.
+[6/5/24 13:01:18:556 GST] 00000001 AdminConfigCl W   WASX7198W: The configuration service is not running. Configuration commands will not run.
+[6/5/24 13:01:18:568 GST] 00000001 AdminConfigCl A   WASX7208I: Validation settings in effect now: Level=HIGHEST, Cross-validation=true, Output file=/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.valout
+[6/5/24 13:01:18:582 GST] 00000001 AdminAppClien W   WASX7072E: The control service is not available.
+[6/5/24 13:01:18:838 GST] 00000001 ModelMgr      I   WSVR0801I: Initializing all server configuration models
+[6/5/24 13:01:19:538 GST] 00000001 WorkSpaceMana A   WKSP0500I: Workspace configuration consistency check is disabled.
+[6/5/24 13:01:19:810 GST] 00000001 AdminAppClien W   WASX7206W: The application management service is not running. Application management commands will not run.
+[6/5/24 13:01:19:812 GST] 00000001 AdminCmdClien W   WASX7198W: The configuration service is not running. Configuration commands will not run.
+[6/5/24 13:01:19:812 GST] 00000001 AdminCmdClien W   WASX8011W: AdminTask object is not available.
+[6/5/24 13:01:20:128 GST] 00000001 AbstractShell A   WASX7091I: Executing script: "wsadmin_script.jy"
+[6/5/24 13:01:20:136 GST] 00000001 AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.ws.scripting.ScriptingException: AdminControl service not available
+" follows:
 
-# Read the content of release.txt and remove any leading/trailing whitespace characters
-release_content=$(sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$release_txt_path" 2>/dev/null)
+ com.ibm.ws.scripting.ScriptingException: AdminControl service not available
+	at com.ibm.ws.scripting.AbstractShell.setAndThrowScriptingException(AbstractShell.java:1887)
+	at com.ibm.ws.scripting.AdminControlClient.checkService(AdminControlClient.java:236)
+	at com.ibm.ws.scripting.AdminControlClient.queryNames_jmx(AdminControlClient.java:411)
+	at com.ibm.ws.scripting.AdminControlClient.queryNames(AdminControlClient.java:955)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java)
+	at org.python.core.PyMethod.__call__(PyMethod.java)
+	at org.python.core.PyObject.__call__(PyObject.java)
+	at org.python.core.PyInstance.invoke(PyInstance.java)
+	at org.python.pycode._pyx50.f$0(<string>:5)
+	at org.python.pycode._pyx50.call_function(<string>)
+	at org.python.core.PyTableCode.call(PyTableCode.java)
+	at org.python.core.PyCode.call(PyCode.java)
+	at org.python.core.Py.runCode(Py.java)
+	at org.python.core.Py.exec(Py.java)
+	at org.python.util.PythonInterpreter.exec(PythonInterpreter.java)
+	at com.ibm.bsf.engines.jython.JythonEngine$BSFPythonInterpreter.exec(Unknown Source)
+	at com.ibm.bsf.engines.jython.JythonEngine.exec(Unknown Source)
+	at com.ibm.bsf.BSFManager$6.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(AccessController.java:746)
+	at com.ibm.bsf.BSFManager.exec(Unknown Source)
+	at com.ibm.ws.scripting.AbstractShell.executeScript(AbstractShell.java:1219)
+	at com.ibm.ws.scripting.AbstractShell.run(AbstractShell.java:2296)
+	at com.ibm.ws.scripting.WasxShell.main(WasxShell.java:1172)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at com.ibm.wsspi.bootstrap.WSLauncher.launchMain(WSLauncher.java:234)
+	at com.ibm.wsspi.bootstrap.WSLauncher.main(WSLauncher.java:96)
+	at com.ibm.wsspi.bootstrap.WSLauncher.run(WSLauncher.java:77)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at org.eclipse.equinox.internal.app.EclipseAppContainer.callMethodWithException(EclipseAppContainer.java:587)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:198)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:369)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
+	at java.lang.reflect.Method.invoke(Method.java:508)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
+	at org.eclipse.core.launcher.Main.run(Main.java:981)
+	at com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)
+	at com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)
 
-# Print the content of release_content
-echo "$release_content"
-
-# Backup old deployment files for each application with timestamp
-if [ -n "$release_content" ]; then
-    backup_location="$Profile_home/release.$release_version"
-    backup_timestamp=$(date +'%Y%m%d%H%M%S')
-    backup_directory="$backup_location/backup-$backup_timestamp"
-    mkdir -p "$backup_directory"
-    chmod 777 "$backup_directory"
-
-    # Copy release.txt file into backup directory
-    cp "$release_txt_path" "$backup_directory"
-
-    # Iterate through each line in release_content
-    while IFS=, read -r app_name app_targeted_location; do
-        # Check if both app_name and app_targeted_location are not empty
-        if [ -n "$app_name" ] && [ -n "$app_targeted_location" ]; then
-            # Construct paths for old deployment files and backup location
-            old_deployment_path="$app_targeted_location"
-            backup_path="$backup_directory/$app_name"
-
-            # Copy old deployment files to backup location
-            cp -r "$old_deployment_path" "$backup_path"
-
-            # Print information about the backup
-            echo "Backup: $app_name - $old_deployment_path -> $backup_path"
-
-            # Define paths for new deployment files and targeted location
-            new_deployment_path="$Profile_home/release.$release_version/release/$app_name"  # Assuming the new files are in the release directory
-
-            # Copy new deployment files to targeted location
-            cp -r "$new_deployment_path" "$app_targeted_location"
-
-            # Set permissions to 755 on new deployment files
-            chmod -R 755 "$app_targeted_location/$app_name"
-
-            # Print information about the copy
-            echo "Copy: $app_name - $new_deployment_path -> $app_targeted_location"
-        fi
-    done <<< "$release_content"
-fi
-
-ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig"
-ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/CustomConfig/KYC_Remediation"
-ls -la "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01"
-
-==========================
-
-#!/bin/bash
-
-# Server details
-WAS_HOST="10.15.11.209"
-WAS_PORT="8879"
-WAS_ADMIN_USER="deployer"
-WAS_ADMIN_PASSWORD="deployer@123"
-
-# WAR file and application details
-WAR_FILE_PATH="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war"
-APP_NAME="KYC_Remediation_war"
-CONTEXT_ROOT="/KYC_Remediation"
-
-# Define shared libraries as an array
-SHARED_LIBS=("ibps_library" "omnidocs_library" "wfs_library")
-
-# Path to wsadmin.sh
-WSADMIN="/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
-
-# wsadmin script content
-WSADMIN_SCRIPT="
-# if  application already exists
-if '${APP_NAME}' in AdminApp.list().splitlines():
-    print 'Application %s already exists. Removing...' % '${APP_NAME}'
-    AdminApp.uninstall('${APP_NAME}')
-    print 'Application %s removed.' % '${APP_NAME}'
-
-print 'Deploying %s from WAR file: %s' % ('${APP_NAME}', '${WAR_FILE_PATH}')
-
-# Install the application
-result = AdminApp.install('${WAR_FILE_PATH}', '[ -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -nodeployejb -appname ${APP_NAME} -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -contextroot ${CONTEXT_ROOT} -MapModulesToServers [[ KYC_Remediation.war KYC_Remediation.war,WEB-INF/web.xml WebSphere:cell=antibpsapp1Cell01,cluster=BPMCLUSTER ]]]' )
-if result != '':
-    print 'Failed to install application ' + '${APP_NAME}' + '. Error: ' + result
-    raise Exception('Failed to install application ' + '${APP_NAME}')
-
-# Map shared libraries
-shared_libs = ['ibps_library', 'wfs_library', 'omnidocs_library']
-for lib in shared_libs:
-    print 'Mapping shared library: ' + lib
-    AdminApp.edit('${APP_NAME}', '[-MapSharedLibForMod [[ \"${APP_NAME}\" \"META-INF/application.xml\" ' + lib + ' ]]]')
-    print 'Shared library ' + lib + ' mapped.'
-
-# Save configuration
-AdminConfig.save()
-
-# Add a delay before starting the application
-import time
-time.sleep(10)
-
-# Start the application
-print 'Starting application ' + '${APP_NAME}'
-app_managers = AdminControl.queryNames('type=ApplicationManager,*').splitlines()
-for app_manager in app_managers:
-    result = AdminControl.invoke(app_manager, 'startApplication', '${APP_NAME}')
-    if result != '':  # If the result is not an empty string, an error occurred
-        print 'Failed to start application ' + '${APP_NAME}' + '. Error: ' + result
-        raise Exception('Failed to start application ' + '${APP_NAME}')
-
-print 'Application ' + '${APP_NAME}' + ' started.'
+[6/5/24 13:01:20:138 GST] 00000001 AbstractShell A   WASX7093I: Issuing message: "WASX7017E: Exception received while running file "wsadmin_script.jy"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available
 "
+[6/5/24 13:01:20:142 GST] 0000001b AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
+" follows:
 
-# Execute the script with wsadmin
-$WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD <<EOF
-$WSADMIN_SCRIPT
-EOF
+ com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
+	at com.ibm.ws.scripting.AbstractShell.setAndThrowScriptingException(AbstractShell.java:1887)
+	at com.ibm.ws.scripting.AdminConfigClient.checkService(AdminConfigClient.java:2499)
+	at com.ibm.ws.scripting.WasxShell.leaving(WasxShell.java:1085)
+	at com.ibm.ws.scripting.WasxShell.leaving(WasxShell.java:1047)
+	at com.ibm.ws.scripting.WasxShell$1.run(WasxShell.java:1182)
 
-# Check deployment status
-if [ $? -eq 0 ]; then
-    echo 'Deployment of' ${APP_NAME} 'completed successfully.'
-else
-    echo 'Deployment failed. Check the output for errors.'
-    exit 1
-fi
