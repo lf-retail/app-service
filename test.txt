@@ -368,3 +368,25 @@ host1 ansible_ssh_host=10.15.11.210 ansible_host_port=8880 ansible_host_vars_fil
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 
 
+===================
+
+TASK [Set dynamic WAS_HOST and WAS_PORT] ***************************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/was-warfileinstall.yml:7
+ok: [ANTIBPSAPP1] => {
+    "ansible_facts": {
+        "was_host": "10.15.11.209",
+        "was_port": "8879"
+    },
+    "changed": false
+}
+TASK [Include environment-specific variables] **********************************
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/was-warfileinstall.yml:12
+fatal: [ANTIBPSAPP1]: FAILED! => {
+    "ansible_facts": {},
+    "ansible_included_var_files": [],
+    "changed": false,
+    "message": "Could not find or access 'vars/uat209.yml'\nSearched in:\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/uat209.yml on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"
+}
+PLAY RECAP *********************************************************************
+ANTIBPSAPP1                : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+Error: Process completed with exit code 2.
