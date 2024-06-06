@@ -305,12 +305,19 @@ ask this output log
 
 Hi Gaurav/Dev,
 
-We are running our pipeline but it is failing and we verified the wsadmin.traceout log file also and it seems there is SSL certificate expired. so you need to renewal that certificate.  
+We are currently experiencing issues with our pipeline, which is failing due to an expired SSL certificate. Upon verification of the wsadmin.traceout log file, we found that the SSL certificate has expired. Please find the relevant details below:
 
-Please check the below details
- 
 [6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
 
 [6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
+
+We need to renew the certificate as soon as possible to restore the pipeline functionality.
+
+
+
+
+
+
+
 
 Thanks,
