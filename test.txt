@@ -295,3 +295,9 @@ ask this output log
 185        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
 186        "WASX8011W: AdminTask object is not available.",
 187        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available"
+==============
+
+[12:15 PM] Shanmuganathan Murugesan
+[6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
+
+[6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
