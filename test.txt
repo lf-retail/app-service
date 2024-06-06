@@ -390,3 +390,10 @@ fatal: [ANTIBPSAPP1]: FAILED! => {
 PLAY RECAP *********************************************************************
 ANTIBPSAPP1                : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 Error: Process completed with exit code 2.
+===================
+
+Suresh is asking for the approval to renew the SSL certificate for was so can you please approve it.
+
+Server details:
+Ip: 10.15.11.209
+Port: 8879
