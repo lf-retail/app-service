@@ -311,13 +311,60 @@ We are currently experiencing issues with our pipeline, which is failing due to 
 
 [6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
 
-We need to renew the certificate as soon as possible to restore the pipeline functionality.
+We need to renew the certificate as soon as possible to restore the pipeline functionali
+===============
+vars/uat.yml
+
+cell_name: "uatCell01"
+cluster_name: "UATCluster"
+===========
+host.cfg
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_wasuat209]
+host1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879 ansible_host_vars_file=vars/uat.yml
+
+[target_wasprod]
+host1 ansible_ssh_host=10.15.11.210 ansible_host_port=8880 ansible_host_vars_file=vars/prod.yml
+=============
+- name: was deploy warfileinstall in was
+  hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+
+  tasks:
+    - name: Set dynamic WAS_HOST and WAS_PORT
+      set_fact:
+        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
+        
+    - name: Include environment-specific variables
+      include_vars: "{{ hostvars[inventory_hostname].ansible_host_vars_file }}"
+        
+    - name: Include was-warfile-deploy
+      include_role:
+        name: was-warfile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME:  "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
+        WAS_HOST: "{{ was_host }}"
+        WAS_PORT: "{{ was_port }}"
+        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
+        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
+        CELL_NAME: "{{ cell_name }}"
+        CLUSTER_NAME: "{{ cluster_name }}"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
 
 
-
-
-
-
-
-
-Thanks,
