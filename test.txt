@@ -1,403 +1,54 @@
-name: release-was-warfileinstall
-run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      war_file_path:
-        description: 'Path to the WAR file on the target server'
-        required: true
-        type: string
-        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
-      war_file_name:
-        description: 'Name of the WAR file'
-        required: true
-        type: string
-        default: 'KYC_Remediation.war'
-      app_name:
-        description: 'Name of the deployed application'
-        required: true
-        type: string
-        default: 'KYC_Remediation_war'
-      context_root:
-        description: 'Context root of the deployed application'
-        required: true
-        type: string
-        default: '/KYC_Remediation'
-        
-jobs:
-  IBPS-warfileinstall:
-    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@feature/optimum-deh-mcf-templates
-    with:
-      release_version: ${{ github.event.inputs.release_version }}
-      war_file_path: ${{ github.event.inputs.war_file_path }}
-      war_file_name: ${{ github.event.inputs.war_file_name }}
-      app_name: ${{ github.event.inputs.app_name }}
-      context_root: ${{ github.event.inputs.context_root }}
-    secrets:
-      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-      WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
-      WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
-====================
-
-name: was-warfileinstall-reusable-workflow
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-on:
-  workflow_call:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      war_file_path:
-        description: 'Path to the WAR file on the target server'
-        required: true
-        type: string
-      war_file_name:
-        description: 'Name of the WAR file'
-        required: true
-        type: string
-      app_name:
-        description: 'Name of the deployed application'
-        required: true
-        type: string
-      context_root:
-        description: 'Context root of the deployed application'
-        required: true
-        type: string
-
-    secrets:
-      TOKEN_GITHUB: 
-        required: true
-      USERNAME_GITHUB:
-        required: true
-      WAS_ADMIN_USER:
-        required: true
-      WAS_ADMIN_PASSWORD:
-        required: true
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Checkout roles repository
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-ansible-roles
-        token: ${{ secrets.TOKEN_GITHUB }}
-        path: ansible-roles
-        ref: Feature      
-      
-    - name: Checkout reusable code
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-reusable-workflows
-        ref: feature/optimum-deh-mcf-templates
-        path: reusable-workflows
-        token: ${{ secrets.TOKEN_GITHUB }}  
-
-    - name: Make war-install-in-was.sh executable
-      run: |
-        chmod +x scripts/war-install-in-was.sh    
-
-    - name: war file installation in WAS
-      uses: ./reusable-workflows/.github/actions/was-warfileinstall
-      with:
-        release_version: ${{ inputs.release_version }}
-        war_file_path: ${{ inputs.war_file_path }}
-        war_file_name: ${{ inputs.war_file_name }}
-        app_name: ${{ inputs.app_name }}
-        context_root: ${{ inputs.context_root }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        WAS_ADMIN_USER: ${{ secrets.WAS_ADMIN_USER }}
-        WAS_ADMIN_PASSWORD: ${{ secrets.WAS_ADMIN_PASSWORD }}
-==============================
-
-name: 'was-warfileinstall'
-description: 'was-warfileinstall'
-inputs:
-  release_version:
-    description: 'Release version to deploy'
-    required: true 
-    type: string
-  war_file_path:
-    description: 'Path to the WAR file on the target server'
-    required: true
-    type: string
-  war_file_name:
-    description: 'Name of the WAR file'
-    required: true
-    type: string
-  app_name:
-    description: 'Name of the deployed application'
-    required: true
-    type: string
-  context_root:
-    description: 'Context root of the deployed application'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string    
-  WAS_ADMIN_USER:
-    description: 'GitHub username'
-    required: true
-    type: string
-  WAS_ADMIN_PASSWORD:
-    description: 'GitHub username'
-    required: true
-    type: string
-  
-runs:
-  using: "composite"
-  steps:
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
-        release_version: ${{ inputs.release_version }}
-        war_file_path: ${{ inputs.war_file_path }}
-        war_file_name: ${{ inputs.war_file_name }}
-        app_name: ${{ inputs.app_name }}
-        context_root: ${{ inputs.context_root }}
-        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
-        WAS_ADMIN_USER: ${{ inputs.WAS_ADMIN_USER }}
-        WAS_ADMIN_PASSWORD: ${{ inputs.WAS_ADMIN_PASSWORD }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} WAS_ADMIN_USER=${WAS_ADMIN_USER} WAS_ADMIN_PASSWORD=${WAS_ADMIN_PASSWORD} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml
-      shell: bash
-===================================
-
-- name: was deploy warfileinstall in was
-  hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-
-  tasks:
-    - name: Set dynamic WAS_HOST and WAS_PORT
-      set_fact:
-        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
-        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
-
-    - name: Include was-warfile-deploy
-      include_role:
-        name: was-warfile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ lookup('env', 'release_version') }}"
-        Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH: "{{ lookup('env', 'war_file_path') }}"
-        WAR_FILE_NAME: "{{ lookup('env', 'war_file_name') }}"
-        APP_NAME: "{{ lookup('env', 'app_name') }}"
-        CONTEXT_ROOT: "{{ lookup('env', 'context_root') }}"
-        WAS_HOST: "{{ was_host }}"
-        WAS_PORT: "{{ was_port }}"
-        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
-        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
-        CELL_NAME: "antibpsapp1Cell01"
-        CLUSTER_NAME: "BPMCLUSTER"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
-==========================
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
-
-[target_was]
-host1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
-host2 ansible_ssh_host=10.15.13.148 ansible_host_port=887
-
-[target_wasuat209]
-host1 ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879
-================
-
-- name: was deploy warfileinstall in was
-  hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-
-  tasks:
-    - name: Set dynamic WAS_HOST and WAS_PORT
-      set_fact:
-        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
-        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
-        
-    - name: Include was-warfile-deploy
-      include_role:
-        name:  was-warfile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ lookup('env', 'release_version') }}"
-        Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
-        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
-        APP_NAME:  "{{ lookup('env', 'app_name') }}"
-        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
-        WAS_HOST: "{{ was_host }}"
-        WAS_PORT: "{{ was_port }}"
-        #WAS_HOST: "10.15.11.209"
-        #WAS_PORT: "8880"
-        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
-        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
-        #WAS_ADMIN_USER: "deployer"
-        #WAS_ADMIN_PASSWORD: "deployer@123"
-        CELL_NAME: "antibpsapp1Cell01"
-        CLUSTER_NAME: "BPMCLUSTER"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"        
-========================
-
-[4:33 PM] Pradip Kanasani
-ask this output log 
- 
-/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout
-
-------------------
-[4:33 PM] Pradip Kanasani
-        "WASX7023E: Error creating \"SOAP\" connection to host \"10.15.11.209\"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]",
-185        "WASX7213I: This scripting client is not connected to a server process; please refer to the log file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.traceout for additional information.",
-186        "WASX8011W: AdminTask object is not available.",
-187        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available"
-==============
-
-[12:15 PM] Shanmuganathan Murugesan
-[6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-
-[6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-==========
-
-Hi Gaurav/Dev,
-
-We are currently experiencing issues with our pipeline, which is failing due to an expired SSL certificate. Upon verification of the wsadmin.traceout log file, we found that the SSL certificate has expired. Please find the relevant details below:
-
-[6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-
-[6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-
-We need to renew the certificate as soon as possible to restore the pipeline functionali
-===============
-vars/uat.yml
-
-cell_name: "uatCell01"
-cluster_name: "UATCluster"
-===========
-host.cfg
-
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
-
-[target_wasuat209]
-host1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879 ansible_host_vars_file=vars/uat.yml
-
-[target_wasprod]
-host1 ansible_ssh_host=10.15.11.210 ansible_host_port=8880 ansible_host_vars_file=vars/prod.yml
-=============
-- name: was deploy warfileinstall in was
-  hosts: '{{ target }}'
-  become: yes
-  become_user: itdevtra
-
-  tasks:
-    - name: Set dynamic WAS_HOST and WAS_PORT
-      set_fact:
-        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
-        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
-        
-    - name: Include environment-specific variables
-      include_vars: "{{ hostvars[inventory_hostname].ansible_host_vars_file }}"
-        
-    - name: Include was-warfile-deploy
-      include_role:
-        name: was-warfile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ lookup('env', 'release_version') }}"
-        Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
-        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
-        APP_NAME:  "{{ lookup('env', 'app_name') }}"
-        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
-        WAS_HOST: "{{ was_host }}"
-        WAS_PORT: "{{ was_port }}"
-        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER') }}"
-        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD') }}"
-        CELL_NAME: "{{ cell_name }}"
-        CLUSTER_NAME: "{{ cluster_name }}"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
-
-
-===================
-
-TASK [Set dynamic WAS_HOST and WAS_PORT] ***************************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/was-warfileinstall.yml:7
-ok: [ANTIBPSAPP1] => {
-    "ansible_facts": {
-        "was_host": "10.15.11.209",
-        "was_port": "8879"
-    },
-    "changed": false
+TASK [was-warfile-deploy : Run war-install-in-was.sh on Target Server] *********
+task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/ansible-roles/was-warfile-deploy/tasks/main.yml:11
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'( umask 77 && mkdir -p "` echo /tmp `"&& mkdir /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794 && echo ansible-tmp-1717738416.3194215-1622767-176286225567794="` echo /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794 `" ) && sleep 0'"'"''
+<10.15.11.209> (0, b'ansible-tmp-1717738416.3194215-1622767-176286225567794=/tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794\n', b'')
+Using module file /usr/lib/python3.6/site-packages/ansible/modules/commands/command.py
+<10.15.11.209> PUT /home/itdevtra/.ansible/tmp/ansible-local-1622724ap3rhng2/tmpyf399rh6 TO /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794/AnsiballZ_command.py
+<10.15.11.209> SSH: EXEC sftp -b - -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 '[10.15.11.209]'
+<10.15.11.209> (0, b'sftp> put /home/itdevtra/.ansible/tmp/ansible-local-1622724ap3rhng2/tmpyf399rh6 /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794/AnsiballZ_command.py\n', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 10.15.11.209 '/bin/sh -c '"'"'chmod u+x /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794/ /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (0, b'', b'')
+<10.15.11.209> ESTABLISH SSH CONNECTION FOR USER: itdevtra
+<10.15.11.209> SSH: EXEC ssh -C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no -o Port=22 -o KbdInteractiveAuthentication=no -o PreferredAuthentications=gssapi-with-mic,gssapi-keyex,hostbased,publickey -o PasswordAuthentication=no -o 'User="itdevtra"' -o ConnectTimeout=30 -o ControlPath=/home/itdevtra/.ansible/cp/9d82de7b55 -tt 10.15.11.209 '/bin/sh -c '"'"'/usr/bin/python /tmp/ansible-tmp-1717738416.3194215-1622767-176286225567794/AnsiballZ_command.py && sleep 0'"'"''
+<10.15.11.209> (1, b'\r\n{"changed": true, "end": "2024-06-07 09:39:44.677735", "stdout": "WASX7209I: Connected to process \\"dmgr\\" on node antibpsapp1CellManager01 using SOAP connector;  The type of process is: DeploymentManager\\nApplication KYC_Remediation_war is not running.\\nApplication KYC_Remediation_war already exists. Removing...\\nADMA5017I: Uninstallation of KYC_Remediation_war started.\\nADMA5104I: The server index entry for WebSphere:cell=antibpsapp1Cell01,node=antibpsapp2Node01+WebSphere:cell=antibpsapp1Cell01,node=antibpsapp1Node01 is updated successfully.\\nADMA5102I: The configuration data for KYC_Remediation_war from the configuration repository is deleted successfully.\\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.\\nADMA5106I: Application KYC_Remediation_war uninstalled successfully.\\nApplication KYC_Remediation_war removed.\\nWASX7327I: Contents of was.policy file:\\n //\\n// Template policy file for enterprise application.\\n// Extra permissions can be added if required by the enterprise application.\\n//\\n// NOTE: Syntax errors in the policy files will cause the enterprise application FAIL to start.\\n//       Extreme care should be taken when editing these policy files. It is advised to use\\n//       the policytool provided by the JDK for editing the policy files\\n//       (WAS_HOME/java/jre/bin/policytool). \\n//\\n\\ngrant codeBase \\"file:${application}\\" {\\n};\\n\\ngrant codeBase \\"file:${jars}\\" {\\n};\\n\\ngrant codeBase \\"file:${connectorComponent}\\" {\\n};\\n\\ngrant codeBase \\"file:${webComponent}\\" {\\n};\\n\\ngrant codeBase \\"file:${ejbComponent}\\" {\\n};\\n\\n\\nADMA5016I: Installation of KYC_Remediation_war started.\\nADMA5067I: Resource validation for application KYC_Remediation_war completed successfully.\\nADMA5058I: Application and module versions are validated with versions of deployment targets.\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nADMA5081I: The bootstrap address for client module is configured in the WebSphere Application Server repository.\\nADMA5053I: The library references for the installed optional package are created.\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nADMA5001I: The application binaries are saved in /ibm/IBM/WebSphere/AppServer/profiles/Dmgr01/wstemp/Script18ff1342899/workspace/cells/antibpsapp1Cell01/applications/KYC_Remediation_war.ear/KYC_Remediation_war.ear\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nSECJ0400I: Successfully updated the application KYC_Remediation_war with the appContextIDForSecurity information.\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.\\nADMA5113I: Activation plan created successfully.\\nADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.\\nADMA5013I: Application KYC_Remediation_war installed successfully.\\nStarting application KYC_Remediation_war\\nWASX7017E: Exception received while running file \\"wsadmin_script.jy\\"; exception information: javax.management.MBeanException\\ncom.ibm.ws.exception.RedundantStateChangeException: Composition Unit WebSphere:cuname=KYC_Remediation_war,cuedition=BASE already started", "cmd": "cd /ibm/IBM/Application/release/release.2.0.0.5 && ./war-install-in-was.sh 10.15.11.209 8879 *** *** /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh KYC_Remediation.war", "failed": true, "delta": "0:01:50.610422", "stderr": "", "rc": 105, "invocation": {"module_args": {"creates": null, "executable": null, "_uses_shell": true, "strip_empty_ends": true, "_raw_params": "cd /ibm/IBM/Application/release/release.2.0.0.5 && ./war-install-in-was.sh 10.15.11.209 8879 *** *** /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war KYC_Remediation_war /KYC_Remediation antibpsapp1Cell01 BPMCLUSTER /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh KYC_Remediation.war", "removes": null, "argv": null, "warn": false, "chdir": null, "stdin_add_newline": true, "stdin": null}}, "start": "2024-06-07 09:37:54.067313", "msg": "non-zero return code"}\r\n', b'Shared connection to 10.15.11.209 closed.\r\n')
+        "",
+        "grant codeBase \"file:${application}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${jars}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${connectorComponent}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${webComponent}\" {",
+        "};",
+        "",
+        "grant codeBase \"file:${ejbComponent}\" {",
+        "};",
+        "",
+        "",
+        "ADMA5016I: Installation of KYC_Remediation_war started.",
+        "ADMA5067I: Resource validation for application KYC_Remediation_war completed successfully.",
+        "ADMA5058I: Application and module versions are validated with versions of deployment targets.",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "ADMA5081I: The bootstrap address for client module is configured in the WebSphere Application Server repository.",
+        "ADMA5053I: The library references for the installed optional package are created.",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "ADMA5001I: The application binaries are saved in /ibm/IBM/WebSphere/AppServer/profiles/Dmgr01/wstemp/Script18ff1342899/workspace/cells/antibpsapp1Cell01/applications/KYC_Remediation_war.ear/KYC_Remediation_war.ear",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "SECJ0400I: Successfully updated the application KYC_Remediation_war with the appContextIDForSecurity information.",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "ADMA5005I: The application KYC_Remediation_war is configured in the WebSphere Application Server repository.",
+        "ADMA5113I: Activation plan created successfully.",
+        "ADMA5011I: The cleanup of the temp directory for application KYC_Remediation_war is complete.",
+        "ADMA5013I: Application KYC_Remediation_war installed successfully.",
+        "Starting application KYC_Remediation_war",
+        "WASX7017E: Exception received while running file \"wsadmin_script.jy\"; exception information: javax.management.MBeanException",
+        "com.ibm.ws.exception.RedundantStateChangeException: Composition Unit WebSphere:cuname=KYC_Remediation_war,cuedition=BASE already started"
+    ]
 }
-TASK [Include environment-specific variables] **********************************
-task path: /ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/was-warfileinstall.yml:12
-fatal: [ANTIBPSAPP1]: FAILED! => {
-    "ansible_facts": {},
-    "ansible_included_var_files": [],
-    "changed": false,
-    "message": "Could not find or access 'vars/uat209.yml'\nSearched in:\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/vars/uat209.yml\n\t/ansible/GITHUB_RUNNER/actions-runner10/_work/ibps-was-ansible-cd/ibps-was-ansible-cd/playbook/vars/uat209.yml on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"
-}
-PLAY RECAP *********************************************************************
-ANTIBPSAPP1                : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-Error: Process completed with exit code 2.
-===================
-
-Suresh is asking for the approval to renew the SSL certificate for was so can you please approve it.
-
-Server details:
-Ip: 10.15.11.209
-Port: 8879
-=============
-
-Update the IBPS ansible playbook changes wrt to WAS profile parameter’s and while testing the deployment was failed on June 3rd. Spent time on fixing the issue and got the Log files from the support team on June 5th   and get to know that UAT WAS instance certificate got expired on June 2nd.
-Sent a mail to IBPS teams’ approval to renew the cert and got the approval and requested Suresh team to renew the WAS certificate.
+...ignoring
