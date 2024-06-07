@@ -99,3 +99,6 @@ The SSL certificate has been successfully renewed by Suresh's team. I have run t
 The SSL certificate has been successfully renewed by Suresh's team. I have run the pipeline and was able to install the WAR file in the WAS console. Everything is working as expected.
 
 https://github.com/rakbank-internal/ibps-was-ansible-cd/blob/ibps-app-role/playbook/was-warfileinstall.yml
+===================
+[12:26 PM] Pradip Kanasani
+reply to Vijay mail , implementation is done and deployment also successful, for pipeline code review we have sent for Shoaibs review 
