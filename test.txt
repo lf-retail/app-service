@@ -96,3 +96,4 @@ Shanmuganathan M.
 
 The SSL certificate has been successfully renewed by Suresh's team. I have run the pipeline, and it is working as expected.
 
+The SSL certificate has been successfully renewed by Suresh's team. I have run the pipeline and was able to install the WAR file in the WAS console. Everything is working as expected.
