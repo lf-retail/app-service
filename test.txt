@@ -93,3 +93,6 @@ SSL cert renewed successfully from suresh team and I ran the pipeline and its wo
 
 Thanks,
 Shanmuganathan M.
+
+The SSL certificate has been successfully renewed by Suresh's team. I have run the pipeline, and it is working as expected.
+
