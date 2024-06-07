@@ -85,3 +85,11 @@ EOF
 
 # Execute the script with wsadmin
 $WSADMIN -lang jython -conntype SOAP -host $WAS_HOST -port $WAS_PORT -user $WAS_ADMIN_USER -password $WAS_ADMIN_PASSWORD -f $WSADMIN_SCRIPT
+=======================
+
+Hi Shyam,
+
+SSL cert renewed successfully from suresh team and I ran the pipeline and its working fine as expected.
+
+Thanks,
+Shanmuganathan M.
