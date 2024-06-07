@@ -102,3 +102,6 @@ https://github.com/rakbank-internal/ibps-was-ansible-cd/blob/ibps-app-role/playb
 ===================
 [12:26 PM] Pradip Kanasani
 reply to Vijay mail , implementation is done and deployment also successful, for pipeline code review we have sent for Shoaibs review 
+
+The implementation is complete, and the deployment was successful. The pipeline code has been sent to Shoaib for review.
+
