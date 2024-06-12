@@ -105,3 +105,36 @@ reply to Vijay mail , implementation is done and deployment also successful, for
 
 The implementation is complete, and the deployment was successful. The pipeline code has been sent to Shoaib for review.
 
+===============================
+
+
+DEVOPS_WORKFLOW_TOKEN
+
+https://github.com/rakbank-internal/push-engagement-batch-service/blob/develop/.github/workflows/release-orchestrator.yml
+
+1. install ansible roles as a dependency, create a requirements.yml to have it with ansible Galaxy -- Ansible playbooks (once ansible Galaxy is in-place respective workflow changes needs to be updated).
+
+ 
+
+2. move everything to main branch --> roles and workflows etc.
+
+ 
+
+3. create a tag and ref those roles from the main branch to use.
+
+ 
+
+4. update the GitHub token with DEVOPS_WORKFLOW_TOKENenv token.
+
+ 
+
+5. Pass ansible become user also as a parameter. - done
+
+ 
+
+6. don’t hardcode anything in the ansible roles -- ex : ignore_errors: yes
+
+ 
+
+7. Add release branch creation from develop branch step in the workflows.
+
