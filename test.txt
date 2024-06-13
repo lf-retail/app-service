@@ -233,3 +233,130 @@ runs:
         cd ${{ github.workspace }}
         ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml
       shell: bash   
+====================
+
+name: release-was-warfileinstall
+run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
+        required: true
+        type: string
+        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+        default: 'KYC_Remediation.war'
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+        default: 'KYC_Remediation_war'
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+        default: '/KYC_Remediation'
+      target_env:
+        description: 'Target environment (UAT209, UAT210, etc.)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Set environment-specific secrets
+      id: set-env-secrets
+      run: |
+        echo "ANSIBLE_SSH_HOST=${{ secrets.ANSIBLE_SSH_HOST }}" >> $GITHUB_ENV
+        echo "ANSIBLE_HOST_PORT=${{ secrets.ANSIBLE_HOST_PORT }}" >> $GITHUB_ENV
+        echo "WAS_ADMIN_USER=${{ secrets.WAS_ADMIN_USER }}" >> $GITHUB_ENV
+        echo "WAS_ADMIN_PASSWORD=${{ secrets.WAS_ADMIN_PASSWORD }}" >> $GITHUB_ENV
+        echo "CELL_NAME=${{ secrets.CELL_NAME }}" >> $GITHUB_ENV
+        echo "CLUSTER_NAME=${{ secrets.CLUSTER_NAME }}" >> $GITHUB_ENV
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook -vvv -b --extra-vars "target=target_was${{ inputs.target_env }}" \
+          release_version=${{ inputs.release_version }} \
+          war_file_path=${{ inputs.war_file_path }} \
+          war_file_name=${{ inputs.war_file_name }} \
+          app_name=${{ inputs.app_name }} \
+          context_root=${{ inputs.context_root }}" \
+          ANSIBLE_SSH_HOST=${{ env.ANSIBLE_SSH_HOST }}" \
+          ANSIBLE_HOST_PORT=${{ env.ANSIBLE_HOST_PORT }}" \
+          WAS_ADMIN_USER=${{ env.WAS_ADMIN_USER }}" \
+          WAS_ADMIN_PASSWORD=${{ env.WAS_ADMIN_PASSWORD }}" \
+          CELL_NAME=${{ env.CELL_NAME }}" \
+          CLUSTER_NAME=${{ env.CLUSTER_NAME }}" \
+          ./playbook/was-warfileinstall.yml
+      env:
+        TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+==================
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_wasUAT209]
+ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE_HOST_PORT }}
+
+[target_wasUAT210]
+ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE_HOST_PORT }}
+=================
+
+---
+- name: WAS Warfile Install
+  hosts: '{{ target }}'
+  become: yes
+  become_user: '{{ ansible_user }}'
+
+  tasks:
+    - name: Include environment-specific variables
+      include_vars:
+        dir: vars
+        name: "{{ target_env }}"
+
+    - name: Include was-warfile-deploy
+      include_role:
+        name: was-warfile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ release_version }}"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH: "{{ war_file_path }}"
+        WAR_FILE_NAME: "{{ war_file_name }}"
+        APP_NAME: "{{ app_name }}"
+        CONTEXT_ROOT: "{{ context_root }}"
+        WAS_HOST: "{{ ANSIBLE_SSH_HOST }}"
+        WAS_PORT: "{{ ANSIBLE_HOST_PORT }}"
+        WAS_ADMIN_USER: "{{ WAS_ADMIN_USER }}"
+        WAS_ADMIN_PASSWORD: "{{ WAS_ADMIN_PASSWORD }}"
+        CELL_NAME: "{{ CELL_NAME }}"
+        CLUSTER_NAME: "{{ CLUSTER_NAME }}"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
