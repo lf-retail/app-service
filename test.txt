@@ -116,7 +116,7 @@ https://github.com/rakbank-internal/push-engagement-batch-service/blob/develop/.
 
  
 
-2. move everything to main branch --> roles and workflows etc.
+2. move everything to main branch --> roles and workflows etc. 
 
  
 
@@ -124,7 +124,7 @@ https://github.com/rakbank-internal/push-engagement-batch-service/blob/develop/.
 
  
 
-4. update the GitHub token with DEVOPS_WORKFLOW_TOKENenv token.
+4. update the GitHub token with DEVOPS_WORKFLOW_TOKENenv token. - done
 
  
 
