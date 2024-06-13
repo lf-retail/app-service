@@ -103,3 +103,133 @@ cluster_name: "BPMCLUSTER"
 ansible_user: "itdevtra"
 was_admin_user: "deployer"
 was_admin_password: "deployer@123"
+================
+
+name: was-warfileinstall-reusable-workflow
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
+        required: true
+        type: string
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+
+    secrets:
+      TOKEN_GITHUB: 
+        required: true
+      USERNAME_GITHUB:
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Checkout roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature      
+      
+    - name: Checkout reusable code
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-reusable-workflows
+        ref: feature/optimum-deh-mcf-templates
+        path: reusable-workflows
+        token: ${{ secrets.TOKEN_GITHUB }}  
+
+    - name: Make war-install-in-was.sh executable
+      run: |
+        chmod +x scripts/war-install-in-was.sh    
+
+    - name: war file installation in WAS
+      uses: ./reusable-workflows/.github/actions/was-warfileinstall
+      with:
+        release_version: ${{ inputs.release_version }}
+        war_file_path: ${{ inputs.war_file_path }}
+        war_file_name: ${{ inputs.war_file_name }}
+        app_name: ${{ inputs.app_name }}
+        context_root: ${{ inputs.context_root }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+=========================
+name: 'was-warfileinstall'
+description: 'was-warfileinstall'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  war_file_path:
+    description: 'Path to the WAR file on the target server'
+    required: true
+    type: string
+  war_file_name:
+    description: 'Name of the WAR file'
+    required: true
+    type: string
+  app_name:
+    description: 'Name of the deployed application'
+    required: true
+    type: string
+  context_root:
+    description: 'Context root of the deployed application'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string    
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+        war_file_path: ${{ inputs.war_file_path }}
+        war_file_name: ${{ inputs.war_file_name }}
+        app_name: ${{ inputs.app_name }}
+        context_root: ${{ inputs.context_root }}
+        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml
+      shell: bash   
