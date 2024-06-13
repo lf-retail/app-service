@@ -96,3 +96,10 @@ ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879 ansible_host_va
 
 #[target_wasuat210]
 #ANTIBPSAPP2 ansible_ssh_host=10.15.11.210 ansible_host_port=8879 ansible_host_vars_file=vars/uat210.yml
+=================
+
+cell_name: "antibpsapp1Cell01"
+cluster_name: "BPMCLUSTER"
+ansible_user: "itdevtra"
+was_admin_user: "deployer"
+was_admin_password: "deployer@123"
