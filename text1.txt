@@ -193,3 +193,20 @@ ANTIBPSAPP2 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT210') }} ansible_host
         CELL_NAME: "{{ lookup('env', 'CELL_NAME_' + environment) }}"
         CLUSTER_NAME: "{{ lookup('env', 'CLUSTER_NAME_' + environment) }}"
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+=================
+
+ansible_user_UAT209: itdevtra
+WAS_ADMIN_USER_UAT209: <your_WAS_Admin_User_UAT209>
+WAS_ADMIN_PASSWORD_UAT209: <your_WAS_Admin_Password_UAT209>
+CELL_NAME_UAT209: <your_CELL_NAME_UAT209>
+CLUSTER_NAME_UAT209: <your_CLUSTER_NAME_UAT209>
+WAS_HOST_UAT209: <your_WAS_Host_UAT209>
+WAS_PORT_UAT209: <your_WAS_Port_UAT209>
+
+ansible_user_UAT210: itdevtra
+WAS_ADMIN_USER_UAT210: <your_WAS_Admin_User_UAT210>
+WAS_ADMIN_PASSWORD_UAT210: <your_WAS_Admin_Password_UAT210>
+CELL_NAME_UAT210: <your_CELL_NAME_UAT210>
+CLUSTER_NAME_UAT210: <your_CLUSTER_NAME_UAT210>
+WAS_HOST_UAT210: <your_WAS_Host_UAT210>
+WAS_PORT_UAT210: <your_WAS_Port_UAT210>
