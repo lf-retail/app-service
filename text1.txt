@@ -1,139 +1,195 @@
-name: Release Pipeline
-run-name: releaseapp - ${{github.event.inputs.releaseVersion}}
+name: release-was-warfileinstall
+run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
 
 on:
   workflow_dispatch:
     inputs:
-      releaseVersion:
-        description: 'Release Version'
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      war_file_path:
+        description: 'Path to the WAR file on the target server'
         required: true
-        default: '1.0.0'
-      choice:
-        type: choice
-        description: Select a service
-        options:
-          #- Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
-          - Rakbank-DEH-Onboarding/SMEDigitalBank
-          - Rakbank-DEH-Onboarding/RetailOnboarding-DB         
-      app:
-        type: boolean
-        description: Deploy App
-      database:
-        type: boolean
-        description: Deploy database       
-        
+        type: string
+        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
+      war_file_name:
+        description: 'Name of the WAR file'
+        required: true
+        type: string
+        default: 'KYC_Remediation.war'
+      app_name:
+        description: 'Name of the deployed application'
+        required: true
+        type: string
+        default: 'KYC_Remediation_war'
+      context_root:
+        description: 'Context root of the deployed application'
+        required: true
+        type: string
+        default: '/KYC_Remediation'
+      environment:
+        description: 'Target environment'
+        required: true
+        type: string
+        default: 'UAT209'
+
 jobs:
-  Create-App-CI:
-    if: ${{ github.event.inputs.app =='true' }}
-    environment: DEV
-    name: APP-CI-Setup
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-      
-    steps:
-    - name: Get Token
-      id: get-workflow-token
-      uses: peter-murray/workflow-application-token-action@v2
-      with:
-        application_id: 403159
-        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
-    - name: Display selected inputs
-      run: |
-        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
-        echo "Selected Repository: ${{ github.event.inputs.choice }}"
-        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
-    - name: Checkout selected repository
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.event.inputs.choice }}
-        ref: 'dev'
-        token: ${{ steps.get-workflow-token.outputs.token }}
+  IBPS-warfileinstall:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      war_file_path: ${{ github.event.inputs.war_file_path }}
+      war_file_name: ${{ github.event.inputs.war_file_name }}
+      app_name: ${{ github.event.inputs.app_name }}
+      context_root: ${{ github.event.inputs.context_root }}
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+      WAS_ADMIN_USER: ${{ secrets['WAS_ADMIN_USER_' + github.event.inputs.environment] }}
+      WAS_ADMIN_PASSWORD: ${{ secrets['WAS_ADMIN_PASSWORD_' + github.event.inputs.environment] }}
+      CELL_NAME: ${{ secrets['CELL_NAME_' + github.event.inputs.environment] }}
+      CLUSTER_NAME: ${{ secrets['CLUSTER_NAME_' + github.event.inputs.environment] }}
+      WAS_HOST: ${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}
+      WAS_PORT: ${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}
+      ansible_user: ${{ secrets['ansible_user_' + github.event.inputs.environment] }}
+=================
 
-    - name : Create Application Release Branch 
-      run: |
-        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
-        git checkout -b $RELEASE_BRANCH_NAME
-        git push --set-upstream origin $RELEASE_BRANCH_NAME
+name: 'was-warfileinstall'
+description: 'was-warfileinstall'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  war_file_path:
+    description: 'Path to the WAR file on the target server'
+    required: true
+    type: string
+  war_file_name:
+    description: 'Name of the WAR file'
+    required: true
+    type: string
+  app_name:
+    description: 'Name of the deployed application'
+    required: true
+    type: string
+  context_root:
+    description: 'Context root of the deployed application'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string    
+  environment:
+    description: 'Deployment environment'
+    required: true
+    type: string
+
+secrets:
+  TOKEN_GITHUB: 
+    required: true
+  USERNAME_GITHUB:
+    required: true
+  WAS_ADMIN_USER:
+    required: true
+  WAS_ADMIN_PASSWORD:
+    required: true
+  CELL_NAME:
+    required: true
+  CLUSTER_NAME:
+    required: true
+  WAS_HOST:
+    required: true
+  WAS_PORT:
+    required: true
+  ansible_user:
+    required: true
+    description: 'Ansible user for the deployment'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
       env:
-        token: $GITHUB_TOKEN
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+        war_file_path: ${{ inputs.war_file_path }}
+        war_file_name: ${{ inputs.war_file_name }}
+        app_name: ${{ inputs.app_name }}
+        context_root: ${{ inputs.context_root }}
+        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+        WAS_ADMIN_USER: ${{ secrets['WAS_ADMIN_USER_' + inputs.environment] }}
+        WAS_ADMIN_PASSWORD: ${{ secrets['WAS_ADMIN_PASSWORD_' + inputs.environment] }}
+        CELL_NAME: ${{ secrets['CELL_NAME_' + inputs.environment] }}
+        CLUSTER_NAME: ${{ secrets['CLUSTER_NAME_' + inputs.environment] }}
+        WAS_HOST: ${{ secrets['WAS_HOST_' + inputs.environment] }}
+        WAS_PORT: ${{ secrets['WAS_PORT_' + inputs.environment] }}
+        ansible_user: ${{ secrets['ansible_user_' + inputs.environment] }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_was${{ inputs.environment }} destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} TOKEN_GITHUB=${TOKEN_GITHUB} WAS_ADMIN_USER=${WAS_ADMIN_USER} WAS_ADMIN_PASSWORD=${WAS_ADMIN_PASSWORD} CELL_NAME=${CELL_NAME} CLUSTER_NAME=${CLUSTER_NAME} WAS_HOST=${WAS_HOST} WAS_PORT=${WAS_PORT}" ./playbook/was-warfileinstall.yml
+      shell: bash
+============
 
-  #App-CI:
-   # name: App-CI
-    #needs: Create-App-CI
-    ##uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
-    #secrets: inherit
-    #with:
-     # repoName: ${{ github.event.inputs.choice }}
-      #branchName: $RELEASE_BRANCH_NAME
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
 
-  App-CI:
-    needs: Create-App-CI
-    environment: DEV
-    name: App-CI
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App CI now "      
+[target_wasUAT209]
+ANTIBPSAPP1 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT209') }} ansible_host_port={{ lookup('env', 'WAS_PORT_UAT209') }}
 
-  #App-Deploy-Dev:
-   # needs: App-CI
-    #environment: DEV
-    #name: App Deployment DEV
-    #runs-on: ubuntu-latest
-    #steps:
-     # - name: Check out code
-      #  uses: actions/checkout@v2
-      #- name: deploy App
-       # run: |
-        #  echo " running App deployment now "
+[target_wasUAT210]
+ANTIBPSAPP2 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT210') }} ansible_host_port={{ lookup('env', 'WAS_PORT_UAT210') }}
+===============
 
-  App-Deploy-DEV:
-    name: App-cd-dev
-    needs: App-CI
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      env_value: DEV
-      version: ${{ github.event.inputs.releaseVersion }}
-      
-  App-Deploy-UAT:
-    name: App-cd-uat
-    needs: App-Deploy-DEV
-    uses: Rakbank-DEH-Onboarding/SMEDigitalBank/.github/workflows/jboss-deploy.yml@feature/deploy-release
-    secrets: inherit
-    with:
-      repoName: ${{ github.event.inputs.choice }}
-      env_value: UAT
-      version: ${{ github.event.inputs.releaseVersion }}
-          
-  
-  App-Deploy-PROD:
-    needs: App-Deploy-UAT
-    environment: PROD
-    name: App Deployment PROD
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo " running App deployment now "
-          
-  App-deploy-DR:
-    needs: App-Deploy-PROD
-    environment: DR
-    name: App Deployment DR
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: deploy App
-        run: |
-          echo "running App deployment now"
+---
+- name: was deploy warfileinstall in was
+  hosts: '{{ target }}'
+  become: yes
+  become_user: '{{ ansible_user }}'
+
+  tasks:
+    - name: Set dynamic WAS_HOST and WAS_PORT
+      set_fact:
+        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
+
+    - name: Include environment-specific variables
+      include_vars: "{{ hostvars[inventory_hostname].ansible_host_vars_file }}"
+        
+    - name: Include was-warfile-deploy
+      include_role:
+        name: was-warfile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        Profile_home: "/ibm/IBM/Application/release"
+        WAR_FILE_PATH: "{{ lookup('env', 'war_file_path') }}"
+        WAR_FILE_NAME: "{{ lookup('env', 'war_file_name') }}"
+        APP_NAME: "{{ lookup('env', 'app_name') }}"
+        CONTEXT_ROOT: "{{ lookup('env', 'context_root') }}"
+        ansible_user: "{{ lookup('env', 'ansible_user_' + environment) }}"
+        WAS_HOST: "{{ was_host }}"
+        WAS_PORT: "{{ was_port }}"
+        WAS_ADMIN_USER: "{{ lookup('env', 'WAS_ADMIN_USER_' + environment) }}"
+        WAS_ADMIN_PASSWORD: "{{ lookup('env', 'WAS_ADMIN_PASSWORD_' + environment) }}"
+        CELL_NAME: "{{ lookup('env', 'CELL_NAME_' + environment) }}"
+        CLUSTER_NAME: "{{ lookup('env', 'CLUSTER_NAME_' + environment) }}"
+        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
