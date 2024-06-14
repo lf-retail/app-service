@@ -210,3 +210,9 @@ CELL_NAME_UAT210: <your_CELL_NAME_UAT210>
 CLUSTER_NAME_UAT210: <your_CLUSTER_NAME_UAT210>
 WAS_HOST_UAT210: <your_WAS_Host_UAT210>
 WAS_PORT_UAT210: <your_WAS_Port_UAT210>
+
+cell_name: "antibpsapp1Cell01"
+cluster_name: "BPMCLUSTER"
+ansible_user: "itdevtra"
+was_admin_user: "deployer"
+was_admin_password: "deployer@123"
