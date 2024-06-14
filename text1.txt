@@ -225,3 +225,7 @@ ANTIBPSAPP1 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT209') }} ansible_host
 
 [target_wasUAT210]
 ANTIBPSAPP2 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT210') }} ansible_host_port={{ lookup('env', 'WAS_PORT_UAT210') }} ansible_user={{ lookup('env', 'ansible_user_UAT210') }}
+===============
+
+[1:41 PM] Pradip Kanasani
+https://github.com/rakbank-internal/deh_onboarding_retail_account_v1111/blob/develop/.github/workflows/gradle-hif-build.yml
