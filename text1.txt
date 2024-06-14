@@ -216,3 +216,12 @@ cluster_name: "BPMCLUSTER"
 ansible_user: "itdevtra"
 was_admin_user: "deployer"
 was_admin_password: "deployer@123"
+
+[all:vars]
+ansible_ssh_port=22
+
+[target_wasUAT209]
+ANTIBPSAPP1 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT209') }} ansible_host_port={{ lookup('env', 'WAS_PORT_UAT209') }} ansible_user={{ secrets.ansible_user_UAT209 }}
+
+[target_wasUAT210]
+ANTIBPSAPP2 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT210') }} ansible_host_port={{ lookup('env', 'WAS_PORT_UAT210') }} ansible_user={{ secrets.ansible_user_UAT210 }}
