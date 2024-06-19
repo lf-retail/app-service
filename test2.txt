@@ -1,164 +1,220 @@
-************ Start Display Current Environment ************
-Host Operating System is Linux, version 3.10.0-1160.105.1.el7.x86_64
-Java version = 1.8.0_391, Java Runtime Version = 8.0.8.15 - pxa6480sr8fp15-20231030_01(SR8 FP15), Java Compiler = j9jit29, Java VM name = IBM J9 VM
-was.install.root = /ibm/IBM/WebSphere/AppServer
-user.install.root = /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01
-Java Home = /ibm/IBM/WebSphere/AppServer/java/jre
-ws.ext.dirs = /ibm/IBM/WebSphere/AppServer/java/lib:/ibm/IBM/WebSphere/AppServer/classes:/ibm/IBM/WebSphere/AppServer/lib:/ibm/IBM/WebSphere/AppServer/installedChannels:/ibm/IBM/WebSphere/AppServer/lib/ext:/ibm/IBM/WebSphere/AppServer/web/help:/ibm/IBM/WebSphere/AppServer/deploytool/itp/plugins/com.ibm.etools.ejbdeploy/runtime
-Classpath = /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/properties:/ibm/IBM/WebSphere/AppServer/properties:/ibm/IBM/WebSphere/AppServer/lib/startup.jar:/ibm/IBM/WebSphere/AppServer/lib/bootstrap.jar:/ibm/IBM/WebSphere/AppServer/lib/lmproxy.jar:/ibm/IBM/WebSphere/AppServer/lib/urlprotocols.jar:/ibm/IBM/WebSphere/AppServer/java/lib/tools.jar:/ibm/IBM/WebSphere/AppServer/deploytool/itp/batchboot.jar:/ibm/IBM/WebSphere/AppServer/deploytool/itp/batch2.jar
-Java Library path = /ibm/IBM/WebSphere/AppServer/java/jre/lib/amd64/compressedrefs:/ibm/IBM/WebSphere/AppServer/java/jre/lib/amd64:/ibm/IBM/WebSphere/AppServer/lib/native/linux/x86_64/:/ibm/IBM/WebSphere/AppServer/bin:/ibm/IBM/WebSphere/AppServer/nulldllsdir:/usr/lib64:/usr/lib
-Orb Version = IBM Java ORB build orbdev-userlvl-20230924.2334
-Max file descriptor count = 20480
-Current trace specification = *=info
-************* End Display Current Environment *************
-[6/5/24 13:01:15:786 GST] 00000001 ManagerAdmin  I   TRAS0017I: The startup trace state is *=info.
-[6/5/24 13:01:16:088 GST] 00000001 AbstractShell A   WASX7326I: Loaded properties file "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/properties/wsadmin.properties"
-[6/5/24 13:01:16:450 GST] 00000001 ProviderTrack I com.ibm.ffdc.osgi.ProviderTracker AddingService FFDC1007I: FFDC Provider Installed: com.ibm.ffdc.util.provider.FfdcOnDirProvider@a22f868e
-[6/5/24 13:01:16:551 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.certpath.disabledAlgorithms set to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, include jdk.disabled.namedCurves, SHA1 usage SignedJAR & denyAfter 2019-01-01].  The WebSphere Application server is setting the java security property jdk.certpath.disabledAlgorithms to [MD2, MD5, SHA1 jdkCA & usage TLSServer, RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224]. 
-[6/5/24 13:01:16:554 GST] 00000001 SSLConfigMana I   CWPKI0051I: The process has the java security property jdk.tls.disabledAlgorithms set to [SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC, include jdk.disabled.namedCurves].  The WebSphere Application server is setting the java security property jdk.tls.disabledAlgorithms to [SSLv3, RC4, DES, MD5withRSA, DH keySize < 1024, DESede, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, DES_CBC]. 
-[6/5/24 13:01:16:556 GST] 00000001 SSLConfigMana I   CWPKI0027I: Disabling default hostname verification for HTTPS URL connections.
-[6/5/24 13:01:16:561 GST] 00000001 SecurityObjec I   CWSCF0002I: The client code is attempting to load the security configuration the server and this operation is not allowed.
-[6/5/24 13:01:18:521 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-[6/5/24 13:01:18:530 GST] 00000001 WSX509TrustMa E   CWPKI0312E: The certificate with subject DN CN=ibpsapp.rakbanktst.ae, OU=IT, O=RAKBANK, L=RAK, ST=RAK, C=AE has an end date Sun Jun 02 08:06:43 GST 2024 which is no longer valid.
-[6/5/24 13:01:18:538 GST] 00000001 AbstractShell A   WASX7093I: Issuing message: "WASX7023E: Error creating "SOAP" connection to host "10.15.11.209"; exception information: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]"
-[6/5/24 13:01:18:541 GST] 00000001 AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.websphere.management.exception.ConnectorException
-java.lang.reflect.InvocationTargetException: java.lang.reflect.InvocationTargetException
-" follows:
+using release workflow
 
- com.ibm.websphere.management.exception.ConnectorException: ADMC0016E: The system cannot create a SOAP connector to connect to host 10.15.11.209 at port 8879.
-	at com.ibm.websphere.management.AdminClientFactory.createAdminClientPrivileged(AdminClientFactory.java:635)
-	at com.ibm.websphere.management.AdminClientFactory.access$000(AdminClientFactory.java:127)
-	at com.ibm.websphere.management.AdminClientFactory$1.run(AdminClientFactory.java:210)
-	at com.ibm.ws.security.util.AccessController.doPrivileged(AccessController.java:63)
-	at com.ibm.websphere.management.AdminClientFactory.createAdminClient(AdminClientFactory.java:206)
-	at com.ibm.ws.scripting.CommonScriptingObject.connectToAdminService(CommonScriptingObject.java:123)
-	at com.ibm.ws.scripting.CommonScriptingObject.<init>(CommonScriptingObject.java:104)
-	at com.ibm.ws.scripting.AdminControlClient.<init>(AdminControlClient.java:170)
-	at com.ibm.ws.scripting.AbstractShell.createControlClient(AbstractShell.java:1290)
-	at com.ibm.ws.scripting.AbstractShell.run(AbstractShell.java:2253)
-	at com.ibm.ws.scripting.WasxShell.main(WasxShell.java:1172)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at com.ibm.wsspi.bootstrap.WSLauncher.launchMain(WSLauncher.java:234)
-	at com.ibm.wsspi.bootstrap.WSLauncher.main(WSLauncher.java:96)
-	at com.ibm.wsspi.bootstrap.WSLauncher.run(WSLauncher.java:77)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at org.eclipse.equinox.internal.app.EclipseAppContainer.callMethodWithException(EclipseAppContainer.java:587)
-	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:198)
-	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
-	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
-	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:369)
-	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)
-	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
-	at org.eclipse.core.launcher.Main.run(Main.java:981)
-	at com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)
-	at com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)
-Caused by: java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:83)
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:57)
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:437)
-	at com.ibm.websphere.management.AdminClientFactory.createAdminClientPrivileged(AdminClientFactory.java:457)
-	... 36 more
-Caused by: com.ibm.websphere.management.exception.ConnectorNotAvailableException: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]
-	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.reconnect(SOAPConnectorClient.java:437)
-	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.<init>(SOAPConnectorClient.java:236)
-	... 41 more
-Caused by: [SOAPException: faultCode=SOAP-ENV:Client; msg=Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed; targetException=java.lang.IllegalArgumentException: Error opening socket: java.io.IOException: Exception during sslSocket.startHandshake: com.ibm.jsse2.util.ValidatorException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed]
-	at org.apache.soap.transport.http.SOAPHTTPConnection.send(SOAPHTTPConnection.java:475)
-	at org.apache.soap.rpc.Call.WASinvoke(Call.java:525)
-	at com.ibm.ws.management.connector.soap.SOAPConnectorClient$4.run(SOAPConnectorClient.java:395)
-	at com.ibm.ws.security.util.AccessController.doPrivileged(AccessController.java:118)
-	at com.ibm.ws.management.connector.soap.SOAPConnectorClient.reconnect(SOAPConnectorClient.java:380)
-	... 42 more
+name: release-was-loose-file-deployment
+run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
 
-[6/5/24 13:01:18:542 GST] 00000001 AdminControlC W   WASX7072E: The control service is not available.
-[6/5/24 13:01:18:556 GST] 00000001 AdminConfigCl W   WASX7198W: The configuration service is not running. Configuration commands will not run.
-[6/5/24 13:01:18:568 GST] 00000001 AdminConfigCl A   WASX7208I: Validation settings in effect now: Level=HIGHEST, Cross-validation=true, Output file=/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/logs/wsadmin.valout
-[6/5/24 13:01:18:582 GST] 00000001 AdminAppClien W   WASX7072E: The control service is not available.
-[6/5/24 13:01:18:838 GST] 00000001 ModelMgr      I   WSVR0801I: Initializing all server configuration models
-[6/5/24 13:01:19:538 GST] 00000001 WorkSpaceMana A   WKSP0500I: Workspace configuration consistency check is disabled.
-[6/5/24 13:01:19:810 GST] 00000001 AdminAppClien W   WASX7206W: The application management service is not running. Application management commands will not run.
-[6/5/24 13:01:19:812 GST] 00000001 AdminCmdClien W   WASX7198W: The configuration service is not running. Configuration commands will not run.
-[6/5/24 13:01:19:812 GST] 00000001 AdminCmdClien W   WASX8011W: AdminTask object is not available.
-[6/5/24 13:01:20:128 GST] 00000001 AbstractShell A   WASX7091I: Executing script: "wsadmin_script.jy"
-[6/5/24 13:01:20:136 GST] 00000001 AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.ws.scripting.ScriptingException: AdminControl service not available
-" follows:
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
 
- com.ibm.ws.scripting.ScriptingException: AdminControl service not available
-	at com.ibm.ws.scripting.AbstractShell.setAndThrowScriptingException(AbstractShell.java:1887)
-	at com.ibm.ws.scripting.AdminControlClient.checkService(AdminControlClient.java:236)
-	at com.ibm.ws.scripting.AdminControlClient.queryNames_jmx(AdminControlClient.java:411)
-	at com.ibm.ws.scripting.AdminControlClient.queryNames(AdminControlClient.java:955)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java)
-	at org.python.core.PyMethod.__call__(PyMethod.java)
-	at org.python.core.PyObject.__call__(PyObject.java)
-	at org.python.core.PyInstance.invoke(PyInstance.java)
-	at org.python.pycode._pyx50.f$0(<string>:5)
-	at org.python.pycode._pyx50.call_function(<string>)
-	at org.python.core.PyTableCode.call(PyTableCode.java)
-	at org.python.core.PyCode.call(PyCode.java)
-	at org.python.core.Py.runCode(Py.java)
-	at org.python.core.Py.exec(Py.java)
-	at org.python.util.PythonInterpreter.exec(PythonInterpreter.java)
-	at com.ibm.bsf.engines.jython.JythonEngine$BSFPythonInterpreter.exec(Unknown Source)
-	at com.ibm.bsf.engines.jython.JythonEngine.exec(Unknown Source)
-	at com.ibm.bsf.BSFManager$6.run(Unknown Source)
-	at java.security.AccessController.doPrivileged(AccessController.java:746)
-	at com.ibm.bsf.BSFManager.exec(Unknown Source)
-	at com.ibm.ws.scripting.AbstractShell.executeScript(AbstractShell.java:1219)
-	at com.ibm.ws.scripting.AbstractShell.run(AbstractShell.java:2296)
-	at com.ibm.ws.scripting.WasxShell.main(WasxShell.java:1172)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at com.ibm.wsspi.bootstrap.WSLauncher.launchMain(WSLauncher.java:234)
-	at com.ibm.wsspi.bootstrap.WSLauncher.main(WSLauncher.java:96)
-	at com.ibm.wsspi.bootstrap.WSLauncher.run(WSLauncher.java:77)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at org.eclipse.equinox.internal.app.EclipseAppContainer.callMethodWithException(EclipseAppContainer.java:587)
-	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:198)
-	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
-	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
-	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:369)
-	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:90)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:55)
-	at java.lang.reflect.Method.invoke(Method.java:508)
-	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:340)
-	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
-	at org.eclipse.core.launcher.Main.run(Main.java:981)
-	at com.ibm.wsspi.bootstrap.WSPreLauncher.launchEclipse(WSPreLauncher.java:425)
-	at com.ibm.wsspi.bootstrap.WSPreLauncher.main(WSPreLauncher.java:178)
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+      repository:
+        description: 'Download Release repo name'
+        required: true
+        type: string
+        default:  rakbank-internal/ibps-was-ansible-cd
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+jobs:
+  IBPS-loosefile-deploy:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      tag: ${{ github.event.inputs.tag }}
+      fileName: ${{ github.event.inputs.fileName }}
+      repository: ${{ github.event.inputs.repository }}
+      deploy_mode: ${{ github.event.inputs.deploy_mode }}
+      rollback_mode: ${{ github.event.inputs.rollback_mode }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
+      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+==========================
+using reusable workflow
 
-[6/5/24 13:01:20:138 GST] 00000001 AbstractShell A   WASX7093I: Issuing message: "WASX7017E: Exception received while running file "wsadmin_script.jy"; exception information: com.ibm.ws.scripting.ScriptingException: AdminControl service not available
-"
-[6/5/24 13:01:20:142 GST] 0000001b AbstractShell E   WASX7120E: Diagnostic information from exception with text "com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
-" follows:
+name: was-loose-file-deployment
 
- com.ibm.ws.scripting.ScriptingException: WASX7070E: The configuration service is not available.
-	at com.ibm.ws.scripting.AbstractShell.setAndThrowScriptingException(AbstractShell.java:1887)
-	at com.ibm.ws.scripting.AdminConfigClient.checkService(AdminConfigClient.java:2499)
-	at com.ibm.ws.scripting.WasxShell.leaving(WasxShell.java:1085)
-	at com.ibm.ws.scripting.WasxShell.leaving(WasxShell.java:1047)
-	at com.ibm.ws.scripting.WasxShell$1.run(WasxShell.java:1182)
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
 
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        required: true 
+        type: string
+      tag:
+        required: true
+        type: string
+      fileName:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      deploy_mode:
+        required: true
+        type: string
+      rollback_mode:
+        required: true
+        type: string
+
+    secrets:
+      TOKEN_GITHUB: 
+        required: true
+      USERNAME_GITHUB:
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout ibps-was-ansible-cd repository
+      uses: actions/checkout@v4
+
+    - name: Checkout roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature    
+      
+    - name: Checkout reusable code
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-reusable-workflows
+        ref: feature/optimum-deh-mcf-templates
+        path: reusable-workflows
+        token: ${{ secrets.TOKEN_GITHUB }}  
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x scripts/deploy.sh scripts/rollback.sh    
+
+    - name: Downlaod the releaseartifact from GitHub release
+      uses: ./reusable-workflows/.github/actions/releaseartifact-download-GitHubrelease
+      with:
+        tag: ${{ inputs.tag }}
+        fileName: ${{ inputs.fileName }}
+        repository: ${{ inputs.repository }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+
+    - name: Run Ansible Playbook
+      uses: ./reusable-workflows/.github/actions/was-loosfile-cd
+      with: 
+        release_version: ${{ inputs.release_version }}
+        deploy_mode: ${{ inputs.deploy_mode }}
+        rollback_mode: ${{ inputs.rollback_mode }}
+      shell: bash 
+=================================
+
+using composite action for was-loosfile-cd
+
+name: 'was-loosefile-deployment'
+description: 'was-loosefile-deployment'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  deploy_mode:
+    description: 'deploy loose file'
+    required: true
+    type: string
+  rollback_mode:
+    description: 'rollback loose file'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} deploy_mode=${{ inputs.deploy_mode }} rollback_mode=${{ inputs.rollback_mode }} release_version=${release_version}" ./playbook/was-loosefile-deployment.yml #Cluster ip:10.15.11.209
+      shell: bash 
+======================
+
+using host.cfg
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[target_wasuat209]
+ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879 ansible_host_vars_file=vars/uat209.yml
+============================
+playbook/vars/uat209.yml
+
+cell_name: "antibpsapp1Cell01"
+cluster_name: "BPMCLUSTER"
+ansible_user: "itdevtra"
+was_admin_user: "deployer"
+was_admin_password: "deployer@123"
+
+=========================
+using playbook
+
+- name: ibps app deploy for loosefile
+  hosts: '{{ target }}'
+  become: yes
+  become_user: '{{ ansible_user }}'
+
+  tasks:
+    - name: Include was-loosefile-deploy
+      include_role:
+        name: was-loosefile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "develop"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+        zip_file_name: "{{ zip_file_url | basename }}"
+        Profile_home: "/ibm/IBM/Application/release"
