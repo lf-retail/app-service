@@ -374,3 +374,5 @@ Compress the "release" directory to create "release.zip".
 Finally, the Newgen team should upload the "release.zip" file to GitHub Releases.
 Please proceed accordingly. Let me know if you need any further clarification.
 
+Please refer to the below screenshot for the previous releases. We need to follow the same process to move the release.zip file, ensuring the GitHub Releases tag name is different this time.
+
