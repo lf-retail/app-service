@@ -640,3 +640,77 @@ using playbook
 getting error
 Invalid workflow file: .github/workflows/release-was-loosefile-cd.yml#L59
 The workflow is not valid. .github/workflows/release-was-loosefile-cd.yml (Line: 59, Col: 21): Unexpected symbol: '+'. Located at position 25 within expression: secrets['ANSIBLE_USER_' + github.event.inputs.environment] .github/workflows/release-was-loosefile-cd.yml (Line: 60, Col: 17): Unexpected symbol: '+'. Located at position 21 within expression: secrets['WAS_HOST_' + github.event.inputs.environment]
+================
+
+name: release-was-loose-file-deployment
+run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+      repository:
+        description: 'Download Release repo name'
+        required: true
+        type: string
+        default: rakbank-internal/ibps-was-ansible-cd
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: string
+        default: 'UAT209'
+
+jobs:
+  IBPS-loosefile-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set environment-specific secrets
+      id: set-env
+      run: |
+        echo "ANSIBLE_USER=${{ secrets['ANSIBLE_USER_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
+        echo "WAS_HOST=${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
+        echo "WAS_PORT=${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
+
+    - name: Call reusable workflow
+      uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
+      with:
+        release_version: ${{ github.event.inputs.release_version }}
+        tag: ${{ github.event.inputs.tag }}
+        fileName: ${{ github.event.inputs.fileName }}
+        repository: ${{ github.event.inputs.repository }}
+        deploy_mode: ${{ github.event.inputs.deploy_mode }}
+        rollback_mode: ${{ github.event.inputs.rollback_mode }}
+        environment: ${{ github.event.inputs.environment }}
+      secrets:
+        TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        ansible_user: ${{ env.ANSIBLE_USER }}
+        WAS_HOST: ${{ env.WAS_HOST }}
+        WAS_PORT: ${{ env.WAS_PORT }}
