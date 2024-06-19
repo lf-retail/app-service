@@ -229,3 +229,64 @@ ANTIBPSAPP2 ansible_ssh_host={{ lookup('env', 'WAS_HOST_UAT210') }} ansible_host
 
 [1:41 PM] Pradip Kanasani
 https://github.com/rakbank-internal/deh_onboarding_retail_account_v1111/blob/develop/.github/workflows/gradle-hif-build.yml
+==============================================================================================
+
+name: release-was-loose-file-deployment
+run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+      repository:
+        description: 'Download Release repo name'
+        required: true
+        type: string
+        default:  rakbank-internal/ibps-was-ansible-cd
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: string
+        default: 'UAT209'
+  
+jobs:
+  IBPS-loosefile-deploy:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      tag: ${{ github.event.inputs.tag }}
+      fileName: ${{ github.event.inputs.fileName }}
+      repository: ${{ github.event.inputs.repository }}
+      deploy_mode: ${{ github.event.inputs.deploy_mode }}
+      rollback_mode: ${{ github.event.inputs.rollback_mode }}
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
+      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+      
