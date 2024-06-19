@@ -363,9 +363,15 @@ ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE
 
 ====================
 
-1. Create the release directory.
-2. Inside the release directory, create a release.txt file containing the application name and its targeted location in CSV format.
-3. Additionally, copy the application files into the release directory.
-4. Compress the release directory to obtain release.zip.
-5. Subsequently, Newgen team should send the release.zip file to the Rakbank support team.
+Hi Hritik,
 
+You already done the below steps to move the release.zip into GitHub Releases But now you sent in different way. So Please follow the below step for IBPS application deployment
+
+Create the release directory.
+Inside the release directory, create a release.txt file containing the application name and its targeted location in CSV format.
+Additionally, copy the application files into the release directory.
+Compress the release directory to obtain release.zip.
+Subsequently, Newgen team should send the release.zip file into GitHub Releases
+
+Thanks,
+Shanmuganathan M.
