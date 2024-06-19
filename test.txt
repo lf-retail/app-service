@@ -367,11 +367,10 @@ Hi Hritik,
 
 You already done the below steps to move the release.zip into GitHub Releases But now you sent in different way. So Please follow the below step for IBPS application deployment
 
-Create the release directory.
-Inside the release directory, create a release.txt file containing the application name and its targeted location in CSV format.
-Additionally, copy the application files into the release directory.
-Compress the release directory to obtain release.zip.
-Subsequently, Newgen team should send the release.zip file into GitHub Releases
+Create the "release" directory.
+Inside the "release" directory, generate a "release.txt" file that lists the application name and its intended location in CSV format.
+Additionally, place all application files into the "release" directory.
+Compress the "release" directory to create "release.zip".
+Finally, the Newgen team should upload the "release.zip" file to GitHub Releases.
+Please proceed accordingly. Let me know if you need any further clarification.
 
-Thanks,
-Shanmuganathan M.
