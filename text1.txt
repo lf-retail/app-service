@@ -260,13 +260,13 @@ on:
         description: 'Download Release repo name'
         required: true
         type: string
-        default:  rakbank-internal/ibps-was-ansible-cd
+        default: rakbank-internal/ibps-was-ansible-cd
       deploy_mode:
-        description: 'deploy loose file'
+        description: 'Deploy loose file'
         required: true
         type: string
       rollback_mode:
-        description: 'rollback loose file'
+        description: 'Rollback loose file'
         required: true
         type: string
       environment:
@@ -274,7 +274,7 @@ on:
         required: true
         type: string
         default: 'UAT209'
-  
+
 jobs:
   IBPS-loosefile-deploy:
     uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
@@ -289,4 +289,10 @@ jobs:
     secrets:
       TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
       USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-      
+      ansible_user: ${{ secrets['ansible_user_' + github.event.inputs.environment] }}
+      WAS_ADMIN_USER: ${{ secrets['WAS_ADMIN_USER_' + github.event.inputs.environment] }}
+      WAS_ADMIN_PASSWORD: ${{ secrets['WAS_ADMIN_PASSWORD_' + github.event.inputs.environment] }}
+      CELL_NAME: ${{ secrets['CELL_NAME_' + github.event.inputs.environment] }}
+      CLUSTER_NAME: ${{ secrets['CLUSTER_NAME_' + github.event.inputs.environment] }}
+      WAS_HOST: ${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}
+      WAS_PORT: ${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}
