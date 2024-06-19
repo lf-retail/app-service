@@ -376,3 +376,267 @@ Please proceed accordingly. Let me know if you need any further clarification.
 
 Please refer to the below screenshot for the previous releases. We need to follow the same process to move the release.zip file, ensuring the GitHub Releases tag name is different this time.
 
+=====================================
+using release workflow
+
+name: release-was-loose-file-deployment
+run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy'
+        required: true 
+        type: string
+      tag:
+        description: 'Release tag name'
+        required: true
+        type: string
+      fileName:
+        description: 'Release file name'
+        required: true
+        type: string
+      repository:
+        description: 'Download Release repo name'
+        required: true
+        type: string
+        default:  rakbank-internal/ibps-was-ansible-cd
+      deploy_mode:
+        description: 'deploy loose file'
+        required: true
+        type: string
+      rollback_mode:
+        description: 'rollback loose file'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: string
+        default: 'UAT209'
+  
+jobs:
+  IBPS-loosefile-deploy:
+    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
+    with:
+      release_version: ${{ github.event.inputs.release_version }}
+      tag: ${{ github.event.inputs.tag }}
+      fileName: ${{ github.event.inputs.fileName }}
+      repository: ${{ github.event.inputs.repository }}
+      deploy_mode: ${{ github.event.inputs.deploy_mode }}
+      rollback_mode: ${{ github.event.inputs.rollback_mode }}
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
+      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+      ansible_user: ${{ secrets['ANSIBLE_USER_' + github.event.inputs.environment] }}
+      WAS_HOST: ${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}
+      WAS_PORT: ${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}
+-------------------------
+using reusable workflow
+
+name: was-loose-file-deployment
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  actions: read
+  pull-requests: write
+
+
+on:
+  workflow_call:
+    inputs:
+      release_version:
+        required: true 
+        type: string
+      tag:
+        required: true
+        type: string
+      fileName:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      deploy_mode:
+        required: true
+        type: string
+      rollback_mode:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
+    secrets:
+      TOKEN_GITHUB: 
+        required: true
+      USERNAME_GITHUB:
+        required: true
+      ansible_user:
+        required: true
+      WAS_HOST:
+        required: true
+      WAS_PORT:
+        required: true
+
+jobs:
+  deploy:
+    runs-on:
+     group: rakbank-self-hosted-runner
+     labels: dehitdevtra1
+
+    steps:
+    - name: Checkout ibps-was-ansible-cd repository
+      uses: actions/checkout@v4
+
+    - name: Checkout roles repository
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-ansible-roles
+        token: ${{ secrets.TOKEN_GITHUB }}
+        path: ansible-roles
+        ref: Feature    
+      
+    - name: Checkout reusable code
+      uses: actions/checkout@v4
+      with:
+        repository: rakbank-internal/enterprise-reusable-workflows
+        ref: feature/optimum-deh-mcf-templates
+        path: reusable-workflows
+        token: ${{ secrets.TOKEN_GITHUB }}  
+
+    - name: Make deploy.sh and rollback.sh executable
+      run: |
+        chmod +x scripts/deploy.sh scripts/rollback.sh    
+
+    - name: Downlaod the releaseartifact from GitHub release
+      uses: ./reusable-workflows/.github/actions/releaseartifact-download-GitHubrelease
+      with:
+        tag: ${{ inputs.tag }}
+        fileName: ${{ inputs.fileName }}
+        repository: ${{ inputs.repository }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+
+    - name: Run Ansible Playbook
+      uses: ./reusable-workflows/.github/actions/was-loosfile-cd
+      with: 
+        release_version: ${{ inputs.release_version }}
+        deploy_mode: ${{ inputs.deploy_mode }}
+        rollback_mode: ${{ inputs.rollback_mode }}
+        environment: ${{ inputs.environment }}
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
+        ansible_user: ${{ secrets.ansible_user }}
+        WAS_HOST: ${{ secrets.WAS_HOST }}
+        WAS_PORT: ${{ secrets.WAS_PORT }}
+---------------------------
+using action for was-loosefile-cd
+
+name: 'was-loosefile-deployment'
+description: 'was-loosefile-deployment'
+inputs:
+  release_version:
+    description: 'Release version to deploy'
+    required: true 
+    type: string
+  deploy_mode:
+    description: 'deploy loose file'
+    required: true
+    type: string
+  rollback_mode:
+    description: 'rollback loose file'
+    required: true
+    type: string
+  environment:
+    description: 'target environment'
+    required: true
+    type: string
+  USERNAME_GITHUB:
+    description: 'GitHub username'
+    required: true
+    type: string
+  TOKEN_GITHUB:
+    description: 'GitHub token'
+    required: true
+    type: string
+  ansible_user:
+    required: true
+    type: string
+  WAS_HOST:
+    required: true
+    type: string
+  WAS_PORT:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Ansible Playbook
+      env:
+        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
+        release_version: ${{ inputs.release_version }}
+        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+        ansible_user: ${{ inputs.ansible_user }} 
+        WAS_HOST: ${{ inputs.WAS_HOST }}
+        WAS_PORT: ${{ inputs.WAS_PORT }}
+        environment: ${{ inputs.environment }}
+      run: |
+        cd ${{ github.workspace }}
+        ansible-playbook -vvv -b --extra-vars "target=target_was{{ inputs.environment }} destination=${{ github.workspace }} deploy_mode=${{ inputs.deploy_mode }} rollback_mode=${{ inputs.rollback_mode }} release_version=${release_version} WAS_HOST=${WAS_HOST} WAS_PORT=${WAS_PORT} environment=${environment} ansible_user=${ansible_user}" ./playbook/was-loosefile-deployment.yml #Cluster ip:10.15.11.209
+      shell: bash 
+===========================
+
+using host.cfg
+
+[all:vars]
+ansible_ssh_port=22
+
+[target_was+{{ lookup('env', 'environment') }}]
+ANTIBPSAPP1 ansible_ssh_host={{ lookup('env', 'WAS_HOST') }} ansible_host_port={{ lookup('env', 'WAS_PORT') }} ansible_user={{ lookup('env', 'ansible_user') }}
+
+-------------------------------------
+
+using playbook
+
+- name: ibps app deploy for loosefile
+  hosts: '{{ target }}'
+  become: yes
+  become_user: "{{ lookup('env', 'ansible_user') }}"
+
+  tasks:
+    - name: Include was-loosefile-deploy
+      include_role:
+        name: was-loosefile-deploy
+        tasks_from: main.yml
+      vars:
+        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+        owner: "rakbank-internal"
+        repo: "ibps-was-ansible-cd"
+        branch: "IBPS-APP-ROLE"
+        release_version: "{{ lookup('env', 'release_version') }}"
+        WAS_HOST: "{{ lookup('env', 'WAS_HOST') }}"
+        WAS_PORT: "{{ lookup('env', 'WAS_PORT') }}"
+        environment: "{{ lookup('env', 'environment') }}"
+        ansible_user: "{{ lookup('env', 'ansible_user') }}"
+        zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
+        zip_file_name: "{{ zip_file_url | basename }}"
+        Profile_home: "/ibm/IBM/Application/release"
+
+============================
+
+getting error
+Invalid workflow file: .github/workflows/release-was-loosefile-cd.yml#L59
+The workflow is not valid. .github/workflows/release-was-loosefile-cd.yml (Line: 59, Col: 21): Unexpected symbol: '+'. Located at position 25 within expression: secrets['ANSIBLE_USER_' + github.event.inputs.environment] .github/workflows/release-was-loosefile-cd.yml (Line: 60, Col: 17): Unexpected symbol: '+'. Located at position 21 within expression: secrets['WAS_HOST_' + github.event.inputs.environment]
