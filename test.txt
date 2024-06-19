@@ -731,3 +731,8 @@ sudo chmod u+rw /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org
 1 vulnerability
 Please replace u+rw with the appropriate permissions and /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock with the path to your file or directory.
 Remember to be careful when changing permissions to ensure you are not inadvertently giving access to users who should not have it.
+==================
+
+We are doing the IBPS war file installation in WAS and we have done for the UAT server 10.15.11.209 
+but we are getting below error in 10.15.11.210  port 8879
+Can you please check that issue
