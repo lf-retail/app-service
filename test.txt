@@ -714,3 +714,20 @@ jobs:
         ansible_user: ${{ env.ANSIBLE_USER }}
         WAS_HOST: ${{ env.WAS_HOST }}
         WAS_PORT: ${{ env.WAS_PORT }}
+====================
+
+[5:39 PM] Pradip Kanasani
+The error message indicates that the process does not have the necessary permissions to access the file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock.
+This could be due to the user running the process not having the necessary read/write permissions for the file or directory.
+To fix this issue, you can change the permissions of the file or directory using the chmod command in the terminal.
+Here is an example of how you can give read/write permissions to the user for the file:
+ 
+ 
+sudo chmod u+rw /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock
+ 
+ 
+ 
+ 
+1 vulnerability
+Please replace u+rw with the appropriate permissions and /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock with the path to your file or directory.
+Remember to be careful when changing permissions to ensure you are not inadvertently giving access to users who should not have it.
