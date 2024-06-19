@@ -360,3 +360,12 @@ ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE
         CELL_NAME: "{{ CELL_NAME }}"
         CLUSTER_NAME: "{{ CLUSTER_NAME }}"
         WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
+
+====================
+
+1. Create the release directory.
+2. Inside the release directory, create a release.txt file containing the application name and its targeted location in CSV format.
+3. Additionally, copy the application files into the release directory.
+4. Compress the release directory to obtain release.zip.
+5. Subsequently, Newgen team should send the release.zip file to the Rakbank support team.
+
