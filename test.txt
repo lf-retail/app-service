@@ -1,740 +1,195 @@
-name: release-was-warfileinstall
-run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
+Hi Bala,
+As we planned to implement our release Pipeline with the below
+APP-CI-Setup --> App-CI/Build --> App-CD-DEV --> App-CD-UAT --> App-CD-PROD --> App-CD-DR
 
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
+Release Pipeline
+----------------
+name: Release Pipeline cd test
+run-name: release - ${{github.event.inputs.releaseVersion}}
 
 on:
   workflow_dispatch:
     inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      war_file_path:
-        description: 'Path to the WAR file on the target server'
+      releaseVersion:
+        description: 'Release Version'
         required: true
-        type: string
-        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
-      war_file_name:
-        description: 'Name of the WAR file'
-        required: true
-        type: string
-        default: 'KYC_Remediation.war'
-      app_name:
-        description: 'Name of the deployed application'
-        required: true
-        type: string
-        default: 'KYC_Remediation_war'
-      context_root:
-        description: 'Context root of the deployed application'
-        required: true
-        type: string
-        default: '/KYC_Remediation'
+        default: '1.0.0'
+      choice:
+        type: choice
+        description: Select a service
+        options:
+          - Rakbank-DEH-Onboarding/RetailOnboarding-AccMS
+         
+      app:
+        type: boolean
+        description: Deploy App
+      database:
+        type: boolean
+        description: Deploy database       
         
 jobs:
-  IBPS-warfileinstall:
-    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-warfileinstall.yml@feature/optimum-deh-mcf-templates
-    with:
-      release_version: ${{ github.event.inputs.release_version }}
-      war_file_path: ${{ github.event.inputs.war_file_path }}
-      war_file_name: ${{ github.event.inputs.war_file_name }}
-      app_name: ${{ github.event.inputs.app_name }}
-      context_root: ${{ github.event.inputs.context_root }}
-    secrets:
-      TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
-      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-
-================================
-- name: was deploy warfileinstall in was
-  hosts: '{{ target }}'
-  become: yes
-  become_user: '{{ ansible_user }}'
-
-  tasks:
-    - name: Set dynamic WAS_HOST and WAS_PORT
-      set_fact:
-        was_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
-        was_port: "{{ hostvars[inventory_hostname]['ansible_host_port'] }}"
-
-    - name: Include environment-specific variables
-      include_vars: "{{ hostvars[inventory_hostname].ansible_host_vars_file }}"
+  Create-App-CI:
+    if: ${{ github.event.inputs.app =='true' }}
+    environment: DEV
+    name: APP-CI-Setup
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+      
+    steps:
+    ###we are using github token because if it is enterprise level we have to use this
+    - name: Get Token
+      id: get-workflow-token
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+        application_id: 403159
+        application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
         
-    - name: Include was-warfile-deploy
-      include_role:
-        name:  was-warfile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ lookup('env', 'release_version') }}"
-        Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH:  "{{ lookup('env', 'war_file_path') }}"
-        WAR_FILE_NAME:  "{{ lookup('env', 'war_file_name') }}"
-        APP_NAME:  "{{ lookup('env', 'app_name') }}"
-        CONTEXT_ROOT:  "{{ lookup('env', 'context_root') }}"
-        WAS_HOST: "{{ was_host }}"
-        WAS_PORT: "{{ was_port }}"
-        WAS_ADMIN_USER: "{{ was_admin_user }}"
-        WAS_ADMIN_PASSWORD: "{{ was_admin_password }}"
-        CELL_NAME: "{{ cell_name }}"
-        CLUSTER_NAME: "{{ cluster_name }}"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"        
-=========================
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
+    - name: Display selected inputs
+      run: |
+        echo "Selected Release Version: ${{ github.event.inputs.releaseVersion }}"
+        echo "Selected Repository: ${{ github.event.inputs.choice }}"
+        echo "Selected Organization: ${{ github.event.inputs.Organization }}"
+    - name: Checkout selected repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.event.inputs.choice }}
+        ref: 'dev'
+        token: ${{ steps.get-workflow-token.outputs.token }}
 
-[target_wasuat209]
-ANTIBPSAPP1 ansible_ssh_host=10.15.11.209 ansible_host_port=8879 ansible_host_vars_file=vars/uat209.yml
+    - name : Create Application Release Branch 
+      run: |
+        RELEASE_BRANCH_NAME=release/r-${{ github.event.inputs.releaseVersion }}
+        git checkout -b $RELEASE_BRANCH_NAME
+        git push --set-upstream origin $RELEASE_BRANCH_NAME
+      env:
+        token: $GITHUB_TOKEN
 
-#[target_wasuat210]
-#ANTIBPSAPP2 ansible_ssh_host=10.15.11.210 ansible_host_port=8879 ansible_host_vars_file=vars/uat210.yml
-=================
+###successfully calling our CI
+  App-CI:
+    name: App-CI
+    needs: Create-App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/release-gradle-build.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      branchName: $RELEASE_BRANCH_NAME
 
-cell_name: "antibpsapp1Cell01"
-cluster_name: "BPMCLUSTER"
-ansible_user: "itdevtra"
-was_admin_user: "deployer"
-was_admin_password: "deployer@123"
-================
+###if we are using the below method it is working with environment variable but release structure will be changed like what we have done CI
+ # Create-App-CD:
+  #  name: App-CD
+  #  needs: App-CI
+   # environment: UAT
+    #runs-on: ubuntu-latest
+      
+    #steps:
+    #- name: Get Token
+     # id: get-workflow-token
+      #uses: peter-murray/workflow-application-token-action@v2
+      #with:
+       # application_id: 403159
+        #application_private_key: ${{ secrets.DEVOPSTOKEN_DEH }}
+        
+  #App-Deploy-Dev:
+   # name: App-CD-UAT
+    #needs: Create-App-CD
+    #uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    #secrets: inherit
+    #with:
+     # repoName: ${{ github.event.inputs.choice }}
+         
 
-name: was-warfileinstall-reusable-workflow
+###if we are using the below method it is working but we have to give the environment variable in CD workflow
+  App-Deploy-UAT:
+    name: App-cd
+    needs: App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+         
 
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
+###if we are using the below method it is working but it will calling CD workflow directly and it is not wait for approval
+  App-Deploy-UAT:
+    name: App-cd
+    needs: App-CI
+    uses: Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/.github/workflows/jboss_deploy_github_new.yml@dev
+    secrets: inherit
+    with:
+      repoName: ${{ github.event.inputs.choice }}
+      Environments: UAT #tried with other variable also env_value: UAT     
+   
+###further we are stuck with to implement for passing the environment variable and getting the input from CD workflow. So need your help proceed further
+       
+
+==========================
+
+CD workflow
+-----------
+name: Deploy WAR to JBoss
 
 on:
+
   workflow_call:
     inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      war_file_path:
-        description: 'Path to the WAR file on the target server'
+      repoName:
         required: true
-        type: string
-      war_file_name:
-        description: 'Name of the WAR file'
-        required: true
-        type: string
-      app_name:
-        description: 'Name of the deployed application'
-        required: true
-        type: string
-      context_root:
-        description: 'Context root of the deployed application'
-        required: true
-        type: string
-
-    secrets:
-      TOKEN_GITHUB: 
-        required: true
-      USERNAME_GITHUB:
-        required: true
+        type: string 
+      #Environments:
+       # required: true
+        #type: string
 
 jobs:
   deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
+    runs-on: ubuntu-latest
+    Environments: UAT 
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      #group: rakbank-self-hosted-runner
+      #labels: rakdeh3
+    steps: 
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-    - name: Checkout roles repository
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-ansible-roles
-        token: ${{ secrets.TOKEN_GITHUB }}
-        path: ansible-roles
-        ref: Feature      
-      
-    - name: Checkout reusable code
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-reusable-workflows
-        ref: feature/optimum-deh-mcf-templates
-        path: reusable-workflows
-        token: ${{ secrets.TOKEN_GITHUB }}  
-
-    - name: Make war-install-in-was.sh executable
-      run: |
-        chmod +x scripts/war-install-in-was.sh    
-
-    - name: war file installation in WAS
-      uses: ./reusable-workflows/.github/actions/was-warfileinstall
-      with:
-        release_version: ${{ inputs.release_version }}
-        war_file_path: ${{ inputs.war_file_path }}
-        war_file_name: ${{ inputs.war_file_name }}
-        app_name: ${{ inputs.app_name }}
-        context_root: ${{ inputs.context_root }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-=========================
-name: 'was-warfileinstall'
-description: 'was-warfileinstall'
-inputs:
-  release_version:
-    description: 'Release version to deploy'
-    required: true 
-    type: string
-  war_file_path:
-    description: 'Path to the WAR file on the target server'
-    required: true
-    type: string
-  war_file_name:
-    description: 'Name of the WAR file'
-    required: true
-    type: string
-  app_name:
-    description: 'Name of the deployed application'
-    required: true
-    type: string
-  context_root:
-    description: 'Context root of the deployed application'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string    
-  
-runs:
-  using: "composite"
-  steps:
     - name: Run Ansible Playbook
       env:
-        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
-        release_version: ${{ inputs.release_version }}
-        war_file_path: ${{ inputs.war_file_path }}
-        war_file_name: ${{ inputs.war_file_name }}
-        app_name: ${{ inputs.app_name }}
-        context_root: ${{ inputs.context_root }}
-        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
+        
+        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        
       run: |
         cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_wasuat209 destination=${{ github.workspace }} release_version=${release_version} war_file_path=${war_file_path} war_file_name=${war_file_name} app_name=${app_name} context_root=${context_root} TOKEN_GITHUB=${TOKEN_GITHUB}" ./playbook/was-warfileinstall.yml
-      shell: bash   
-====================
+        ansible-playbook -b --extra-vars 'target=ANTANSAPPS02' ./playbook/dehrepdeployment.yml 
+        
+=======================
 
-name: release-was-warfileinstall
-run-name: release-was-warfileinstall-${{ github.event.inputs.release_version }}
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      war_file_path:
-        description: 'Path to the WAR file on the target server'
-        required: true
-        type: string
-        default: '/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/installedApps/antibpsapp1Cell01/KYC_Remediation.war'
-      war_file_name:
-        description: 'Name of the WAR file'
-        required: true
-        type: string
-        default: 'KYC_Remediation.war'
-      app_name:
-        description: 'Name of the deployed application'
-        required: true
-        type: string
-        default: 'KYC_Remediation_war'
-      context_root:
-        description: 'Context root of the deployed application'
-        required: true
-        type: string
-        default: '/KYC_Remediation'
-      target_env:
-        description: 'Target environment (UAT209, UAT210, etc.)'
-        required: true
-        type: string
-
-jobs:
-  deploy:
-    runs-on: self-hosted
-
-    steps:
-    - name: Set environment-specific secrets
-      id: set-env-secrets
-      run: |
-        echo "ANSIBLE_SSH_HOST=${{ secrets.ANSIBLE_SSH_HOST }}" >> $GITHUB_ENV
-        echo "ANSIBLE_HOST_PORT=${{ secrets.ANSIBLE_HOST_PORT }}" >> $GITHUB_ENV
-        echo "WAS_ADMIN_USER=${{ secrets.WAS_ADMIN_USER }}" >> $GITHUB_ENV
-        echo "WAS_ADMIN_PASSWORD=${{ secrets.WAS_ADMIN_PASSWORD }}" >> $GITHUB_ENV
-        echo "CELL_NAME=${{ secrets.CELL_NAME }}" >> $GITHUB_ENV
-        echo "CLUSTER_NAME=${{ secrets.CLUSTER_NAME }}" >> $GITHUB_ENV
-
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Run Ansible Playbook
-      run: |
-        ansible-playbook -vvv -b --extra-vars "target=target_was${{ inputs.target_env }}" \
-          release_version=${{ inputs.release_version }} \
-          war_file_path=${{ inputs.war_file_path }} \
-          war_file_name=${{ inputs.war_file_name }} \
-          app_name=${{ inputs.app_name }} \
-          context_root=${{ inputs.context_root }}" \
-          ANSIBLE_SSH_HOST=${{ env.ANSIBLE_SSH_HOST }}" \
-          ANSIBLE_HOST_PORT=${{ env.ANSIBLE_HOST_PORT }}" \
-          WAS_ADMIN_USER=${{ env.WAS_ADMIN_USER }}" \
-          WAS_ADMIN_PASSWORD=${{ env.WAS_ADMIN_PASSWORD }}" \
-          CELL_NAME=${{ env.CELL_NAME }}" \
-          CLUSTER_NAME=${{ env.CLUSTER_NAME }}" \
-          ./playbook/was-warfileinstall.yml
-      env:
-        TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-==================
-
-[all:vars]
-ansible_user=itdevtra
-ansible_ssh_port=22
-
-[target_wasUAT209]
-ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE_HOST_PORT }}
-
-[target_wasUAT210]
-ANTIBPSAPP1 ansible_ssh_host={{ ANSIBLE_SSH_HOST }} ansible_host_port={{ ANSIBLE_HOST_PORT }}
-=================
+Playbook
+--------
+jboss_controller: 10.15.14.105:18990
+#jboss_user: "{{ lookup('env', 'JBOSS_USER') }}"
+#jboss_password: "{{ lookup('env', 'JBOSS_PASSWORD') }}"
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+war_file_url: "https://maven.pkg.github.com/Rakbank-DEH-Onboarding/RetailOnboarding-AccMS/com/rakbank/infosys/lib/retailonboarding-accms/1111/retailonboarding-accms-1111.war"
+war_file_name: "{{ war_file_url | basename }}"
+jboss_home: "/apps/JBOSSEAP7.2_EXP_DIGIHUB_DIGITAL_BANK/EAP-7.2.0"
+jboss_deployments_dir: "{{ jboss_home }}/standalone/deployments"
+#dest_path: "/apps/JBOSSEAP7.2_EXP_DIGIHUB_DIGITAL_BANK/EAP-7.2.0/standalone/{{ war_file_name }}"
+...
 
 ---
-- name: WAS Warfile Install
-  hosts: '{{ target }}'
-  become: yes
-  become_user: '{{ ansible_user }}'
+- name: Download WAR from GitHub packages
+  get_url:
+    url: "{{ war_file_url }}"
+    dest: "{{ jboss_deployments_dir }}/{{ war_file_name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
 
-  tasks:
-    - name: Include environment-specific variables
-      include_vars:
-        dir: vars
-        name: "{{ target_env }}"
+- name: Undeploy existing WAR (if it exists) from JBoss
+  shell: "{{ jboss_home }}/bin/jboss-cli.sh --connect --controller={{ jboss_controller }} --command='undeploy {{ war_file_name }} --keep-content'"
+  ignore_errors: yes  
 
-    - name: Include was-warfile-deploy
-      include_role:
-        name: was-warfile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ release_version }}"
-        Profile_home: "/ibm/IBM/Application/release"
-        WAR_FILE_PATH: "{{ war_file_path }}"
-        WAR_FILE_NAME: "{{ war_file_name }}"
-        APP_NAME: "{{ app_name }}"
-        CONTEXT_ROOT: "{{ context_root }}"
-        WAS_HOST: "{{ ANSIBLE_SSH_HOST }}"
-        WAS_PORT: "{{ ANSIBLE_HOST_PORT }}"
-        WAS_ADMIN_USER: "{{ WAS_ADMIN_USER }}"
-        WAS_ADMIN_PASSWORD: "{{ WAS_ADMIN_PASSWORD }}"
-        CELL_NAME: "{{ CELL_NAME }}"
-        CLUSTER_NAME: "{{ CLUSTER_NAME }}"
-        WSADMIN: "/ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/bin/wsadmin.sh"
-
-====================
-
-Hi Hritik,
-
-You already done the below steps to move the release.zip into GitHub Releases But now you sent in different way. So Please follow the below step for IBPS application deployment
-
-Create the "release" directory.
-Inside the "release" directory, generate a "release.txt" file that lists the application name and its intended location in CSV format.
-Additionally, place all application files into the "release" directory.
-Compress the "release" directory to create "release.zip".
-Finally, the Newgen team should upload the "release.zip" file to GitHub Releases.
-Please proceed accordingly. Let me know if you need any further clarification.
-
-Please refer to the below screenshot for the previous releases. We need to follow the same process to move the release.zip file, ensuring the GitHub Releases tag name is different this time.
-
-=====================================
-using release workflow
-
-name: release-was-loose-file-deployment
-run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      tag:
-        description: 'Release tag name'
-        required: true
-        type: string
-      fileName:
-        description: 'Release file name'
-        required: true
-        type: string
-      repository:
-        description: 'Download Release repo name'
-        required: true
-        type: string
-        default:  rakbank-internal/ibps-was-ansible-cd
-      deploy_mode:
-        description: 'deploy loose file'
-        required: true
-        type: string
-      rollback_mode:
-        description: 'rollback loose file'
-        required: true
-        type: string
-      environment:
-        description: 'Target environment'
-        required: true
-        type: string
-        default: 'UAT209'
-  
-jobs:
-  IBPS-loosefile-deploy:
-    uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
-    with:
-      release_version: ${{ github.event.inputs.release_version }}
-      tag: ${{ github.event.inputs.tag }}
-      fileName: ${{ github.event.inputs.fileName }}
-      repository: ${{ github.event.inputs.repository }}
-      deploy_mode: ${{ github.event.inputs.deploy_mode }}
-      rollback_mode: ${{ github.event.inputs.rollback_mode }}
-      environment: ${{ github.event.inputs.environment }}
-    secrets:
-      TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
-      USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-      ansible_user: ${{ secrets['ANSIBLE_USER_' + github.event.inputs.environment] }}
-      WAS_HOST: ${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}
-      WAS_PORT: ${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}
--------------------------
-using reusable workflow
-
-name: was-loose-file-deployment
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-
-on:
-  workflow_call:
-    inputs:
-      release_version:
-        required: true 
-        type: string
-      tag:
-        required: true
-        type: string
-      fileName:
-        required: true
-        type: string
-      repository:
-        required: true
-        type: string
-      deploy_mode:
-        required: true
-        type: string
-      rollback_mode:
-        required: true
-        type: string
-      environment:
-        required: true
-        type: string
-
-    secrets:
-      TOKEN_GITHUB: 
-        required: true
-      USERNAME_GITHUB:
-        required: true
-      ansible_user:
-        required: true
-      WAS_HOST:
-        required: true
-      WAS_PORT:
-        required: true
-
-jobs:
-  deploy:
-    runs-on:
-     group: rakbank-self-hosted-runner
-     labels: dehitdevtra1
-
-    steps:
-    - name: Checkout ibps-was-ansible-cd repository
-      uses: actions/checkout@v4
-
-    - name: Checkout roles repository
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-ansible-roles
-        token: ${{ secrets.TOKEN_GITHUB }}
-        path: ansible-roles
-        ref: Feature    
-      
-    - name: Checkout reusable code
-      uses: actions/checkout@v4
-      with:
-        repository: rakbank-internal/enterprise-reusable-workflows
-        ref: feature/optimum-deh-mcf-templates
-        path: reusable-workflows
-        token: ${{ secrets.TOKEN_GITHUB }}  
-
-    - name: Make deploy.sh and rollback.sh executable
-      run: |
-        chmod +x scripts/deploy.sh scripts/rollback.sh    
-
-    - name: Downlaod the releaseartifact from GitHub release
-      uses: ./reusable-workflows/.github/actions/releaseartifact-download-GitHubrelease
-      with:
-        tag: ${{ inputs.tag }}
-        fileName: ${{ inputs.fileName }}
-        repository: ${{ inputs.repository }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-
-    - name: Run Ansible Playbook
-      uses: ./reusable-workflows/.github/actions/was-loosfile-cd
-      with: 
-        release_version: ${{ inputs.release_version }}
-        deploy_mode: ${{ inputs.deploy_mode }}
-        rollback_mode: ${{ inputs.rollback_mode }}
-        environment: ${{ inputs.environment }}
-        TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        ansible_user: ${{ secrets.ansible_user }}
-        WAS_HOST: ${{ secrets.WAS_HOST }}
-        WAS_PORT: ${{ secrets.WAS_PORT }}
----------------------------
-using action for was-loosefile-cd
-
-name: 'was-loosefile-deployment'
-description: 'was-loosefile-deployment'
-inputs:
-  release_version:
-    description: 'Release version to deploy'
-    required: true 
-    type: string
-  deploy_mode:
-    description: 'deploy loose file'
-    required: true
-    type: string
-  rollback_mode:
-    description: 'rollback loose file'
-    required: true
-    type: string
-  environment:
-    description: 'target environment'
-    required: true
-    type: string
-  USERNAME_GITHUB:
-    description: 'GitHub username'
-    required: true
-    type: string
-  TOKEN_GITHUB:
-    description: 'GitHub token'
-    required: true
-    type: string
-  ansible_user:
-    required: true
-    type: string
-  WAS_HOST:
-    required: true
-    type: string
-  WAS_PORT:
-    required: true
-    type: string
-
-runs:
-  using: "composite"
-  steps:
-    - name: Run Ansible Playbook
-      env:
-        TOKEN_GITHUB: ${{ inputs.TOKEN_GITHUB }}
-        release_version: ${{ inputs.release_version }}
-        USERNAME_GITHUB: ${{ inputs.USERNAME_GITHUB }}
-        ansible_user: ${{ inputs.ansible_user }} 
-        WAS_HOST: ${{ inputs.WAS_HOST }}
-        WAS_PORT: ${{ inputs.WAS_PORT }}
-        environment: ${{ inputs.environment }}
-      run: |
-        cd ${{ github.workspace }}
-        ansible-playbook -vvv -b --extra-vars "target=target_was{{ inputs.environment }} destination=${{ github.workspace }} deploy_mode=${{ inputs.deploy_mode }} rollback_mode=${{ inputs.rollback_mode }} release_version=${release_version} WAS_HOST=${WAS_HOST} WAS_PORT=${WAS_PORT} environment=${environment} ansible_user=${ansible_user}" ./playbook/was-loosefile-deployment.yml #Cluster ip:10.15.11.209
-      shell: bash 
-===========================
-
-using host.cfg
-
-[all:vars]
-ansible_ssh_port=22
-
-[target_was+{{ lookup('env', 'environment') }}]
-ANTIBPSAPP1 ansible_ssh_host={{ lookup('env', 'WAS_HOST') }} ansible_host_port={{ lookup('env', 'WAS_PORT') }} ansible_user={{ lookup('env', 'ansible_user') }}
-
--------------------------------------
-
-using playbook
-
-- name: ibps app deploy for loosefile
-  hosts: '{{ target }}'
-  become: yes
-  become_user: "{{ lookup('env', 'ansible_user') }}"
-
-  tasks:
-    - name: Include was-loosefile-deploy
-      include_role:
-        name: was-loosefile-deploy
-        tasks_from: main.yml
-      vars:
-        github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
-        owner: "rakbank-internal"
-        repo: "ibps-was-ansible-cd"
-        branch: "IBPS-APP-ROLE"
-        release_version: "{{ lookup('env', 'release_version') }}"
-        WAS_HOST: "{{ lookup('env', 'WAS_HOST') }}"
-        WAS_PORT: "{{ lookup('env', 'WAS_PORT') }}"
-        environment: "{{ lookup('env', 'environment') }}"
-        ansible_user: "{{ lookup('env', 'ansible_user') }}"
-        zip_file_url: "{{ lookup('env', 'ZIP_FILE_URL') }}"
-        zip_file_name: "{{ zip_file_url | basename }}"
-        Profile_home: "/ibm/IBM/Application/release"
-
-============================
-
-getting error
-Invalid workflow file: .github/workflows/release-was-loosefile-cd.yml#L59
-The workflow is not valid. .github/workflows/release-was-loosefile-cd.yml (Line: 59, Col: 21): Unexpected symbol: '+'. Located at position 25 within expression: secrets['ANSIBLE_USER_' + github.event.inputs.environment] .github/workflows/release-was-loosefile-cd.yml (Line: 60, Col: 17): Unexpected symbol: '+'. Located at position 21 within expression: secrets['WAS_HOST_' + github.event.inputs.environment]
-================
-
-name: release-was-loose-file-deployment
-run-name: release-was-loose-file-deployment-${{ github.event.inputs.release_version }}
-
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-  actions: read
-  pull-requests: write
-
-on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Release version to deploy'
-        required: true 
-        type: string
-      tag:
-        description: 'Release tag name'
-        required: true
-        type: string
-      fileName:
-        description: 'Release file name'
-        required: true
-        type: string
-      repository:
-        description: 'Download Release repo name'
-        required: true
-        type: string
-        default: rakbank-internal/ibps-was-ansible-cd
-      deploy_mode:
-        description: 'deploy loose file'
-        required: true
-        type: string
-      rollback_mode:
-        description: 'rollback loose file'
-        required: true
-        type: string
-      environment:
-        description: 'Target environment'
-        required: true
-        type: string
-        default: 'UAT209'
-
-jobs:
-  IBPS-loosefile-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Set environment-specific secrets
-      id: set-env
-      run: |
-        echo "ANSIBLE_USER=${{ secrets['ANSIBLE_USER_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
-        echo "WAS_HOST=${{ secrets['WAS_HOST_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
-        echo "WAS_PORT=${{ secrets['WAS_PORT_' + github.event.inputs.environment] }}" >> $GITHUB_ENV
-
-    - name: Call reusable workflow
-      uses: rakbank-internal/enterprise-reusable-workflows/.github/workflows/was-loose-file-deployment.yml@feature/optimum-deh-mcf-templates
-      with:
-        release_version: ${{ github.event.inputs.release_version }}
-        tag: ${{ github.event.inputs.tag }}
-        fileName: ${{ github.event.inputs.fileName }}
-        repository: ${{ github.event.inputs.repository }}
-        deploy_mode: ${{ github.event.inputs.deploy_mode }}
-        rollback_mode: ${{ github.event.inputs.rollback_mode }}
-        environment: ${{ github.event.inputs.environment }}
-      secrets:
-        TOKEN_GITHUB: ${{ secrets.DEVOPS_WORKFLOW_TOKEN }}
-        USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
-        ansible_user: ${{ env.ANSIBLE_USER }}
-        WAS_HOST: ${{ env.WAS_HOST }}
-        WAS_PORT: ${{ env.WAS_PORT }}
-====================
-
-[5:39 PM] Pradip Kanasani
-The error message indicates that the process does not have the necessary permissions to access the file /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock.
-This could be due to the user running the process not having the necessary read/write permissions for the file or directory.
-To fix this issue, you can change the permissions of the file or directory using the chmod command in the terminal.
-Here is an example of how you can give read/write permissions to the user for the file:
- 
- 
-sudo chmod u+rw /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock
- 
- 
- 
- 
-1 vulnerability
-Please replace u+rw with the appropriate permissions and /ibm/IBM/WebSphere/AppServer/profiles/AppSrv01/configuration/org.eclipse.osgi/.manager/.fileTableLock with the path to your file or directory.
-Remember to be careful when changing permissions to ensure you are not inadvertently giving access to users who should not have it.
-==================
-
-We are in the process of installing the IBPS WAR file in WAS. While the installation on the UAT server (10.15.11.209) was successful, we are encountering an error on server 10.15.11.210, port 8879.
-
-Can you please check this issue?
+- name: Deploy the WAR file to JBoss
+  shell: "{{ jboss_home }}/bin/jboss-cli.sh --connect --controller={{ jboss_controller }} --command='deploy --force {{ jboss_deployments_dir }}/{{ war_file_name }}'"
+...        
 
 
